@@ -12,7 +12,7 @@ export async function withFilesRouter({ baseDir = '/api' } = {}) {
     .catch(() => import('./lib/default-not-found.js'));
 
   return function requestHandler(req, res) {
-    const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+    const parsedUrl = new URL(req.url, `https://${req.headers.host}`);
     let pathname = parsedUrl.pathname;
 
     let matchedHandler = null;

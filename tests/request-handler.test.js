@@ -4,22 +4,23 @@ import * as assert from 'uvu/assert';
 import { withFilesRouter } from '../src/request-handler.js';
 
 const requestHandlerTest = await withFilesRouter({ baseDir: 'tests/api-basics' });
-test('first level path', t => {
-  requestHandlerTest(
-    { url: 'http://site.com', headers: { host: 'site' } },
-    {
-      end: result => assert.is(result, 'root', 'return "index"')
-    },
-  );
+
+const testCases = [
+  { fromUrl: '/', toFile: '/api-basics/index.js' },
+  { fromUrl: '/example', toFile: '/api-basics/example.js' },
+];
+
+testCases.forEach(({ fromUrl, toFile }) => {
+  test('index route', () => {
+    runRequestHandler(fromUrl, res => assert.is(res, toFile, `return response "${toFile}"`));
+  });
 });
 
-test('index route', t => {
+function runRequestHandler(url, onSuccess) {
   requestHandlerTest(
-    { url: 'http://site.com/root-path', headers: { host: 'site' } },
-    {
-      end: result => assert.is(result, 'root', 'return "root"')
-    },
+    { url, headers: { host: 'site' } },
+    { end: onSuccess },
   );
-});
+}
 
 test.run();
