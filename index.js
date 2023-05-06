@@ -1,7 +1,7 @@
 import http from 'node:http';
-import { requestHandler } from './request-handler/request-handler.js';
+import { withFilesRouter } from './src/request-handler.js';
 
-const server = http.createServer(requestHandler);
+const server = http.createServer(await withFilesRouter());
 
 const port = 3000;
 server.listen(port, () => {
