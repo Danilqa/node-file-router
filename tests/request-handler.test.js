@@ -8,6 +8,9 @@ const requestHandlerTest = await withFilesRouter({ baseDir: 'tests/api-basics' }
 const testCases = [
   { fromUrl: '/', toFile: '/api-basics/index.js' },
   { fromUrl: '/example', toFile: '/api-basics/example.js' },
+  { fromUrl: '/subpath/123', toFile: '/api-basics/subpath/[id]/index.js' },
+  { fromUrl: '/subpath/45/subsubpath', toFile: '/api-basics/subpath/[id]/subsubpath/index.js' },
+  { fromUrl: '/subpath/55/subsubpath/89', toFile: '/api-basics/subpath/[id]/subsubpath/[subId].js' },
 ];
 
 testCases.forEach(({ fromUrl, toFile }) => {

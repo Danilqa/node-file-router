@@ -1,4 +1,2 @@
-export default function rootHandler(req, res) {
-  console.log(import.meta.url);
-  res.end(import.meta.url);
-}
+import { createTestRequestHandler } from '../../../test-utils.js';
+export default createTestRequestHandler(import.meta.url);
