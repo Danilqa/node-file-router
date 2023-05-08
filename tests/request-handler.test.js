@@ -23,23 +23,23 @@ RequestHandler('should invoke handler from mapped file', async (context) => {
       toFile: '/api-basics/one/[id]/two/three/[id].js',
     }
   ];
-  const runRequestHandler = createTestRequestRunner(context.basicCasesRequestHandler);
+  const run = createTestRequestRunner(context.basicCasesRequestHandler);
 
   mappingTestCases.forEach(({ fromUrl, toFile }) => {
-    runRequestHandler(fromUrl, ({ filePath }) => assert.is(filePath, toFile));
+    run(fromUrl, ({ filePath }) => assert.is(filePath, toFile));
   });
 });
 
 RequestHandler('should take default 404 fallback when no mapping is found', async (context) => {
-  const runRequestHandler = createTestRequestRunner(context.basicCasesRequestHandler);
+  const run = createTestRequestRunner(context.basicCasesRequestHandler);
 
-  runRequestHandler('/one/123/404', res => assert.is(res, '404 Not Found'));
+  run('/one/123/404', res => assert.is(res, '404 Not Found'));
 });
 
 RequestHandler('should take custom 404 fallback from _404.js file when no mapping is found', async (context) => {
-  const runRequestHandler = createTestRequestRunner(context.notFoundCasesRequestHandler);
+  const run = createTestRequestRunner(context.notFoundCasesRequestHandler);
 
-  runRequestHandler('/one/123/404', ({ filePath }) => assert.is(filePath, '/api-for-not-found/_404.js'));
+  run('/one/123/404', ({ filePath }) => assert.is(filePath, '/api-for-not-found/_404.js'));
 });
 
 RequestHandler('should take params from [slug] handlers', async (context) => {
