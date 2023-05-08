@@ -7,6 +7,6 @@ export function encodeSlugParam(slugParam) {
 }
 
 export function decodeSlugParam(value) {
-  const indexRegexp = new RegExp(`_\d{${NUMBER_OF_INDEX_DIGITS}}$`);
+  const indexRegexp = new RegExp(`_\\d{${NUMBER_OF_INDEX_DIGITS}}$`);
   return value.replace(indexRegexp, '');
 }

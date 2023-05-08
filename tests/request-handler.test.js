@@ -4,14 +4,14 @@ import * as assert from 'uvu/assert';
 import { withFilesRouter } from '../src/request-handler.js';
 import { createTestRequestRunner } from './test-utils.js';
 
-const RequestHandler = suite('Request Handler');
+const requestHandler = suite('Request Handler');
 
-RequestHandler.before(async (context) => {
+requestHandler.before(async (context) => {
   context.basicCasesRequestHandler = await withFilesRouter({ baseDir: 'tests/api-basics' });
   context.notFoundCasesRequestHandler = await withFilesRouter({ baseDir: 'tests/api-for-not-found' });
 });
 
-RequestHandler('should invoke handler from mapped file', async (context) => {
+requestHandler('should invoke handler from mapped file', async (context) => {
   const mappingTestCases = [
     { fromUrl: '/', toFile: '/api-basics/index.js' },
     { fromUrl: '/example', toFile: '/api-basics/example.js' },
@@ -30,29 +30,29 @@ RequestHandler('should invoke handler from mapped file', async (context) => {
   });
 });
 
-RequestHandler('should take default 404 fallback when no mapping is found', async (context) => {
+requestHandler('should take default 404 fallback when no mapping is found', async (context) => {
   const runRequestHandler = createTestRequestRunner(context.basicCasesRequestHandler);
 
   runRequestHandler('/one/123/404', res => assert.is(res, '404 Not Found'));
 });
 
-RequestHandler('should take custom 404 fallback from _404.js file when no mapping is found', async (context) => {
+requestHandler('should take custom 404 fallback from _404.js file when no mapping is found', async (context) => {
   const runRequestHandler = createTestRequestRunner(context.notFoundCasesRequestHandler);
 
   runRequestHandler('/one/123/404', ({ filePath }) => assert.is(filePath, '/api-for-not-found/_404.js'));
 });
 
-RequestHandler('should take params from [slug] handlers', async (context) => {
+requestHandler('should take params from [slug] handlers', async (context) => {
   const slugDataTestCases = [
     { url: '/one/123', params: { id: '123' }, description: 'takes param from directory' },
-    { url: '/one/1/two/tree/3', params: { id: '3' }, description: 'takes the last param with the duplicate name' },
+    { url: '/one/1/two/three/3', params: { id: '3' }, description: 'takes the last param with the duplicate name' },
     { url: '/one/1/two/2', params: { id: '1', subId: '2' }, description: 'takes all params from all levels' },
   ];
   const runRequestHandler = createTestRequestRunner(context.basicCasesRequestHandler);
 
-  slugDataTestCases.forEach(({ url, params }) => {
-    runRequestHandler(url, ({ req }) => assert.equal(req.query, params));
+  slugDataTestCases.forEach(({ url, params, description }) => {
+    runRequestHandler(url, ({ req }) => assert.equal(req.query, params, description));
   });
 });
 
-RequestHandler.run();
+requestHandler.run();
