@@ -5,9 +5,7 @@ import { replaceObjectKeys } from './utils/object.utils.js';
 import { decodeSlugParam } from './lib/slug-param/slug-param.js';
 
 export async function withFilesRouter({ baseDir = '/api' } = {}) {
-  const __dirname = process.cwd();
-
-  const basePath = path.join(__dirname, baseDir);
+  const basePath = path.join(process.cwd(), baseDir);
 
   const routeHandlers = await getRouteHandlers(basePath);
   const notFoundHandler = await import(path.join(basePath, '_404.js'))
@@ -15,24 +13,16 @@ export async function withFilesRouter({ baseDir = '/api' } = {}) {
 
   return function requestHandler(req, res) {
     const parsedUrl = new URL(req.url, `https://${req.headers.host}`);
-    let pathname = parsedUrl.pathname;
+    const { pathname } = parsedUrl;
 
-    let matchedHandler = null;
-    let queryParams = {};
+    const matchedRoute = Object.values(routeHandlers).find(({ regex }) => regex.test(pathname));
 
-    for (const [route, handlerData] of Object.entries(routeHandlers)) {
-      const match = handlerData.regex.exec(pathname);
-      if (match) {
-        matchedHandler = handlerData.handler;
-        const decodedGroups = replaceObjectKeys(match.groups, decodeSlugParam);
-        queryParams = { ...Object.fromEntries(parsedUrl.searchParams), ...decodedGroups };
-        break;
-      }
-    }
-
-    if (matchedHandler) {
-      req.query = queryParams;
-      matchedHandler(req, res);
+    if (matchedRoute) {
+      const { regex, handler } = matchedRoute;
+      const match = regex.exec(pathname);
+      const decodedGroups = replaceObjectKeys(match.groups, decodeSlugParam);
+      req.query = { ...Object.fromEntries(parsedUrl.searchParams), ...decodedGroups };
+      handler(req, res);
     } else {
       notFoundHandler.default(req, res);
     }

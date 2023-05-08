@@ -6,9 +6,9 @@ export async function getRouteHandlers(directory, parentRoute = '') {
   const entries = await fs.readdir(directory, { withFileTypes: true });
   const routeHandlers = {};
 
-  for (const entry of entries) {
+  const processEntry = async (entry) => {
     const fullPath = path.join(directory, entry.name);
-    const routePath = parentRoute + '/' + entry.name;
+    const routePath = `${parentRoute}/${entry.name}`;
 
     if (entry.isDirectory()) {
       const childHandlers = await getRouteHandlers(fullPath, routePath);
@@ -32,7 +32,9 @@ export async function getRouteHandlers(directory, parentRoute = '') {
         routeHandlers[route] = { handler: handler.default, regex: new RegExp(`^${route}/?$`) };
       }
     }
-  }
+  };
+
+  await Promise.all(entries.map(processEntry));
 
   return routeHandlers;
 }
