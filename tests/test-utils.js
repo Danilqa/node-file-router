@@ -5,7 +5,14 @@ export function createTestRequestHandler(url) {
     .replace(process.cwd(), '')
     .replace('/tests', '');
 
-  return function handler(req, res) {
-    res.end(filePath);
-  }
+  return (req, res) => res.end({ req, filePath });
+}
+
+export function createTestRequestRunner(requestHandler) {
+  return (url, onSuccess) => {
+    requestHandler(
+      { url, headers: { host: 'site' } },
+      { end: onSuccess },
+    );
+  };
 }

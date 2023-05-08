@@ -1,6 +1,8 @@
 import { URL } from 'node:url';
 import path from 'node:path';
 import { getRouteHandlers } from './lib/route-handler.js';
+import { replaceObjectKeys } from './utils/object.utils.js';
+import { decodeSlugParam } from './lib/slug-param/slug-param.js';
 
 export async function withFilesRouter({ baseDir = '/api' } = {}) {
   const __dirname = process.cwd();
@@ -19,16 +21,11 @@ export async function withFilesRouter({ baseDir = '/api' } = {}) {
     let queryParams = {};
 
     for (const [route, handlerData] of Object.entries(routeHandlers)) {
-      if (handlerData.regex) {
-        const match = handlerData.regex.exec(pathname);
-        if (match) {
-          matchedHandler = handlerData.handler;
-          queryParams = { ...Object.fromEntries(parsedUrl.searchParams), ...match.groups };
-          break;
-        }
-      } else if (route === pathname) {
+      const match = handlerData.regex.exec(pathname);
+      if (match) {
         matchedHandler = handlerData.handler;
-        queryParams = Object.fromEntries(parsedUrl.searchParams);
+        const decodedGroups = replaceObjectKeys(match.groups, decodeSlugParam);
+        queryParams = { ...Object.fromEntries(parsedUrl.searchParams), ...decodedGroups };
         break;
       }
     }

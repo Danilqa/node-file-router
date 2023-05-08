@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { encodeSlugParam } from './slug-param/slug-param.js';
 
 export async function getRouteHandlers(directory, parentRoute = '') {
   const entries = await fs.readdir(directory, { withFileTypes: true });
@@ -16,13 +17,11 @@ export async function getRouteHandlers(directory, parentRoute = '') {
       const handler = await import(fullPath);
       let route = routePath.replace(/\.js$/, '');
 
-      // Check if the file name follows the [param] pattern
       const pathMatch = route.match(/\[(\w+)]/g);
-
       if (pathMatch) {
         route = pathMatch.reduce((accumulator, currentParam) => {
           const paramName = currentParam.slice(1, -1);
-          return accumulator.replace(`[${paramName}]`, `(?<${paramName}>[^/]+)`);
+          return accumulator.replace(`[${paramName}]`, `(?<${encodeSlugParam(paramName)}>[^/]+)`);
         }, route);
       }
 
