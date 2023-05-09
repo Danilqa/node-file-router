@@ -15,22 +15,16 @@ export async function getRouteHandlers(directory, parentRoute = '') {
       Object.assign(routeHandlers, childHandlers);
     } else if (entry.isFile() && path.extname(entry.name) === '.js') {
       const handler = await import(fullPath);
-      let route = routePath.replace(/\.js$/, '');
+      const initialRoute = routePath.replace(/\.js$/, '');
+      const pathMatch = initialRoute.match(/\[(\w+)]/g);
 
-      const pathMatch = route.match(/\[(\w+)]/g);
-      if (pathMatch) {
-        route = pathMatch.reduce((accumulator, currentParam) => {
-          const paramName = currentParam.slice(1, -1);
-          return accumulator.replace(`[${paramName}]`, `(?<${encodeSlugParam(paramName)}>[^/]+)`);
-        }, route);
-      }
+      const route = pathMatch ? pathMatch.reduce((accumulator, currentParam) => {
+        const paramName = currentParam.slice(1, -1);
+        return accumulator.replace(currentParam, `(?<${encodeSlugParam(paramName)}>[^/]+)`);
+      }, initialRoute) : initialRoute;
 
-      if (entry.name === 'index.js') {
-        const indexRoute = route.replace(/\/index$/, '') || '/';
-        routeHandlers[indexRoute] = { handler: handler.default, regex: new RegExp(`^${indexRoute}/?$`) };
-      } else {
-        routeHandlers[route] = { handler: handler.default, regex: new RegExp(`^${route}/?$`) };
-      }
+      const routeKey = entry.name === 'index.js' ? route.replace(/\/index$/, '') || '/' : route;
+      routeHandlers[routeKey] = { handler: handler.default, regex: new RegExp(`^${routeKey}/?$`) };
     }
   };
 
