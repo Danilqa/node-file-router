@@ -16,3 +16,12 @@ export function createTestRequestRunner(requestHandler) {
     );
   };
 }
+
+export function createTestMethodsRequestRunner(requestHandler) {
+  return (url, method, onSuccess) => {
+    requestHandler(
+      { url, headers: { host: 'site' }, method },
+      { end: onSuccess },
+    );
+  };
+}

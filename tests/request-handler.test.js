@@ -2,7 +2,7 @@ import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 
 import { withFilesRouter } from '../src/request-handler.js';
-import { createTestRequestRunner } from './test-utils.js';
+import { createTestMethodsRequestRunner, createTestRequestRunner } from './test-utils.js';
 
 const RequestHandler = suite('Request Handler');
 
@@ -47,7 +47,37 @@ RequestHandler('should take params from [slug] handlers', async (context) => {
 
   run('/one/123', ({ req }) => assert.equal(req.query, { id: '123' }, 'takes param from directory'));
   run('/one/1/two/three/3', ({ req }) => assert.equal(req.query, { id: '3' }, 'takes the last param with the duplicate name'));
-  run('/one/1/two/2', ({ req }) => assert.equal(req.query, { id: '1', subId: '2' }, 'takes all params from all levels'));
+  run('/one/1/two/2', ({ req }) => assert.equal(req.query, {
+    id: '1',
+    subId: '2'
+  }, 'takes all params from all levels'));
+});
+
+RequestHandler('should invoke http-method based handlers', async (context) => {
+  const run = createTestMethodsRequestRunner(context.basicCasesRequestHandler);
+
+  run(
+    '/one/1/two/multi-methods/3',
+    'post',
+    ({ req }) => {
+      assert.equal(req.query, { id: '3' });
+      assert.equal(req.method, 'post');
+    }
+  );
+
+  run(
+    '/one/1/two/multi-methods/3',
+    'get',
+    ({ req }) => {
+      assert.equal(req.query, { id: '3' });
+      assert.equal(req.method, 'get');
+    }
+  );
+});
+
+RequestHandler('should returns 404 not found if method doesn\'t exists', async (context) => {
+  const run = createTestMethodsRequestRunner(context.basicCasesRequestHandler);
+  run('/one/1/two/multi-methods/3', 'put', res => assert.is(res, '404 Not Found'));
 });
 
 RequestHandler.run();
