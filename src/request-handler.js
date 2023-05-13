@@ -11,8 +11,6 @@ export async function withFilesRouter({ baseDir = '/api' } = {}) {
   const notFoundHandler = await import(path.join(basePath, '_404.js'))
     .catch(() => import('./lib/default-not-found.js'));
 
-  console.log(routeHandlers);
-
   return function requestHandler(req, res) {
     const parsedUrl = new URL(withoutTrailingSlashes(req.url), `https://${req.headers.host}`);
     const { searchParams, pathname } = parsedUrl;
