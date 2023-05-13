@@ -24,7 +24,6 @@ export async function getRouteHandlers(directory, parentRoute = '') {
 
       const dynamicRoute = [exactSlugRoute, catchAllRoute, optionalCatchAllRoute].find(route => route.isMatch(initialRoute));
       const route = dynamicRoute?.get(initialRoute) || initialRoute;
-      console.log('route:', route);
       const routeKey = entry.name === 'index.js' ? route.replace(/\/index$/, '') || '/' : route;
 
       routeHandlers[routeKey] = createRouteHandler({ handler, routeKey });
@@ -32,8 +31,6 @@ export async function getRouteHandlers(directory, parentRoute = '') {
   };
 
   await Promise.all(entries.map(processEntry));
-
-  console.log(routeHandlers);
 
   return routeHandlers;
 }
