@@ -15,7 +15,7 @@ describe('RequestHandler', () => {
 
   it('should invoke handler from mapped file', () => {
     const mappingTestCases = [
-      { fromUrl: '/', toFile: '/api-basics/index.js' },
+      { fromUrl: '', toFile: '/api-basics/index.js' },
       { fromUrl: '/example', toFile: '/api-basics/example.js' },
       { fromUrl: '/one/123', toFile: '/api-basics/one/[id]/index.js' },
       { fromUrl: '/one/45/two', toFile: '/api-basics/one/[id]/two/index.js' },
