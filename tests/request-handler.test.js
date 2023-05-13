@@ -1,4 +1,4 @@
-import { withFilesRouter } from '../src/request-handler.js';
+import { initFileRouter } from '../src/file-router.js';
 import { createTestMethodsRequestRunner, createTestRequestRunner } from './test-utils.js';
 import { describe, expect, it, beforeAll } from 'vitest';
 
@@ -8,9 +8,9 @@ describe('RequestHandler', () => {
   let dynamicSegmentsHandler;
 
   beforeAll(async () => {
-    basicCasesRequestHandler = await withFilesRouter({ baseDir: 'tests/api-basics' });
-    notFoundCasesRequestHandler = await withFilesRouter({ baseDir: 'tests/api-for-not-found' });
-    dynamicSegmentsHandler = await withFilesRouter({ baseDir: 'tests/api-dynamic-segments' });
+    basicCasesRequestHandler = await initFileRouter({ baseDir: 'tests/api-basics' });
+    notFoundCasesRequestHandler = await initFileRouter({ baseDir: 'tests/api-for-not-found' });
+    dynamicSegmentsHandler = await initFileRouter({ baseDir: 'tests/api-dynamic-segments' });
   });
 
   it('should invoke handler from mapped file', () => {

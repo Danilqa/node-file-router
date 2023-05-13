@@ -1,7 +1,11 @@
 import http from 'node:http';
-import { withFilesRouter } from './../src/request-handler.js';
+import { initFileRouter } from '../src/file-router.js';
 
-const server = http.createServer(await withFilesRouter({ baseDir: './sample/api' }));
+const useFileRouter = await initFileRouter({ baseDir: './sample/api' });
+
+const server = http.createServer((req, res) => {
+  useFileRouter(req, res);
+});
 
 const port = 4000;
 server.listen(port, () => {

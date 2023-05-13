@@ -4,7 +4,7 @@ import { getRouteHandlers } from './lib/route-handler.js';
 import { isFunction, isObject } from './utils/object.utils.js';
 import { withoutTrailingSlashes } from './utils/string.utils.js';
 
-export async function withFilesRouter({ baseDir = '/api' } = {}) {
+export async function initFileRouter({ baseDir = '/api' } = {}) {
   const basePath = path.join(process.cwd(), baseDir);
 
   const routeHandlers = await getRouteHandlers(basePath);
