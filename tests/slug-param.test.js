@@ -1,15 +1,13 @@
-import { suite } from 'uvu';
-import * as assert from 'uvu/assert';
 import { decodeSlugParam, encodeSlugParam } from '../src/lib/slug-param/slug-param.js';
+import { describe, expect, it } from 'vitest';
 
-const SlugParam = suite('SlugParam');
+describe('SlugParam', () => {
 
-SlugParam('should encode a slug param', async (context) => {
-  assert.match(encodeSlugParam('slugId'), new RegExp('^slugId_\\d{8}$'));
+  it('should encode a slug param', () => {
+    expect(encodeSlugParam('slugId')).toMatch(/^slugId_\d{8}$/);
+  });
+
+  it('should decode a slug param', () => {
+    expect(decodeSlugParam('slugId_12345678')).toBe('slugId');
+  });
 });
-
-SlugParam('should decode a slug param', async (context) => {
-  assert.match(decodeSlugParam('slugId_12345678'), 'slugId');
-});
-
-SlugParam.run();

@@ -1,8 +1,8 @@
 import { URL } from 'node:url';
 import path from 'node:path';
 import { getRouteHandlers } from './lib/route-handler.js';
-import { isFunction, isObject, replaceObjectKeys } from './utils/object.utils.js';
-import { decodeSlugParam } from './lib/slug-param/slug-param.js';
+import { isFunction, isObject } from './utils/object.utils.js';
+import { withoutTrailingSlashes } from './utils/string.utils.js';
 
 export async function withFilesRouter({ baseDir = '/api' } = {}) {
   const basePath = path.join(process.cwd(), baseDir);
@@ -11,19 +11,19 @@ export async function withFilesRouter({ baseDir = '/api' } = {}) {
   const notFoundHandler = await import(path.join(basePath, '_404.js'))
     .catch(() => import('./lib/default-not-found.js'));
 
+  console.log(routeHandlers);
+
   return function requestHandler(req, res) {
-    const parsedUrl = new URL(req.url, `https://${req.headers.host}`);
-    const { pathname, searchParams } = parsedUrl;
+    const parsedUrl = new URL(withoutTrailingSlashes(req.url), `https://${req.headers.host}`);
+    const { searchParams, pathname } = parsedUrl;
     const matchedRoute = Object.values(routeHandlers).find(({ regex }) => regex.test(pathname));
     if (!matchedRoute) {
       notFoundHandler.default(req, res);
       return;
     }
 
-    const { regex, handler } = matchedRoute;
-    const match = regex.exec(pathname);
-    const decodedGroups = replaceObjectKeys(match.groups, decodeSlugParam);
-    req.query = { ...Object.fromEntries(searchParams), ...decodedGroups };
+    const { handler, getQueryParams } = matchedRoute;
+    req.query = { ...Object.fromEntries(searchParams), ...getQueryParams(pathname) };
 
     const method = req.method?.toLowerCase();
     if (isObject(handler) && handler[method]) {

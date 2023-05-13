@@ -6,8 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "node index.js",
-    "test": "uvu tests",
-    "test:coverage": "c8 --include=src npm test"
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "Daniil Sitdikov",
@@ -16,7 +15,7 @@
     "node": ">=14.8.0"
   },
   "devDependencies": {
-    "c8": "7.13.0",
-    "uvu": "0.5.6"
+    "@vitest/coverage-c8": "0.31.0",
+    "vitest": "0.31.0"
   }
 }
