@@ -1,0 +1,16 @@
+{
+  "name": "es-modules-sample",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node sample/server.js"
+  },
+  "keywords": [],
+  "author": "Daniil Sitdikov",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.8.0"
+  }
+}

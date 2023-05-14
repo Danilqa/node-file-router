@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
+    "build": "babel src --out-dir dist --extensions '.ts'",
     "dev:sample": "ts-node sample/server.ts",
     "test": "vitest run"
   },
@@ -14,11 +15,15 @@
     "node": ">=14.8.0"
   },
   "devDependencies": {
+    "@babel/cli": "7.21.5",
+    "@babel/core": "7.21.8",
+    "@babel/preset-env": "7.21.5",
     "@babel/preset-typescript": "7.21.5",
     "@types/node": "20.1.4",
     "@vitest/coverage-c8": "0.31.0",
+    "cross-env": "7.0.3",
     "ts-node": "10.9.1",
-    "typescript": "^5.0.4",
+    "typescript": "5.0.4",
     "vitest": "0.31.0"
   }
 }
