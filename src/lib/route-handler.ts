@@ -1,11 +1,15 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { decodeSlugParam } from './slug-param/slug-param.js';
-import { exactSlugRoute } from './routes/exact-slug-route.js';
-import { catchAllRoute } from './routes/catch-all-route.js';
-import { filterValues, mapKeys, mapValues } from '../utils/object.utils.js';
-import { pipe } from '../utils/fp.utils.js';
-import { optionalCatchAllRoute } from './routes/optional-catch-all-route.js';
+import { decodeSlugParam } from './slug-param/slug-param';
+import { exactSlugRoute } from './routes/exact-slug-route';
+import { catchAllRoute } from './routes/catch-all-route';
+import { filterValues, mapKeys, mapValues } from '../utils/object.utils';
+import { pipe } from '../utils/fp.utils';
+import { optionalCatchAllRoute } from './routes/optional-catch-all-route';
+
+const fileExtensions = ['js', 'mjs', 'cjs', 'ts'].join('|');
+const fileExtensionPattern = new RegExp(`\\.(${fileExtensions})$`);
+const indexFilePattern = new RegExp(`index\\.(${fileExtensions})$`);
 
 export async function getRouteHandlers(directory, parentRoute = '') {
   const entries = await fs.readdir(directory, { withFileTypes: true });
@@ -18,13 +22,13 @@ export async function getRouteHandlers(directory, parentRoute = '') {
     if (entry.isDirectory()) {
       const childHandlers = await getRouteHandlers(fullPath, routePath);
       Object.assign(routeHandlers, childHandlers);
-    } else if (entry.isFile() && path.extname(entry.name) === '.js') {
+    } else if (entry.isFile() && fileExtensionPattern.test(entry.name)) {
       const handler = await import(fullPath);
-      const initialRoute = routePath.replace(/\.js$/, '');
+      const initialRoute = routePath.replace(fileExtensionPattern, '');
 
       const dynamicRoute = [exactSlugRoute, catchAllRoute, optionalCatchAllRoute].find(route => route.isMatch(initialRoute));
       const route = dynamicRoute?.get(initialRoute) || initialRoute;
-      const routeKey = entry.name === 'index.js' ? route.replace(/\/index$/, '') || '/' : route;
+      const routeKey = indexFilePattern.test(entry.name) ? route.replace(/\/index$/, '') || '/' : route;
 
       routeHandlers[routeKey] = createRouteHandler({ handler, routeKey });
     }

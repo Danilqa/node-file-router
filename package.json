@@ -2,10 +2,9 @@
   "name": "node-file-router",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "dev:sample": "node ./sample/server.js",
+    "dev:sample": "ts-node sample/server.ts",
     "test": "vitest run"
   },
   "keywords": [],
@@ -15,7 +14,11 @@
     "node": ">=14.8.0"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "7.21.5",
+    "@types/node": "20.1.4",
     "@vitest/coverage-c8": "0.31.0",
+    "ts-node": "10.9.1",
+    "typescript": "^5.0.4",
     "vitest": "0.31.0"
   }
 }

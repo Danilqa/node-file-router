@@ -1,4 +1,4 @@
-import { decodeSlugParam, encodeSlugParam } from '../src/lib/slug-param/slug-param.js';
+import { decodeSlugParam, encodeSlugParam } from '../src/lib/slug-param/slug-param';
 import { describe, expect, it } from 'vitest';
 
 describe('SlugParam', () => {

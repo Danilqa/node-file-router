@@ -1,15 +1,15 @@
 import { URL } from 'node:url';
-import path from 'node:path';
-import { getRouteHandlers } from './lib/route-handler.js';
-import { isFunction, isObject } from './utils/object.utils.js';
-import { withoutTrailingSlashes } from './utils/string.utils.js';
+import * as path from 'node:path';
+import { getRouteHandlers } from './lib/route-handler';
+import { isFunction, isObject } from './utils/object.utils';
+import { withoutTrailingSlashes } from './utils/string.utils';
 
 export async function initFileRouter({ baseDir = '/api' } = {}) {
   const basePath = path.join(process.cwd(), baseDir);
 
   const routeHandlers = await getRouteHandlers(basePath);
   const notFoundHandler = await import(path.join(basePath, '_404.js'))
-    .catch(() => import('./lib/default-not-found.js'));
+    .catch(() => import('./lib/default-not-found'));
 
   return function requestHandler(req, res) {
     const parsedUrl = new URL(withoutTrailingSlashes(req.url), `https://${req.headers.host}`);
@@ -20,6 +20,7 @@ export async function initFileRouter({ baseDir = '/api' } = {}) {
       return;
     }
 
+    // @ts-ignore
     const { handler, getQueryParams } = matchedRoute;
     req.query = { ...Object.fromEntries(searchParams), ...getQueryParams(pathname) };
 

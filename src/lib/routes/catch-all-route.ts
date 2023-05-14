@@ -1,4 +1,4 @@
-import { encodeSlugParam } from '../slug-param/slug-param.js';
+import { encodeSlugParam } from '../slug-param/slug-param';
 
 const pattern = /\[(\.\.\.\w+)]$/g;
 

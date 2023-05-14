@@ -1,4 +1,4 @@
-import { initFileRouter } from '../src/file-router.js';
+import { initFileRouter } from '../src/file-router';
 import { createTestMethodsRequestRunner, createTestRequestRunner } from './test-utils.js';
 import { describe, expect, it, beforeAll } from 'vitest';
 
@@ -15,14 +15,14 @@ describe('RequestHandler', () => {
 
   it('should invoke handler from mapped file', () => {
     const mappingTestCases = [
-      { fromUrl: '', toFile: '/api-basics/index.js' },
-      { fromUrl: '/example', toFile: '/api-basics/example.js' },
-      { fromUrl: '/one/123', toFile: '/api-basics/one/[id]/index.js' },
-      { fromUrl: '/one/45/two', toFile: '/api-basics/one/[id]/two/index.js' },
-      { fromUrl: '/one/55/two/89', toFile: '/api-basics/one/[id]/two/[subId].js' },
+      { fromUrl: '', toFile: '/api-basics/index.ts' },
+      { fromUrl: '/example', toFile: '/api-basics/example.ts' },
+      { fromUrl: '/one/123', toFile: '/api-basics/one/[id]/index.ts' },
+      { fromUrl: '/one/45/two', toFile: '/api-basics/one/[id]/two/index.ts' },
+      { fromUrl: '/one/55/two/89', toFile: '/api-basics/one/[id]/two/[subId].ts' },
       {
         fromUrl: '/one/55/two/three/55',
-        toFile: '/api-basics/one/[id]/two/three/[id].js',
+        toFile: '/api-basics/one/[id]/two/three/[id].ts',
       }
     ];
     const run = createTestRequestRunner(basicCasesRequestHandler);
@@ -40,7 +40,7 @@ describe('RequestHandler', () => {
 
   it('should take custom 404 fallback from _404.js file when no mapping is found', () => {
     const run = createTestRequestRunner(notFoundCasesRequestHandler);
-    run('/one/123/404', ({ filePath }) => expect(filePath).toBe('/api-for-not-found/_404.js'));
+    run('/one/123/404', ({ filePath }) => expect(filePath).toBe('/api-for-not-found/_404.ts'));
   });
 
   it('should take params from [slug] handlers', () => {
@@ -86,13 +86,13 @@ describe('RequestHandler', () => {
     run(
       '/catch-all',
       ({ req, filePath }) => {
-        expect(filePath).toEqual('/api-dynamic-segments/catch-all/index.js');
+        expect(filePath).toEqual('/api-dynamic-segments/catch-all/index.ts');
         expect(req.query).toEqual({ slug: undefined });
       });
     run(
       '/catch-all/',
       ({ req, filePath }) => {
-        expect(filePath).toEqual('/api-dynamic-segments/catch-all/index.js');
+        expect(filePath).toEqual('/api-dynamic-segments/catch-all/index.ts');
         expect(req.query).toEqual({ slug: undefined });
       });
   });
