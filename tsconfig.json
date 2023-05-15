@@ -1,6 +1,16 @@
 {
   "compilerOptions": {
     "declaration": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "alwaysStrict": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "emitDecoratorMetadata": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "experimentalDecorators": true,
     "emitDeclarationOnly": true,
     "declarationMap": true,
     "lib": ["es2017"],

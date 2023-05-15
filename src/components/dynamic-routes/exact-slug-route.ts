@@ -1,14 +1,15 @@
 import { encodeSlugParam } from '../slug-param/slug-param';
+import { DynamicRoute } from "../../types/dynamic-route";
 
 const pattern = /\[(\w+)]/g;
 
-export const exactSlugRoute = {
+export const exactSlugRoute: DynamicRoute = {
   get: initialRoute => {
-    const slugParamMatch = initialRoute.match(pattern);
+    const slugParamMatch = initialRoute.match(pattern)!;
     return slugParamMatch.reduce((accumulator, currentParam) => {
       const paramName = currentParam.slice(1, -1);
       return accumulator.replace(currentParam, `(?<${encodeSlugParam(paramName)}>[^/]+)`);
     }, initialRoute);
   },
-  isMatch: route => route.match(pattern),
+  isMatch: route => pattern.test(route),
 }
