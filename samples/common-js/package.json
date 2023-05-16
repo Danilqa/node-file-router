@@ -1,10 +1,9 @@
 {
-  "name": "es-modules-sample",
+  "name": "common-js-modules-sample",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "scripts": {
-    "start": "node sample/server.js"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "Daniil Sitdikov",

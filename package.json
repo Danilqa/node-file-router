@@ -2,11 +2,19 @@
   "name": "node-file-router",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
   "scripts": {
-    "build": "babel src --out-dir dist --extensions '.ts'",
+    "build:esm": "cross-env BABEL_ENV=esmUnbundled babel src --extensions '.ts' --out-dir 'dist/esm' --source-maps",
+    "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts' --out-dir 'dist/cjs' --source-maps",
+    "build": "npm run build:cjs && npm run build:esm && node ./dev/scripts/copy-files.js",
+    "dev:link": "npm link ./dist",
     "dev:sample": "ts-node sample/server.ts",
     "test": "vitest run"
+  },
+  "module": "./esm/file-router.js",
+  "main": "../cjs/file-router.js",
+  "exports": {
+    "import": "./esm/file-router.js",
+    "require": "./cjs/file-router.js"
   },
   "keywords": [],
   "author": "Daniil Sitdikov",
@@ -17,6 +25,8 @@
   "devDependencies": {
     "@babel/cli": "7.21.5",
     "@babel/core": "7.21.8",
+    "@babel/plugin-transform-modules-commonjs": "7.21.5",
+    "@babel/plugin-transform-runtime": "7.21.4",
     "@babel/preset-env": "7.21.5",
     "@babel/preset-typescript": "7.21.5",
     "@types/node": "20.1.4",

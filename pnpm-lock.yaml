@@ -3,6 +3,8 @@ lockfileVersion: 5.4
 specifiers:
   '@babel/cli': 7.21.5
   '@babel/core': 7.21.8
+  '@babel/plugin-transform-modules-commonjs': 7.21.5
+  '@babel/plugin-transform-runtime': 7.21.4
   '@babel/preset-env': 7.21.5
   '@babel/preset-typescript': 7.21.5
   '@types/node': 20.1.4
@@ -15,6 +17,8 @@ specifiers:
 devDependencies:
   '@babel/cli': 7.21.5_@babel+core@7.21.8
   '@babel/core': 7.21.8
+  '@babel/plugin-transform-modules-commonjs': 7.21.5_@babel+core@7.21.8
+  '@babel/plugin-transform-runtime': 7.21.4_@babel+core@7.21.8
   '@babel/preset-env': 7.21.5_@babel+core@7.21.8
   '@babel/preset-typescript': 7.21.5_@babel+core@7.21.8
   '@types/node': 20.1.4
@@ -1003,6 +1007,23 @@ packages:
     dependencies:
       '@babel/core': 7.21.8
       '@babel/helper-plugin-utils': 7.21.5
+    dev: true
+
+  /@babel/plugin-transform-runtime/7.21.4_@babel+core@7.21.8:
+    resolution: {integrity: sha512-1J4dhrw1h1PqnNNpzwxQ2UBymJUF8KuPjAAnlLwZcGhHAIqUigFW7cdK6GHoB64ubY4qXQNYknoUeks4Wz7CUA==}
+    engines: {node: '>=6.9.0'}
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
+    dependencies:
+      '@babel/core': 7.21.8
+      '@babel/helper-module-imports': 7.21.4
+      '@babel/helper-plugin-utils': 7.21.5
+      babel-plugin-polyfill-corejs2: 0.3.3_@babel+core@7.21.8
+      babel-plugin-polyfill-corejs3: 0.6.0_@babel+core@7.21.8
+      babel-plugin-polyfill-regenerator: 0.4.1_@babel+core@7.21.8
+      semver: 6.3.0
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /@babel/plugin-transform-shorthand-properties/7.18.6_@babel+core@7.21.8:

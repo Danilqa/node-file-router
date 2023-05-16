@@ -1,0 +1,7 @@
+lockfileVersion: 5.4
+
+specifiers:
+  node-file-router: workspace:../../dist
+
+dependencies:
+  node-file-router: link:../../dist

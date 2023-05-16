@@ -1,5 +1,5 @@
 const http = require('node:http');
-const { initFileRouter } = require('../../dist/file-router');
+const { initFileRouter } = require('node-file-router');
 
 async function run() {
   const useFileRouter = await initFileRouter({ baseDir: './api' });
