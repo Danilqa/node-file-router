@@ -1,6 +1,6 @@
 import { URL } from 'node:url';
 import * as path from 'node:path';
-import { ServerResponse } from 'node:http';
+import { IncomingMessage, ServerResponse } from 'node:http';
 
 import { resolveFileRoutes } from './components/file-route-resolver';
 import { isFunction, isRecordWith } from './utils/object.utils';
@@ -14,7 +14,7 @@ export async function initFileRouter({ baseDir = '/api' } = {}) {
   const routeHandlers = await resolveFileRoutes(basePath);
   const notFoundHandler = await resolveNotFoundHandler(basePath);
 
-  return function requestHandler(req: Request, res: ServerResponse) {
+  return function requestHandler(req: IncomingMessage, res: ServerResponse) {
     const parsedUrl = new URL(withoutTrailingSlashes(req.url || ''), `https://${req.headers.host}`);
     const { searchParams, pathname } = parsedUrl;
     const matchedRoute = Object.values(routeHandlers).find(({ regex }) => regex.test(pathname));
@@ -25,7 +25,7 @@ export async function initFileRouter({ baseDir = '/api' } = {}) {
 
     const { handler, getQueryParams } = matchedRoute;
 
-    req.query = { ...Object.fromEntries(searchParams), ...getQueryParams(pathname) };
+    (req as Request).query = { ...Object.fromEntries(searchParams), ...getQueryParams(pathname) };
 
     const method = req.method?.toLowerCase();
     if (isRecordWith<Function>(handler) && method && handler[method]) {
