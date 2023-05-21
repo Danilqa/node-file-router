@@ -9,6 +9,7 @@ specifiers:
   '@babel/preset-typescript': 7.21.5
   '@types/node': 20.1.4
   '@vitest/coverage-c8': 0.31.0
+  babel-plugin-add-import-extension: 1.6.0
   cross-env: 7.0.3
   ts-node: 10.9.1
   typescript: 5.0.4
@@ -23,6 +24,7 @@ devDependencies:
   '@babel/preset-typescript': 7.21.5_@babel+core@7.21.8
   '@types/node': 20.1.4
   '@vitest/coverage-c8': 0.31.0_vitest@0.31.0
+  babel-plugin-add-import-extension: 1.6.0_@babel+core@7.21.8
   cross-env: 7.0.3
   ts-node: 10.9.1_4c63mq2757qljrsjjqnwiygpbu
   typescript: 5.0.4
@@ -1669,6 +1671,15 @@ packages:
 
   /assertion-error/1.1.0:
     resolution: {integrity: sha512-jgsaNduz+ndvGyFt3uSuWqvy4lCnIJiovtouQN5JZHOKCS2QuhEdbcQHFhVksz2N2U9hXJo8odG7ETyWlEeuDw==}
+    dev: true
+
+  /babel-plugin-add-import-extension/1.6.0_@babel+core@7.21.8:
+    resolution: {integrity: sha512-JVSQPMzNzN/S4wPRoKQ7+u8PlkV//BPUMnfWVbr63zcE+6yHdU2Mblz10Vf7qe+6Rmu4svF5jG7JxdcPi9VvKg==}
+    peerDependencies:
+      '@babel/core': '>=7.0.0'
+    dependencies:
+      '@babel/core': 7.21.8
+      '@babel/helper-plugin-utils': 7.21.5
     dev: true
 
   /babel-plugin-polyfill-corejs2/0.3.3_@babel+core@7.21.8:

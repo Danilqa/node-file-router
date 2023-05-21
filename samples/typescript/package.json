@@ -1,10 +1,10 @@
 {
-  "name": "es-modules-sample",
+  "name": "typescript-sample",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "start": "ts-node src/server.ts",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "Daniil Sitdikov",
@@ -14,5 +14,10 @@
   },
   "dependencies": {
     "node-file-router": "workspace:../../dist"
+  },
+  "devDependencies": {
+    "ts-node": "10.9.1",
+    "typescript": "5.0.4",
+    "@types/node": "20.1.4"
   }
 }

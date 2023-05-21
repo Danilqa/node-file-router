@@ -6,12 +6,9 @@ const shared = {
 
 module.exports = {
   env: {
-    esmUnbundled: shared,
-    esmBundled: {
+    esm: {
       ...shared,
-      presets: [['@babel/env', {
-        targets: '> 0.25%, not dead'
-      }], ...sharedPresets],
+      plugins: [['add-import-extension', { extension: 'mjs' }]],
     },
     cjs: {
       ...shared,
@@ -19,5 +16,5 @@ module.exports = {
         modules: 'commonjs'
       }], ...sharedPresets],
     }
-  }
+  },
 }

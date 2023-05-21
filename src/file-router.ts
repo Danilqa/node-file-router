@@ -5,17 +5,17 @@ import { ServerResponse } from 'node:http';
 import { resolveFileRoutes } from './components/file-route-resolver';
 import { isFunction, isRecordWith } from './utils/object.utils';
 import { withoutTrailingSlashes } from './utils/string.utils';
-import { Request } from "./types/request";
+import { resolveNotFoundHandler } from './components/not-found-resolver';
+import { Request } from './types/request';
 
 export async function initFileRouter({ baseDir = '/api' } = {}) {
   const basePath = path.join(process.cwd(), baseDir);
 
   const routeHandlers = await resolveFileRoutes(basePath);
-  const notFoundHandler = await import(path.join(basePath, '_404.js'))
-    .catch(() => import('./components/default-not-found'));
+  const notFoundHandler = await resolveNotFoundHandler(basePath);
 
   return function requestHandler(req: Request, res: ServerResponse) {
-    const parsedUrl = new URL(withoutTrailingSlashes(req.url), `https://${req.headers.host}`);
+    const parsedUrl = new URL(withoutTrailingSlashes(req.url || ''), `https://${req.headers.host}`);
     const { searchParams, pathname } = parsedUrl;
     const matchedRoute = Object.values(routeHandlers).find(({ regex }) => regex.test(pathname));
     if (!matchedRoute) {
@@ -24,6 +24,7 @@ export async function initFileRouter({ baseDir = '/api' } = {}) {
     }
 
     const { handler, getQueryParams } = matchedRoute;
+
     req.query = { ...Object.fromEntries(searchParams), ...getQueryParams(pathname) };
 
     const method = req.method?.toLowerCase();

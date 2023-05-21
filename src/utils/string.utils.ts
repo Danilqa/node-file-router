@@ -1,3 +1,3 @@
-export function withoutTrailingSlashes(path) {
+export function withoutTrailingSlashes(path: string): string {
   return path.replace(/\/+$/, '');
 }

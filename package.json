@@ -3,17 +3,19 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build:esm": "cross-env BABEL_ENV=esmUnbundled babel src --extensions '.ts' --out-dir 'dist/esm' --source-maps",
+    "build:esm": "cross-env BABEL_ENV=esm babel src --extensions '.ts' --out-dir 'dist/esm' --out-file-extension .mjs --source-maps",
     "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts' --out-dir 'dist/cjs' --source-maps",
-    "build": "npm run build:cjs && npm run build:esm && node ./dev/scripts/copy-files.js",
+    "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist/types --rootDir src",
+    "build": "npm run build:cjs && npm run build:esm && npm run build:types && node ./dev/scripts/copy-files.js",
     "dev:link": "npm link ./dist",
     "dev:sample": "ts-node sample/server.ts",
     "test": "vitest run"
   },
-  "module": "./esm/file-router.js",
+  "module": "./esm/file-router.mjs",
   "main": "../cjs/file-router.js",
+  "types": "./types/file-router.d.ts",
   "exports": {
-    "import": "./esm/file-router.js",
+    "import": "./esm/file-router.mjs",
     "require": "./cjs/file-router.js"
   },
   "keywords": [],
@@ -31,6 +33,7 @@
     "@babel/preset-typescript": "7.21.5",
     "@types/node": "20.1.4",
     "@vitest/coverage-c8": "0.31.0",
+    "babel-plugin-add-import-extension": "1.6.0",
     "cross-env": "7.0.3",
     "ts-node": "10.9.1",
     "typescript": "5.0.4",
