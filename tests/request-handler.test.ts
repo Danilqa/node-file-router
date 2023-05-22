@@ -45,9 +45,9 @@ describe('RequestHandler', () => {
 
   it('should take params from [slug] handlers', () => {
     const run = createTestRequestRunner(basicCasesRequestHandler);
-    run('/one/123', ({ req }) => expect(req.query).toEqual({ id: '123' }));
-    run('/one/1/two/three/3', ({ req }) => expect(req.query).toEqual({ id: '3' }));
-    run('/one/1/two/2', ({ req }) => expect(req.query).toEqual({
+    run('/one/123', ({ routeParams }) => expect(routeParams).toEqual({ id: '123' }));
+    run('/one/1/two/three/3', ({ routeParams }) => expect(routeParams).toEqual({ id: '3' }));
+    run('/one/1/two/2', ({ routeParams }) => expect(routeParams).toEqual({
       id: '1',
       subId: '2'
     }));
@@ -55,16 +55,16 @@ describe('RequestHandler', () => {
 
   it('should invoke http-method based handlers', () => {
     const run = createTestMethodsRequestRunner(basicCasesRequestHandler);
-    run('/one/1/two/multi-methods/3', 'post', ({ req }) => {
-      expect(req.query).toEqual({ id: '3' });
+    run('/one/1/two/multi-methods/3', 'post', ({ req, routeParams }) => {
+      expect(routeParams).toEqual({ id: '3' });
       expect(req.method).toBe('post');
     });
 
     run(
       '/one/1/two/multi-methods/3',
       'get',
-      ({ req }) => {
-        expect(req.query).toEqual({ id: '3' });
+      ({ req, routeParams }) => {
+        expect(routeParams).toEqual({ id: '3' });
         expect(req.method).toBe('get');
       }
     );
@@ -77,30 +77,30 @@ describe('RequestHandler', () => {
 
   it('should get all query params from [...slug]', () => {
     const run = createTestRequestRunner(dynamicSegmentsHandler);
-    run('/catch-all/1/2/3/4', ({ req }) => expect(req.query).toEqual({ slug: ['1', '2', '3', '4'] }));
-    run('/catch-all/1/2/3/4/', ({ req }) => expect(req.query).toEqual({ slug: ['1', '2', '3', '4'] }));
+    run('/catch-all/1/2/3/4', ({ routeParams }) => expect(routeParams).toEqual({ slug: ['1', '2', '3', '4'] }));
+    run('/catch-all/1/2/3/4/', ({ routeParams }) => expect(routeParams).toEqual({ slug: ['1', '2', '3', '4'] }));
   });
 
   it('should take index file when it is defined', () => {
     const run = createTestRequestRunner(dynamicSegmentsHandler);
     run(
       '/catch-all',
-      ({ req, filePath }) => {
+      ({ routeParams, filePath }) => {
         expect(filePath).toEqual('/api-dynamic-segments/catch-all/index.ts');
-        expect(req.query).toEqual({ slug: undefined });
+        expect(routeParams).toEqual({ slug: undefined });
       });
     run(
       '/catch-all/',
-      ({ req, filePath }) => {
+      ({ routeParams, filePath }) => {
         expect(filePath).toEqual('/api-dynamic-segments/catch-all/index.ts');
-        expect(req.query).toEqual({ slug: undefined });
+        expect(routeParams).toEqual({ slug: undefined });
       });
   });
 
   it('should catch index file in [[...slug]]', () => {
     const run = createTestRequestRunner(dynamicSegmentsHandler);
 
-    run('/optional-catch-all', ({ req }) => expect(req.query).toEqual({ slug: undefined }));
-    run('/optional-catch-all/', ({ req }) => expect(req.query).toEqual({ slug: undefined }));
+    run('/optional-catch-all', ({ routeParams }) => expect(routeParams).toEqual({ slug: undefined }));
+    run('/optional-catch-all/', ({ routeParams }) => expect(routeParams).toEqual({ slug: undefined }));
   });
 });

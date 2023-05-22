@@ -16,7 +16,7 @@ export class FileRoute {
     this.regex = new RegExp(`^${routeKey}/?$`);
   }
 
-  getQueryParams = (pathname: string): Record<string, string | string[]> => {
+  getRouteParams = (pathname: string): Record<string, string | string[]> => {
     const rawQueryParams = this.regex.exec(pathname)?.groups || {};
 
     return pipe(

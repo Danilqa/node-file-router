@@ -2,7 +2,7 @@ export function createTestRequestHandler(url) {
   const filePath = url.replace(process.cwd(), '')
       .replace('/tests', '');
 
-  return (req, res) => res.end({ req, filePath });
+  return (req, res, routeParams) => res.end({ req, filePath, routeParams });
 }
 
 export function createTestRequestRunner(requestHandler) {

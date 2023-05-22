@@ -1,8 +1,11 @@
-import { Request } from 'node-file-router/types/types/request';
-import { ServerResponse } from 'node:http';
+import { IncomingMessage, ServerResponse } from 'node:http';
 
-export default function productsHandler(req: Request, res: ServerResponse) {
-  const { id } = req.query!;
+interface RouteParams {
+  id: string;
+}
+
+export default function productsHandler(_: IncomingMessage, res: ServerResponse, routeParams: RouteParams) {
+  const { id } = routeParams;
   res.setHeader('Content-Type', 'application/json');
   res.end(JSON.stringify({ id, name: `User ${id}` }));
 }
