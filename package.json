@@ -8,7 +8,7 @@
     "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist/types --rootDir src",
     "build": "npm run build:cjs && npm run build:esm && npm run build:types && node ./dev/scripts/copy-files.js",
     "dev:link": "npm link ./dist",
-    "dev:sample": "ts-node sample/server.ts",
+    "dev:sandbox": "ts-node samples/sandbox/server.ts",
     "test": "vitest run"
   },
   "module": "./esm/file-router.mjs",

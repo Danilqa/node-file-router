@@ -1,13 +1,5 @@
 {
   "compilerOptions": {
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "strictNullChecks": true,
-    "alwaysStrict": true,
-    "strictBindCallApply": true,
-    "strictFunctionTypes": true,
-    "noUnusedParameters": true,
-    "noUnusedLocals": true,
     "lib": [
       "es2017"
     ],

@@ -5,7 +5,7 @@ import { Dirent } from 'node:fs';
 import { exactSlugRoute } from './dynamic-routes/exact-slug-route';
 import { catchAllRoute } from './dynamic-routes/catch-all-route';
 import { optionalCatchAllRoute } from './dynamic-routes/optional-catch-all-route';
-import { FileRoute } from "./file-route/file-route";
+import { FileRoute } from './file-route/file-route';
 
 const fileExtensions = ['js', 'mjs', 'cjs', 'ts'].join('|');
 const fileExtensionPattern = new RegExp(`\\.(${fileExtensions})$`);
@@ -30,7 +30,12 @@ export async function resolveFileRoutes(directory: string, parentRoute = ''): Pr
       const route = dynamicRoute?.get(initialRoute) || initialRoute;
       const routeKey = indexFilePattern.test(entry.name) ? route.replace(/\/index$/, '') || '/' : route;
 
-      routeHandlers[routeKey] = new FileRoute({ handler, routeKey });
+      const regex = new RegExp(`^${routeKey}/?$`);
+      routeHandlers[routeKey] = {
+        handler,
+        regex,
+        getRouteParams: dynamicRoute?.getRouteParams?.(regex) || (() => ({}))
+      };
     }
   };
 

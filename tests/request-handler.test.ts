@@ -75,7 +75,13 @@ describe('RequestHandler', () => {
     run('/one/1/two/multi-methods/3', 'put', res => expect(res).toBe('404 Not Found'));
   });
 
-  it('should get all query params from [...slug]', () => {
+  it('should get one route param from [...slug]', () => {
+    const run = createTestRequestRunner(dynamicSegmentsHandler);
+    run('/catch-all/1', ({ routeParams }) => expect(routeParams).toEqual({ slug: ['1'] }));
+    run('/catch-all/1/', ({ routeParams }) => expect(routeParams).toEqual({ slug: ['1'] }));
+  });
+
+  it('should get all route params from [...slug]', () => {
     const run = createTestRequestRunner(dynamicSegmentsHandler);
     run('/catch-all/1/2/3/4', ({ routeParams }) => expect(routeParams).toEqual({ slug: ['1', '2', '3', '4'] }));
     run('/catch-all/1/2/3/4/', ({ routeParams }) => expect(routeParams).toEqual({ slug: ['1', '2', '3', '4'] }));
@@ -102,5 +108,28 @@ describe('RequestHandler', () => {
 
     run('/optional-catch-all', ({ routeParams }) => expect(routeParams).toEqual({ slug: undefined }));
     run('/optional-catch-all/', ({ routeParams }) => expect(routeParams).toEqual({ slug: undefined }));
+  });
+
+  it('should catch one param in [[...slug]]', () => {
+    const run = createTestRequestRunner(dynamicSegmentsHandler);
+
+    run('/optional-catch-all/1', ({ routeParams }) => expect(routeParams).toEqual({ slug: ['1'] }));
+    run('/optional-catch-all/1/', ({ routeParams }) => expect(routeParams).toEqual({ slug: ['1'] }));
+  });
+
+  it('should catch several params in [[...slug]]', () => {
+    const run = createTestRequestRunner(dynamicSegmentsHandler);
+
+    run('/optional-catch-all/1/2/3', ({ routeParams }) => expect(routeParams).toEqual({ slug: ['1', '2', '3'] }));
+    run('/optional-catch-all/1/2/3/', ({ routeParams }) => expect(routeParams).toEqual({ slug: ['1', '2', '3'] }));
+  });
+
+  it('should catch all params during combination of dynamic segements', () => {
+    const run = createTestRequestRunner(dynamicSegmentsHandler);
+
+    run('/combination/1/sub/1/2', ({ routeParams, filePath }) => {
+      expect(filePath).toEqual('/api-dynamic-segments/combination/1/sub/[[...slug]].ts');
+      expect(routeParams).toEqual({ id: '1', slug: ['1', '2'] });
+    });
   });
 });
