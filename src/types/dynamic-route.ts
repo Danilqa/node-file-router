@@ -1,5 +1,9 @@
+import { ParsedRoute } from '../components/dynamic-routes/common/route-params-parser';
+
 export interface DynamicRoute {
+  type: string;
+
   isMatch(route: string): boolean;
-  get(route: string): string;
-  getRouteParams(regexp: RegExp): (pathname: string) => Record<string, string | string[]>;
+
+  parseRoute(route: string): ParsedRoute;
 }

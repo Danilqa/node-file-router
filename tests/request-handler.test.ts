@@ -128,8 +128,8 @@ describe('RequestHandler', () => {
     const run = createTestRequestRunner(dynamicSegmentsHandler);
 
     run('/combination/1/sub/1/2', ({ routeParams, filePath }) => {
-      expect(filePath).toEqual('/api-dynamic-segments/combination/1/sub/[[...slug]].ts');
-      expect(routeParams).toEqual({ id: '1', slug: ['1', '2'] });
+      expect(filePath).toEqual('/api-dynamic-segments/combination/[id]/sub/[...ids].ts');
+      expect(routeParams).toEqual({ id: '1', ids: ['1', '2'] });
     });
   });
 });

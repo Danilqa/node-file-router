@@ -6,10 +6,19 @@ import { exactSlugRoute } from './dynamic-routes/exact-slug-route';
 import { catchAllRoute } from './dynamic-routes/catch-all-route';
 import { optionalCatchAllRoute } from './dynamic-routes/optional-catch-all-route';
 import { FileRoute } from './file-route/file-route';
+import { filterValues, mapKeys, mapValues } from '../utils/object.utils';
+import { pipe } from '../utils/fp.utils';
+import { decodeSlugParam } from './slug-param/slug-param';
+import { ParamsGetter } from './dynamic-routes/common/route-params-parser';
 
 const fileExtensions = ['js', 'mjs', 'cjs', 'ts'].join('|');
 const fileExtensionPattern = new RegExp(`\\.(${fileExtensions})$`);
 const indexFilePattern = new RegExp(`index\\.(${fileExtensions})$`);
+
+interface DynamicRoute {
+  routeKey: string;
+  routeParams: Record<string, ParamsGetter>;
+}
 
 export async function resolveFileRoutes(directory: string, parentRoute = ''): Promise<Record<string, FileRoute>> {
   const entries = await fs.readdir(directory, { withFileTypes: true });
@@ -26,15 +35,30 @@ export async function resolveFileRoutes(directory: string, parentRoute = ''): Pr
       const handler = await import(fullPath).then(module => module.default);
       const initialRoute = routePath.replace(fileExtensionPattern, '');
 
-      const dynamicRoute = [exactSlugRoute, catchAllRoute, optionalCatchAllRoute].find(route => route.isMatch(initialRoute));
-      const route = dynamicRoute?.get(initialRoute) || initialRoute;
+      const parsedDynamicRoute: DynamicRoute = [exactSlugRoute, catchAllRoute, optionalCatchAllRoute]
+          .filter(dynamicRoute => dynamicRoute.isMatch(initialRoute))
+          .reduce((acc, route) => {
+            const parsedRoute = route.parseRoute(acc.routeKey);
+            return { routeKey: parsedRoute.route, routeParams: { ...acc.routeParams, ...parsedRoute.params } };
+
+          }, { routeKey: initialRoute, routeParams: {} });
+
+      const route = parsedDynamicRoute.routeKey || initialRoute;
       const routeKey = indexFilePattern.test(entry.name) ? route.replace(/\/index$/, '') || '/' : route;
 
       const regex = new RegExp(`^${routeKey}/?$`);
+
       routeHandlers[routeKey] = {
         handler,
         regex,
-        getRouteParams: dynamicRoute?.getRouteParams?.(regex) || (() => ({}))
+        getRouteParams: pathname => {
+          const groups = new RegExp(regex).exec(pathname)?.groups || {};
+          return pipe(
+              filterValues<string>(Boolean),
+              mapValues<string, string | string[]>((group, key) => (parsedDynamicRoute.routeParams)[key](group)),
+              mapKeys(decodeSlugParam),
+          )(groups);
+        },
       };
     }
   };

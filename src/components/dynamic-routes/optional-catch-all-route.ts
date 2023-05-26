@@ -1,26 +1,15 @@
-import { decodeSlugParam, encodeSlugParam } from '../slug-param/slug-param';
 import { DynamicRoute } from "../../types/dynamic-route";
-import { pipe } from '../../utils/fp.utils';
-import { filterValues, mapKeys, mapValues } from '../../utils/object.utils';
+import { createRouteParamsParser } from './common/route-params-parser';
 
 const pattern = /\/\[\[(\.\.\.\w+)]]$/g;
 
 export const optionalCatchAllRoute: DynamicRoute = {
-  get: initialRoute => {
-    const pathMatch = initialRoute.match(pattern)!;
-    return pathMatch.reduce((accumulator, currentParam) => {
-      const paramName = currentParam.slice('/[[...'.length, -']]'.length);
-      return accumulator.replace(currentParam, `\\/?(?<${encodeSlugParam(paramName)}>.*)`);
-    }, initialRoute);
-  },
-  isMatch: route => pattern.test(route),
-  getRouteParams: (regex: RegExp) => (pathname: string) => {
-    const rawQueryParams = regex.exec(pathname)?.groups || {};
-
-    return pipe(
-        mapKeys(decodeSlugParam),
-        filterValues(Boolean),
-        mapValues((value: string) => value.split('/')),
-    )(rawQueryParams);
-  }
+  type: 'optional-catch-all',
+  parseRoute: createRouteParamsParser({
+    pattern,
+    paramsGetter: (value: string) => value.split('/'),
+    sanitizeParam: param => param.slice('/[[...'.length, -']]'.length),
+    routeParamPattern: '\\/?(?<:key>.*)'
+  }),
+  isMatch: route => new RegExp(pattern).test(route),
 }

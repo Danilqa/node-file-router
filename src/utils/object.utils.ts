@@ -8,10 +8,10 @@ export function mapKeys<NK extends string, V>(
 }
 
 export function mapValues<V, NV>(
-    replacer: (value: V) => NV
+    replacer: (value: V, key: string) => NV
 ): (obj: Record<string, V>) => Record<string, NV> {
   return obj => {
-    const updatedEntries = Object.entries(obj).map(([key, value]) => [key, replacer(value)]);
+    const updatedEntries = Object.entries(obj).map(([key, value]) => [key, replacer(value, key)]);
     return Object.fromEntries(updatedEntries);
   };
 }
