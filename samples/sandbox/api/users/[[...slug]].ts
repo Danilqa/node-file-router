@@ -1,18 +1,24 @@
 import { randomUUID, UUID } from 'node:crypto';
 import { IncomingMessage, ServerResponse } from 'node:http';
 import { parseJson } from '../../utils/server.utils';
+import { Dictionary } from '../../../../src/types/dictionary';
 
 interface RouteParams {
   slug: [UUID];
 }
 
-const db: Record<UUID, Record<string, string>> = {};
+const db: Record<UUID, Dictionary<string>> = {};
 
 export default {
-  get(_: IncomingMessage, res: ServerResponse, { slug: [id] }: RouteParams) {
+  get(_: IncomingMessage, res: ServerResponse, routeParams: RouteParams) {
+    if (!routeParams.slug) {
+      return res.end(JSON.stringify(Object.values(db)));
+    }
+
+    const [id] = routeParams.slug;
     if (!db[id]) {
       res.statusCode = 404;
-      res.end('Not found');
+      res.end('User Not found');
     }
 
     res.end(JSON.stringify(db[id]));

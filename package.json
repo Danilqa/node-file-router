@@ -9,6 +9,7 @@
     "build": "npm run build:cjs && npm run build:esm && npm run build:types && node ./dev/scripts/copy-files.js",
     "dev:link": "npm link ./dist",
     "dev:sandbox": "ts-node samples/sandbox/server.ts",
+    "dev:sandbox:inspect": "node --loader ts-node --inspect samples/sandbox/server.ts",
     "test": "vitest run"
   },
   "module": "./esm/file-router.mjs",

@@ -61,12 +61,12 @@ describe('RequestHandler', () => {
     });
 
     run(
-      '/one/1/two/multi-methods/3',
-      'get',
-      ({ req, routeParams }) => {
-        expect(routeParams).toEqual({ id: '3' });
-        expect(req.method).toBe('get');
-      }
+        '/one/1/two/multi-methods/3',
+        'get',
+        ({ req, routeParams }) => {
+          expect(routeParams).toEqual({ id: '3' });
+          expect(req.method).toBe('get');
+        }
     );
   });
 
@@ -90,17 +90,17 @@ describe('RequestHandler', () => {
   it('should take index file when it is defined', () => {
     const run = createTestRequestRunner(dynamicSegmentsHandler);
     run(
-      '/catch-all',
-      ({ routeParams, filePath }) => {
-        expect(filePath).toEqual('/api-dynamic-segments/catch-all/index.ts');
-        expect(routeParams).toEqual({ slug: undefined });
-      });
+        '/catch-all',
+        ({ routeParams, filePath }) => {
+          expect(filePath).toEqual('/api-dynamic-segments/catch-all/index.ts');
+          expect(routeParams).toEqual({ slug: undefined });
+        });
     run(
-      '/catch-all/',
-      ({ routeParams, filePath }) => {
-        expect(filePath).toEqual('/api-dynamic-segments/catch-all/index.ts');
-        expect(routeParams).toEqual({ slug: undefined });
-      });
+        '/catch-all/',
+        ({ routeParams, filePath }) => {
+          expect(filePath).toEqual('/api-dynamic-segments/catch-all/index.ts');
+          expect(routeParams).toEqual({ slug: undefined });
+        });
   });
 
   it('should catch index file in [[...slug]]', () => {
@@ -117,6 +117,19 @@ describe('RequestHandler', () => {
     run('/optional-catch-all/1/', ({ routeParams }) => expect(routeParams).toEqual({ slug: ['1'] }));
   });
 
+  it('should catch files near slug [[...slug]] fistly', () => {
+    const mappingTestCases = [
+      { fromUrl: '/optional-catch-all/with-other-files/test', toFile: '/api-dynamic-segments/optional-catch-all/with-other-files/test.ts' },
+      { fromUrl: '/optional-catch-all/with-other-files/1/2/3', toFile: '/api-dynamic-segments/optional-catch-all/with-other-files/[[...slug]].ts' },
+    ];
+    const run = createTestRequestRunner(dynamicSegmentsHandler);
+
+    mappingTestCases.forEach(({ fromUrl, toFile }) => {
+      run(fromUrl, ({ filePath }) => expect(filePath).toBe(toFile));
+      run(`${fromUrl}/`, ({ filePath }) => expect(filePath).toBe(toFile));
+    });
+  });
+
   it('should catch several params in [[...slug]]', () => {
     const run = createTestRequestRunner(dynamicSegmentsHandler);
 
@@ -124,12 +137,16 @@ describe('RequestHandler', () => {
     run('/optional-catch-all/1/2/3/', ({ routeParams }) => expect(routeParams).toEqual({ slug: ['1', '2', '3'] }));
   });
 
-  it('should catch all params during combination of dynamic segements', () => {
+  it('should catch all params during combination of dynamic segments', () => {
     const run = createTestRequestRunner(dynamicSegmentsHandler);
 
     run('/combination/1/sub/1/2', ({ routeParams, filePath }) => {
       expect(filePath).toEqual('/api-dynamic-segments/combination/[id]/sub/[...ids].ts');
       expect(routeParams).toEqual({ id: '1', ids: ['1', '2'] });
+    });
+    run('/combination/1/sub/sub-sub/4/5/6', ({ routeParams, filePath }) => {
+      expect(filePath).toEqual('/api-dynamic-segments/combination/[id]/sub/sub-sub/[[...ids]].ts');
+      expect(routeParams).toEqual({ id: '1', ids: ['4', '5', '6'] });
     });
   });
 });

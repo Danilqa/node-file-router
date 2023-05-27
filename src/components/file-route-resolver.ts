@@ -20,7 +20,7 @@ interface DynamicRoute {
   routeParams: Record<string, ParamsGetter>;
 }
 
-export async function resolveFileRoutes(directory: string, parentRoute = ''): Promise<Record<string, FileRoute>> {
+export async function resolveFileRoutes(directory: string, parentRoute = '', weight = 0): Promise<Record<string, FileRoute>> {
   const entries = await fs.readdir(directory, { withFileTypes: true });
   const routeHandlers: Record<string, FileRoute> = {};
 
@@ -29,7 +29,7 @@ export async function resolveFileRoutes(directory: string, parentRoute = ''): Pr
     const routePath = `${parentRoute}/${entry.name}`;
 
     if (entry.isDirectory()) {
-      const childHandlers = await resolveFileRoutes(fullPath, routePath);
+      const childHandlers = await resolveFileRoutes(fullPath, routePath, weight + 1);
       Object.assign(routeHandlers, childHandlers);
     } else if (entry.isFile() && fileExtensionPattern.test(entry.name)) {
       const handler = await import(fullPath).then(module => module.default);
@@ -39,18 +39,24 @@ export async function resolveFileRoutes(directory: string, parentRoute = ''): Pr
           .filter(dynamicRoute => dynamicRoute.isMatch(initialRoute))
           .reduce((acc, route) => {
             const parsedRoute = route.parseRoute(acc.routeKey);
-            return { routeKey: parsedRoute.route, routeParams: { ...acc.routeParams, ...parsedRoute.params } };
+            return {
+              routeKey: parsedRoute.route,
+              routeParams: { ...acc.routeParams, ...parsedRoute.params }
+            };
 
           }, { routeKey: initialRoute, routeParams: {} });
 
       const route = parsedDynamicRoute.routeKey || initialRoute;
-      const routeKey = indexFilePattern.test(entry.name) ? route.replace(/\/index$/, '') || '/' : route;
+      const isIndex = new RegExp(indexFilePattern).test(entry.name);
+      const routeKey = isIndex ? route.replace(/\/index$/, '') || '/' : route;
 
       const regex = new RegExp(`^${routeKey}/?$`);
 
       routeHandlers[routeKey] = {
+        fileName: entry.name,
         handler,
         regex,
+        weight,
         getRouteParams: pathname => {
           const groups = new RegExp(regex).exec(pathname)?.groups || {};
           return pipe(

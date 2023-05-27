@@ -10,21 +10,29 @@ import { resolveNotFoundHandler } from './components/not-found-resolver';
 export async function initFileRouter({ baseDir = '/api' } = {}) {
   const basePath = path.join(process.cwd(), baseDir);
 
-  const routeHandlers = await resolveFileRoutes(basePath);
+  const routeHandlers = await resolveFileRoutes(basePath)
+      .then(Object.values)
+      .then(routes => routes.sort((a, b) => {
+        if (a.weight === b.weight) {
+          return b.fileName.localeCompare(a.fileName);
+        }
+
+        return b.weight - a.weight;
+      }));
   const notFoundHandler = await resolveNotFoundHandler(basePath);
 
   return function requestHandler(req: IncomingMessage, res: ServerResponse) {
     const parsedUrl = new URL(withoutTrailingSlashes(req.url || ''), `https://${req.headers.host}`);
     const { pathname } = parsedUrl;
-    const matchedRoute = Object.values(routeHandlers).find(({ regex }) => regex.test(pathname));
+    const matchedRoute = routeHandlers.find(({ regex }) => regex.test(pathname))
     if (!matchedRoute) {
       notFoundHandler.default(req, res);
       return;
     }
 
-    const { handler, getRouteParams } = matchedRoute;
+    const { handler } = matchedRoute;
 
-    const routeParams = getRouteParams(pathname);
+    const routeParams = matchedRoute.getRouteParams(pathname);
     const method = req.method?.toLowerCase();
     if (isRecordWith<Function>(handler) && method && handler[method]) {
       handler[method](req, res, routeParams);
