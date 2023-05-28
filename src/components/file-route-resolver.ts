@@ -2,74 +2,76 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { Dirent } from 'node:fs';
 
-import { exactSlugRoute } from './dynamic-routes/exact-slug-route';
-import { catchAllRoute } from './dynamic-routes/catch-all-route';
-import { optionalCatchAllRoute } from './dynamic-routes/optional-catch-all-route';
-import { FileRoute } from './file-route/file-route';
-import { filterValues, mapKeys, mapValues } from '../utils/object.utils';
-import { pipe } from '../utils/fp.utils';
-import { decodeSlugParam } from './slug-param/slug-param';
-import { ParamsGetter } from './dynamic-routes/common/route-params-parser';
+import { exactSlugSegment } from './dynamic-routes/exact-slug-segment';
+import { catchAllSegment } from './dynamic-routes/catch-all-segment';
+import { optionalCatchAllSegment } from './dynamic-routes/optional-catch-all-segment';
+import { ParamExtractor } from './dynamic-routes/common/route-params-parser';
+import { RouteHandler } from './route-handler/route-handler';
 
 const fileExtensions = ['js', 'mjs', 'cjs', 'ts'].join('|');
 const fileExtensionPattern = new RegExp(`\\.(${fileExtensions})$`);
 const indexFilePattern = new RegExp(`index\\.(${fileExtensions})$`);
 
-interface DynamicRoute {
-  routeKey: string;
-  routeParams: Record<string, ParamsGetter>;
+interface RouteWithParams {
+  route: string;
+  paramExtractors: Record<string, ParamExtractor>;
 }
 
-export async function resolveFileRoutes(directory: string, parentRoute = '', weight = 0): Promise<Record<string, FileRoute>> {
+export async function resolveFileRoutes(directory: string, parentRoute = '', nestingLevel = 0): Promise<RouteHandler[]> {
   const entries = await fs.readdir(directory, { withFileTypes: true });
-  const routeHandlers: Record<string, FileRoute> = {};
+  const routeHandlers: RouteHandler[] = [];
 
   const processEntry = async (entry: Dirent) => {
     const fullPath = path.join(directory, entry.name);
     const routePath = `${parentRoute}/${entry.name}`;
 
     if (entry.isDirectory()) {
-      const childHandlers = await resolveFileRoutes(fullPath, routePath, weight + 1);
-      Object.assign(routeHandlers, childHandlers);
+      const childHandlers = await resolveFileRoutes(fullPath, routePath, nestingLevel + 1);
+      routeHandlers.push(...childHandlers);
     } else if (entry.isFile() && fileExtensionPattern.test(entry.name)) {
-      const handler = await import(fullPath).then(module => module.default);
-      const initialRoute = routePath.replace(fileExtensionPattern, '');
-
-      const parsedDynamicRoute: DynamicRoute = [exactSlugRoute, catchAllRoute, optionalCatchAllRoute]
-          .filter(dynamicRoute => dynamicRoute.isMatch(initialRoute))
-          .reduce((acc, route) => {
-            const parsedRoute = route.parseRoute(acc.routeKey);
-            return {
-              routeKey: parsedRoute.route,
-              routeParams: { ...acc.routeParams, ...parsedRoute.params }
-            };
-
-          }, { routeKey: initialRoute, routeParams: {} });
-
-      const route = parsedDynamicRoute.routeKey || initialRoute;
-      const isIndex = new RegExp(indexFilePattern).test(entry.name);
-      const routeKey = isIndex ? route.replace(/\/index$/, '') || '/' : route;
-
-      const regex = new RegExp(`^${routeKey}/?$`);
-
-      routeHandlers[routeKey] = {
-        fileName: entry.name,
-        handler,
-        regex,
-        weight,
-        getRouteParams: pathname => {
-          const groups = new RegExp(regex).exec(pathname)?.groups || {};
-          return pipe(
-              filterValues<string>(Boolean),
-              mapValues<string, string | string[]>((group, key) => (parsedDynamicRoute.routeParams)[key](group)),
-              mapKeys(decodeSlugParam),
-          )(groups);
-        },
-      };
+      const routeHandler = await processFileEntry(fullPath, entry, routePath, nestingLevel);
+      routeHandlers.push(routeHandler);
     }
   };
 
   await Promise.all(entries.map(processEntry));
 
+  routeHandlers.sort((left, right) => {
+    if (left.nestingLevel === right.nestingLevel) return right.fileName.localeCompare(left.fileName);
+    return right.nestingLevel - left.nestingLevel;
+  });
+
   return routeHandlers;
+}
+
+async function processFileEntry(fullPath: string, entry: Dirent, routePath: string, nestingLevel: number): Promise<RouteHandler> {
+  const handler = await import(fullPath).then(module => module.default);
+  const initialRoute = routePath.replace(fileExtensionPattern, '');
+
+  const { route, paramExtractors } = parseDynamicParams(initialRoute);
+
+  const isIndex = indexFilePattern.test(entry.name);
+  const routeKey = isIndex ? route.replace(/\/index$/, '') : route;
+
+  const regex = new RegExp(`^${routeKey}/?$`);
+
+  return new RouteHandler({
+    fileName: entry.name,
+    handler,
+    regex,
+    nestingLevel,
+    paramExtractors,
+  });
+}
+
+function parseDynamicParams(initialRoute: string): RouteWithParams {
+  return [exactSlugSegment, catchAllSegment, optionalCatchAllSegment]
+      .filter(dynamicRoute => dynamicRoute.isMatch(initialRoute))
+      .reduce((acc, route) => {
+        const parsedRoute = route.parse(acc.route);
+        return {
+          route: parsedRoute.route,
+          paramExtractors: { ...acc.paramExtractors, ...parsedRoute.paramExtractors }
+        };
+      }, { route: initialRoute, paramExtractors: {} });
 }
