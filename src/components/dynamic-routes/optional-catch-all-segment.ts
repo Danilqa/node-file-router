@@ -3,6 +3,8 @@ import { createRouteSegmentParamsParser } from './common/route-params-parser';
 
 const pattern = /\/\[\[(\.\.\.\w+)]]$/g;
 
+const fileNamePattern = /\[\[(\.\.\.\w+)]]/;
+
 export const optionalCatchAllSegment: DynamicRouteSegment = {
   type: 'optional-catch-all',
   parse: createRouteSegmentParamsParser({
@@ -12,4 +14,5 @@ export const optionalCatchAllSegment: DynamicRouteSegment = {
     routeParamPattern: '\\/?(?<:key>.*)'
   }),
   isMatch: route => new RegExp(pattern).test(route),
+  isFileMatch: fileName => fileNamePattern.test(fileName),
 }

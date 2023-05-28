@@ -117,7 +117,7 @@ describe('RequestHandler', () => {
     run('/optional-catch-all/1/', ({ routeParams }) => expect(routeParams).toEqual({ slug: ['1'] }));
   });
 
-  it('should catch files near slug [[...slug]] fistly', () => {
+  it('should catch files near slug [[...slug]] firstly', () => {
     const mappingTestCases = [
       { fromUrl: '/optional-catch-all/with-other-files/test', toFile: '/api-dynamic-segments/optional-catch-all/with-other-files/test.ts' },
       { fromUrl: '/optional-catch-all/with-other-files/1/2/3', toFile: '/api-dynamic-segments/optional-catch-all/with-other-files/[[...slug]].ts' },

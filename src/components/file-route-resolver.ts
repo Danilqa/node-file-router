@@ -36,12 +36,23 @@ export async function resolveFileRoutes(directory: string, parentRoute = '', nes
 
   await Promise.all(entries.map(processEntry));
 
-  routeHandlers.sort((left, right) => {
-    if (left.nestingLevel === right.nestingLevel) return right.fileName.localeCompare(left.fileName);
-    return right.nestingLevel - left.nestingLevel;
-  });
+  routeHandlers.sort(compareByNestingLevelAndType);
 
   return routeHandlers;
+}
+
+function compareByNestingLevelAndType(left: RouteHandler, right: RouteHandler) {
+  if (left.nestingLevel !== right.nestingLevel) {
+    return right.nestingLevel - left.nestingLevel;
+  }
+
+  const isDynamic = [
+    optionalCatchAllSegment,
+    catchAllSegment,
+    exactSlugSegment
+  ].some(dynamicRoute => dynamicRoute.isMatch(left.fileName));
+
+  return isDynamic ? 1 : -1;
 }
 
 async function processFileEntry(fullPath: string, entry: Dirent, routePath: string, nestingLevel: number): Promise<RouteHandler> {
