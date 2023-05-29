@@ -8,7 +8,10 @@ describe('RequestHandler', () => {
   let dynamicSegmentsHandler;
 
   beforeAll(async () => {
-    basicCasesRequestHandler = await initFileRouter({ baseDir: 'tests/api-basics' });
+    basicCasesRequestHandler = await initFileRouter({
+      baseDir: 'tests/api-basics',
+      ignoreFilesRegex: [/^_.*$/, /.\.some-spec/],
+    });
     notFoundCasesRequestHandler = await initFileRouter({ baseDir: 'tests/api-for-not-found' });
     dynamicSegmentsHandler = await initFileRouter({ baseDir: 'tests/api-dynamic-segments' });
   });
@@ -36,6 +39,22 @@ describe('RequestHandler', () => {
   it('should parse a relative reference url', () => {
     const run = createTestRequestRunner(basicCasesRequestHandler);
     run('//site.com/example', ({ filePath }) => expect(filePath).toBe('/api-basics/example.ts'));
+  });
+
+  it('should parse http reference url', () => {
+    const run = createTestRequestRunner(basicCasesRequestHandler);
+    run('http://site.com/example', ({ filePath }) => expect(filePath).toBe('/api-basics/example.ts'));
+  });
+
+  it('should parse https reference url', () => {
+    const run = createTestRequestRunner(basicCasesRequestHandler);
+    run('https://site.com/example', ({ filePath }) => expect(filePath).toBe('/api-basics/example.ts'));
+  });
+
+  it('should skip ignoring files', () => {
+    const run = createTestRequestRunner(basicCasesRequestHandler);
+    run('/one/123/index.some-spec', res => expect(res).toBe('404 Not Found'));
+    run('/one/123/_private-file', res => expect(res).toBe('404 Not Found'));
   });
 
   it('should take default 404 fallback when no mapping is found', () => {
@@ -124,8 +143,14 @@ describe('RequestHandler', () => {
 
   it('should catch files near slug [[...slug]] firstly', () => {
     const mappingTestCases = [
-      { fromUrl: '/optional-catch-all/with-other-files/test', toFile: '/api-dynamic-segments/optional-catch-all/with-other-files/test.ts' },
-      { fromUrl: '/optional-catch-all/with-other-files/1/2/3', toFile: '/api-dynamic-segments/optional-catch-all/with-other-files/[[...slug]].ts' },
+      {
+        fromUrl: '/optional-catch-all/with-other-files/test',
+        toFile: '/api-dynamic-segments/optional-catch-all/with-other-files/test.ts'
+      },
+      {
+        fromUrl: '/optional-catch-all/with-other-files/1/2/3',
+        toFile: '/api-dynamic-segments/optional-catch-all/with-other-files/[[...slug]].ts'
+      },
     ];
     const run = createTestRequestRunner(dynamicSegmentsHandler);
 

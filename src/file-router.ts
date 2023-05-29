@@ -2,16 +2,21 @@ import { URL } from 'node:url';
 import * as path from 'node:path';
 import { IncomingMessage, ServerResponse } from 'node:http';
 
-import { resolveFileRoutes } from './components/file-route-resolver';
+import { FileRouteResolver } from './components/file-route-resolver';
 import { isFunction, isRecordWith } from './utils/object.utils';
 import { withoutTrailingSlashes } from './utils/string.utils';
 import { resolveNotFoundHandler } from './components/not-found-resolver';
 
-export async function initFileRouter({ baseDir = '/api' } = {}) {
-  const basePath = path.join(process.cwd(), baseDir);
+interface Options {
+  baseDir?: string;
+  ignoreFilesRegex?: RegExp[];
+}
 
-  const routeHandlers = await resolveFileRoutes(basePath);
-  const notFoundHandler = await resolveNotFoundHandler(basePath);
+export async function initFileRouter({ baseDir = path.join(process.cwd(), '/api'), ignoreFilesRegex }: Options) {
+  const fileRouteResolver = new FileRouteResolver({ baseDir, ignoreFilesRegex });
+
+  const routeHandlers = await fileRouteResolver.getHandlers();
+  const notFoundHandler = await resolveNotFoundHandler(baseDir);
 
   return function requestHandler(req: IncomingMessage, res: ServerResponse) {
     const parsedUrl = new URL(withoutTrailingSlashes(req.url || ''), `https://${req.headers.host}`);
