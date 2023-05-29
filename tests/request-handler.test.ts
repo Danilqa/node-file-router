@@ -33,6 +33,11 @@ describe('RequestHandler', () => {
     });
   });
 
+  it('should parse a relative reference url', () => {
+    const run = createTestRequestRunner(basicCasesRequestHandler);
+    run('//site.com/example', ({ filePath }) => expect(filePath).toBe('/api-basics/example.ts'));
+  });
+
   it('should take default 404 fallback when no mapping is found', () => {
     const run = createTestRequestRunner(basicCasesRequestHandler);
     run('/one/123/404', res => expect(res).toBe('404 Not Found'));
