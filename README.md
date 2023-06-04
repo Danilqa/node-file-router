@@ -1,8 +1,15 @@
 # Node File Router
 
-A file-based routing for Node.js. 
-Supports pure Node.js and Express.
+<img align="right" width="92" height="92" title="Node File Router Logo"
+src="./docs/images/logo.png" />
 
+A file-based routing for Node.js.
+
+* **Technology Agnostic**: 
+  * Pure Node HTTP
+  * Express
+  * Sockets
+  * ... whatever compatible with the interface
 * **0** dependencies
 * **CommonJS** and **ES modules** support
 * **TypeScript** support
@@ -34,19 +41,55 @@ export default function(req, res, { categories }) {
 }
 ```
 
+## Table of Contents
+
 ##  Install
 
+If you use npm:
 ```
 npm install node-file-router
 ```
-
+If you use yarn:
 ```
 yarn add node-file-router
 ```
-
+If you use pnpm:
 ```
 pnpm add node-file-router
 ```
 
 # Guide
 
+## Exact match
+
+## Catch all
+
+## Optional catch-all
+
+## 404 Page
+
+# Setup
+
+```js
+const useFileRouter = await initFileRouter({ baseDir: './api' });
+
+const server = http.createServer((req, res) => {
+    useFileRouter(req, res);
+});
+```
+
+## Options
+
+| Param     | Description | Required |
+|-----------|-------------|----------|
+| baseDir   | -           | -        |
+| ignoreFilesRegex | -           | -        |
+| adapter  | -           | -        |
+
+### Adapter
+
+| Param     | Description |
+|-----------|-------------|
+| getPathname  | -           |
+| getMethod | -           |
+| defaultNotFoundHandler  | -           |

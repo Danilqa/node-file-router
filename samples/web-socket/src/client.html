@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .dashboard {
+      border: 1px solid black;
+      padding: 20px;
+      margin: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="status">offline</div>
+
+<div class="dashboard">
+  <input id="input1" type="text" placeholder="Enter text for input 1">
+  <input id="input2" type="text" placeholder="Enter text for input 2">
+  <input id="input3" type="text" placeholder="Enter text for input 3">
+  <input id="input4" type="text" placeholder="Enter text for input 4">
+  <input id="input5" type="text" placeholder="Enter text for input 5">
+</div>
+
+<script>
+  const serverUrl = 'ws://localhost:8085';
+
+  const clientId = crypto.randomUUID();
+
+  const socket = new WebSocket(serverUrl);
+
+  socket.addEventListener('open', () => {
+    console.log('Connected to the WebSocket server');
+    document.querySelector('.status').innerHTML = 'online';
+  });
+
+  socket.addEventListener('message', (event) => {
+    const data = JSON.parse(event.data);
+    document.getElementById(data.id).value = data.text;
+  });
+
+  const inputs = document.querySelectorAll('input');
+
+  inputs.forEach((input) => {
+    input.addEventListener('input', (event) => {
+      const message = {
+        clientId,
+        action: 'update',
+        path: `/input/${input.id}`,
+        id: input.id,
+        text: event.target.value
+      };
+      socket.send(JSON.stringify(message));
+    });
+  });
+</script>
+
+</body>
+</html>
