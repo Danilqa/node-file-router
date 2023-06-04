@@ -12,5 +12,4 @@ export const exactSlugSegment: DynamicRouteSegment = {
     routeParamPattern: '(?<:key>[^/]+)'
   }),
   isMatch: route => new RegExp(pattern).test(route),
-  isFileMatch: fileName => new RegExp(pattern).test(fileName),
 }
