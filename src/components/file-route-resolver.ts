@@ -7,6 +7,7 @@ import { catchAllSegment } from './dynamic-routes/catch-all-segment';
 import { optionalCatchAllSegment } from './dynamic-routes/optional-catch-all-segment';
 import { ParamExtractor } from './dynamic-routes/common/route-params-parser';
 import { RouteHandler } from './route-handler/route-handler';
+import { validateFileFormat } from '../validations/validations';
 
 interface Props {
   baseDir: string;
@@ -85,7 +86,10 @@ export class FileRouteResolver {
   }
 
   private async processFileEntry(fullPath: string, entry: Dirent, routePath: string, nestingLevel: number): Promise<RouteHandler> {
-    const handler = await import(fullPath).then(module => module.default);
+    const handler = await import(fullPath)
+        .then(module => validateFileFormat(fullPath, module))
+        .then(module => module.default);
+
     const initialRoute = routePath.replace(FileRouteResolver.fileExtensionPattern, '');
 
     const { route, paramExtractors } = this.parseDynamicParams(initialRoute);

@@ -41,7 +41,7 @@ export async function initFileRouter({
     } else if (isFunction(handler)) {
       handler(...args, routeParams);
     } else {
-      notFoundHandler.default(...args, routeParams);
+      notFoundHandler(...args, routeParams);
     }
   }
 }

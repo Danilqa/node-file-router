@@ -1,6 +1,7 @@
 import { initFileRouter } from '../src/file-router';
 import { createTestMethodsRequestRunner, createTestRequestRunner } from './test-utils.js';
 import { describe, expect, it, beforeAll } from 'vitest';
+import { rejects } from 'assert';
 
 describe('RequestHandler', () => {
   let basicCasesRequestHandler;
@@ -178,5 +179,21 @@ describe('RequestHandler', () => {
       expect(filePath).toEqual('/api-dynamic-segments/combination/[id]/sub/sub-sub/[[...ids]].ts');
       expect(routeParams).toEqual({ id: '1', ids: ['4', '5', '6'] });
     });
+  });
+
+  it('should throws error when file does not export default', async () => {
+    try {
+      await initFileRouter({ baseDir: 'tests/not-valid-api-invalid-type' })
+    } catch (e) {
+      expect(e.message).toMatch('content is not format');
+    }
+  });
+
+  it('should throws error when file does not export default', async () => {
+    try {
+      await initFileRouter({ baseDir: 'tests/not-valid-api-no-default' })
+    } catch (e) {
+      expect(e.message).toMatch('does not export a default value');
+    }
   });
 });

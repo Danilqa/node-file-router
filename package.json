@@ -10,7 +10,8 @@
     "dev:link": "npm link ./dist",
     "dev:sandbox": "ts-node samples/sandbox/server.ts",
     "dev:sandbox:inspect": "node --loader ts-node --inspect samples/sandbox/server.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "module": "./esm/file-router.mjs",
   "main": "../cjs/file-router.js",
