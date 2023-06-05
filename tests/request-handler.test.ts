@@ -185,7 +185,7 @@ describe('RequestHandler', () => {
     try {
       await initFileRouter({ baseDir: 'tests/not-valid-api-invalid-type' })
     } catch (e) {
-      expect(e.message).toMatch('content is not format');
+      expect(e.message).toMatch('It should only export either a function or an object');
     }
   });
 
@@ -193,7 +193,7 @@ describe('RequestHandler', () => {
     try {
       await initFileRouter({ baseDir: 'tests/not-valid-api-no-default' })
     } catch (e) {
-      expect(e.message).toMatch('does not export a default value');
+      expect(e.message).toMatch('does not contain a default export');
     }
   });
 });

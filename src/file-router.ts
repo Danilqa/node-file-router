@@ -22,6 +22,7 @@ export async function initFileRouter({
 
   const routeHandlers = await fileRouteResolver.getHandlers();
   const notFoundHandler = await resolveNotFoundHandler(baseDir) || defaultNotFoundHandler;
+
   return function requestHandler(...args: unknown[]) {
     const pathname = getPathname(...args);
 
