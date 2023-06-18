@@ -8,8 +8,8 @@
     "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist/types --rootDir src",
     "build": "npm run build:cjs && npm run build:esm && npm run build:types && node ./dev/scripts/copy-files.js",
     "dev:link": "npm link ./dist",
-    "dev:sandbox": "ts-node samples/sandbox/server.ts",
-    "dev:sandbox:inspect": "node --loader ts-node --inspect samples/sandbox/server.ts",
+    "dev:sandbox": "ts-node examples/sandbox/server.ts",
+    "dev:sandbox:inspect": "node --loader ts-node --inspect examples/sandbox/server.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
