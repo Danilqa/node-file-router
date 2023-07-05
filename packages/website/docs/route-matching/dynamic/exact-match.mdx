@@ -1,0 +1,15 @@
+---
+sidebar_position: 1
+---
+
+# Exact Match
+
+To catch exactly one parameter, use the following syntax in the folder or file name:<br/>
+`[paramName]`.
+
+| Route                                            | Example URL              | Params                               | Notes                                                      |
+|--------------------------------------------------|--------------------------|--------------------------------------|------------------------------------------------------------|
+| /products/[id].js                                | /products/123            | ```{ id: '123'  }```           |                                                            |
+| /categories/[categoryId]/products/[productId].js | /categories/1/products/2 | ```{ categoryId: '1', productId: '2'  }``` | Any nesting level                             |
+| /categories/[id]/products/[id].js                | /categories/1/products/2 | ```{ id: '2'  }```                        | If slug ids have the same name, the last will be taken     |
+| /products/top-10.js                              | /products/top-10         |                                      | You still can use direct match. It will be prioritized over dynamic matchings |

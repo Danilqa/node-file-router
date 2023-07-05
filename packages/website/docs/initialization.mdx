@@ -1,10 +1,32 @@
 ---
-sidebar_position: 1
+sidebar_position: 0
 ---
 
-# Tutorial Intro
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeBlock from '@theme/CodeBlock';
 
-Let's discover **Docusaurus in less than 5 minutes**.
+# Initialization
+
+## Install
+
+<Tabs>
+  <TabItem value="npm" label="npm" default>
+    <CodeBlock language="bash">
+      npm install node-file-router
+    </CodeBlock>
+  </TabItem>
+  <TabItem value="yarn" label="Yarn">
+    <CodeBlock language="bash">
+      yarn add node-file-router
+    </CodeBlock>
+  </TabItem>
+  <TabItem value="pnpm" label="pnpm">
+    <CodeBlock language="bash">
+      pnpm add node-file-router
+    </CodeBlock>
+  </TabItem>
+</Tabs>
 
 ## Getting Started
 
@@ -16,6 +38,22 @@ Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new
 
 - [Node.js](https://nodejs.org/en/download/) version 16.14 or above:
   - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+
+## Basic usage
+
+1. Проинициализируйте все маршруты, вызвав initFileRouter. Это асинхронная функция, которая посмотроет таблицу
+паттернов url'ов и 
+2. 
+
+```js
+import { initFileRouter } from 'node-file-router';
+
+const useFileRouter = await initFileRouter();
+
+const server = http.createServer((req, res) => {
+  useFileRouter(req, res);
+});
+```
 
 ## Generate a new site
 
