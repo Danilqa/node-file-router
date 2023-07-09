@@ -4,14 +4,14 @@ import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  imageName: string,
   description: JSX.Element;
 };
 
 const FeatureList: FeatureItem[] = [
   {
     title: 'Technology Agnostic',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    imageName: 'one.png',
     description: (
       <>
         Works well with pure Node.js, Express.js, WebSockets, and even more!
@@ -20,38 +20,38 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Works Everywhere',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    imageName: 'two.png',
     description: (
       <>
-        ES6 and ES modules ready. TypeScript support out of box
+        ES6 and ES modules ready. TypeScript support out of box.
       </>
     ),
   },
   {
     title: 'Powerful',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    imageName: 'three.png',
     description: (
       <>
-        Inspired by Next.js and has almost the same interface. Supports dynamic routes with wildcard params.
+        Inspired by Next.js and has similar interface. Supports dynamic routes with wildcard params.
       </>
     ),
   },
   {
     title: 'High Quality',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    imageName: 'four.png',
     description: (
       <>
-        0 dependencies and 100% test coverage
+        0 dependencies and 100% test coverage.
       </>
     ),
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({title, imageName, description}: FeatureItem) {
   return (
     <div className={clsx('col col--3')}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} role="img"/>
+        <img className={styles.featureSvg} src={`/img/${imageName}`} alt='feature image'/>
       </div>
       <div className="text--center padding-horiz--md">
         <h3>{title}</h3>
