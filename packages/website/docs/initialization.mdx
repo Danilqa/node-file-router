@@ -28,22 +28,15 @@ import CodeBlock from '@theme/CodeBlock';
   </TabItem>
 </Tabs>
 
-## Getting Started
-
-Get started by **creating a new site**.
-
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
-
 ### What you'll need
 
-- [Node.js](https://nodejs.org/en/download/) version 16.14 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+- [Node.js](https://nodejs.org/en/download/) version 16 or above
 
 ## Basic usage
 
-1. Проинициализируйте все маршруты, вызвав initFileRouter. Это асинхронная функция, которая посмотроет таблицу
-паттернов url'ов и 
-2. 
+1. Initialize all routes by invoking `initFileRouter`. This is an asynchronous function that will
+construct a table of URL patterns. It creates a function which will call the matched file.
+2. Call the created function on each request with `request`, `response`, and others more you need.
 
 ```js
 import { initFileRouter } from 'node-file-router';
@@ -52,34 +45,14 @@ const useFileRouter = await initFileRouter();
 
 const server = http.createServer((req, res) => {
   useFileRouter(req, res);
+  // ... your code below
 });
 ```
 
-## Generate a new site
+:::tip Note
 
-Generate a new Docusaurus site using the **classic template**.
+Everything described below is related only to default Node.js incoming / outcoming
+message interfaces. It works for default http server and Express.js. Create [custom adapter](/own-adapter)
+if you use sockets, different framework, etc.
 
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
-```
-
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+:::
