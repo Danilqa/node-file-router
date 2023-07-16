@@ -75,14 +75,24 @@ const config = {
         },
         items: [
           {
-            to: 'docs/initialization',
+            to: 'docs/getting-started',
             position: 'left',
-            label: 'Getting started',
+            label: 'Getting Started',
           },
           {
-            to: 'docs/category/route-matching',
+            to: 'docs/usage-guide',
             position: 'left',
-            label: 'Route matching'
+            label: 'Usage Guide',
+          },
+          {
+            to: 'docs/route-matching',
+            position: 'left',
+            label: 'Route Matching'
+          },
+          {
+            to: 'docs/custom-adapter',
+            position: 'left',
+            label: 'Custom Adapter'
           },
           {
             href: 'https://github.com/danilqa/node-file-router',

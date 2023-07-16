@@ -1,0 +1,53 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Custom Adapter
+
+In order to use protocols other than HTTP, or to use different frameworks, you can write your own adapter.
+To do this, you'll need to pass the following properties to the `adapter` property:
+
+| Param     | Description | HTTP analogy |
+|-----------|-------------| ------------- |
+| getPathname  | The path which will be parsed and matched with file           | `/products/123/options/78` |
+| getMethod | Refers to spefic action. Used in [object type files.](/docs/intro#object-with-methods)           | `GET`, `POST`, `PATCH` |
+| defaultNotFoundHandler  | Callback which will be invoked when no file is found           | |
+
+Example for websockets.
+
+<Tabs>
+  <TabItem value="javascript" label="JavaScript" default>
+
+```javascript {5-9} showLineNumbers
+import { initFileRouter } from 'node-file-router';
+
+const useFileRouter = await initFileRouter({
+  baseDir: `${__dirname}/api`,
+  adapter: {
+    getPathname: incomeMessage => incomeMessage.path,
+    getMethod: incomeMessage => incomeMessage.action,
+    defaultNotFoundHandler: (incomeMessage, ws) => ws.send(`${incomeMessage.path} is not found.`)
+  }
+});
+```
+
+  </TabItem>
+  <TabItem value="typescript" label="TypeScript">
+
+```typescript {6-10} showLineNumbers
+import { initFileRouter } from 'node-file-router';
+import type { SocketAdapter } from 'node-file-router';
+
+const useFileRouter = await initFileRouter({
+  baseDir: `${__dirname}/api`,
+  adapter: <SocketAdapter>{
+    getPathname: incomeMessage => incomeMessage.path,
+    getMethod: incomeMessage => incomeMessage.action,
+    defaultNotFoundHandler: (incomeMessage, ws) => ws.send(`${incomeMessage.path} is not found.`)
+  }
+});
+```
+
+  </TabItem>
+</Tabs>
+
+Check out the `/examples/web-socket` to get working sample.

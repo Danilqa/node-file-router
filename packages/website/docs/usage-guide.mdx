@@ -1,0 +1,85 @@
+---
+sidebar_position: 1
+---
+
+# Usage Guide
+
+1. Initialize all routes by invoking `initFileRouter`. This is an asynchronous function that will
+construct a table of URL patterns. It creates a function which will call the matched file.
+2. Call the created function on each request with `request`, `response`, and others more you need.
+
+```js
+import * as http from 'node:http';
+import { initFileRouter } from 'node-file-router';
+
+const useFileRouter = await initFileRouter();
+
+const server = http.createServer((req, res) => {
+  useFileRouter(req, res);
+  // ... your code below
+});
+```
+
+:::tip Note
+
+Everything described below is related only to default Node.js incoming / outcoming
+message interfaces. It works for default http server and Express.js. Create [custom adapter](/own-adapter)
+if you use sockets, different framework, etc.
+
+:::
+
+For every incoming HTTP request, the library takes its URL. It then attempts to match this URL
+with a corresponding file in your application.
+
+For instance, on request with url `/users/123/orders/456` the `/users/[productId]/orders/[orderId].js`
+will be invoked.
+
+:::tip Great news!
+
+It works with any popular types: `ts`, `js`, `cjs`, and `mjs`.
+
+:::
+
+Use functions or objects with methods in the target files. And **default export them**.
+
+## Function
+
+The function will be invoked on any request method: `get`, `post`, `patch`, etc.
+
+```js
+export default function(req, res, routeParams) {
+  // Take dynamic route params from the last argument
+}
+```
+
+:::tip Note
+
+Anything what goes in `useFileRouter` won't be mutated. Route params are passed always as the last argument.
+For instance, for Express.js it will be: `function(req, res, next, routeParams)`.
+
+:::
+
+Get the route params from dynamic paths in the last argument. For instance,
+in this file `/users/[productId]/orders/[orderId].js` these params are available:
+`{ productId, orderId }`. More details are described on the [route matching part](/docs/category/route-matching).
+
+## Object with methods
+
+Specify functions for each method type using objects. The rules for functions are identical.
+The main difference only that it belongs to method. Not listed method function will lead to the 404 error.
+
+```js
+export default {
+  get(req, res, routeParams) {
+    const { documentId, draftId } = routeParams;
+    res.end(`Requested document ${documentId} and his draft ${draftId}`);
+  },
+  post(req, res, routeParams) {
+    const { documentId, draftId } = routeParams;
+    res.end(`Created draft ${draftId} for document ${documentId}`);
+  },
+  patch(req, res, routeParams) {
+    // ...
+  },
+}
+```
