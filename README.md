@@ -41,55 +41,7 @@ export default function(req, res, { categories }) {
 }
 ```
 
-## Table of Contents
+# Documentation
 
-##  Install
-
-If you use npm:
-```
-npm install node-file-router
-```
-If you use yarn:
-```
-yarn add node-file-router
-```
-If you use pnpm:
-```
-pnpm add node-file-router
-```
-
-# Guide
-
-## Exact match
-
-## Catch all
-
-## Optional catch-all
-
-## 404 Page
-
-# Setup
-
-```js
-const useFileRouter = await initFileRouter({ baseDir: './api' });
-
-const server = http.createServer((req, res) => {
-    useFileRouter(req, res);
-});
-```
-
-## Options
-
-| Param     | Description | Required |
-|-----------|-------------|----------|
-| baseDir   | -           | -        |
-| ignoreFilesRegex | -           | -        |
-| adapter  | -           | -        |
-
-### Adapter
-
-| Param     | Description |
-|-----------|-------------|
-| getPathname  | -           |
-| getMethod | -           |
-| defaultNotFoundHandler  | -           |
+Visit [website](https://danilqa.github.io/node-file-router/docs/getting-started) to get started and view 
+the full documentation.
