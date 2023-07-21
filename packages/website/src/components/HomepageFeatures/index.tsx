@@ -1,4 +1,4 @@
-import React, {ReactElement} from 'react';
+import React, { ReactElement } from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.css';
 
@@ -47,7 +47,7 @@ const FeatureList: FeatureItem[] = [
   },
 ];
 
-function Feature({title, imageName, description}: FeatureItem) {
+function Feature({ title, imageName, description }: FeatureItem) {
   return (
     <div className={clsx('col col--3')}>
       <div className="text--center">

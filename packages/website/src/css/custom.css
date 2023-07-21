@@ -23,6 +23,9 @@ html[data-theme='dark'] {
   --ifm-background-surface-color: #121212;
   --ifm-footer-background-color: #121212;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --doc-sidebar-width: 200px;
+  --ifm-menu-color-active: #ffffff;
+  --ifm-breadcrumb-color-active: #ffffff;
 }
 
 .navbar {
