@@ -4,9 +4,9 @@ sidebar_position: 1
 
 # Usage Guide
 
-1. Initialize all routes by invoking `initFileRouter`. This is an asynchronous function that will
-construct a table of URL patterns. It creates a function which will call the matched file.
-2. Call the created function on each request with `request`, `response`, and others more you need.
+1. To initialize all routes, invoke the `initFileRouter` function. This is an asynchronous function that
+constructs a table of URL patterns and creates a function that calls the matched file.
+2. Call the created function on each request, passing in the `request`, `response`, and any other necessary parameters.
 
 ```js
 import * as http from 'node:http';
@@ -22,17 +22,15 @@ const server = http.createServer((req, res) => {
 
 :::tip Note
 
-Everything described below is related only to default Node.js incoming / outcoming
-message interfaces. It works for default http server and Express.js. Create [custom adapter](/own-adapter)
-if you use sockets, different framework, etc.
+The information described below pertains only to the default Node.js incoming/outgoing message interfaces,
+and works for both the default HTTP server and Express.js. If you use sockets, a different framework, etc.,
+you will need to create a [custom adapter](/docs/custom-adapter).
 
 :::
 
-For every incoming HTTP request, the library takes its URL. It then attempts to match this URL
-with a corresponding file in your application.
-
-For instance, on request with url `/users/123/orders/456` the `/users/[productId]/orders/[orderId].js`
-will be invoked.
+For each incoming HTTP request, the library takes the URL and attempts to match it with a corresponding file
+in your application. For example, a request with the URL `/users/123/orders/456` will invoke
+the `/users/[productId]/orders/[orderId].js` file.
 
 :::tip Great news!
 
@@ -46,7 +44,8 @@ It works with any popular types: `ts`, `js`, `cjs`, and `mjs`.
 
 **name**: `baseDir`, **default value**: `./api`
 
-Set the destination path for folder which the library will scan during requests. By default, the `api` is taken.
+Set the destination path for the folder that the library will scan during requests.
+By default, the `api` folder is used.
 
 ```js
 const useFileRouter = await initFileRouter({
@@ -54,7 +53,7 @@ const useFileRouter = await initFileRouter({
 });
 ```
 
-For relative path seeking, use `__dirname`:
+To seek relative paths, use `__dirname`:
 
 ```js
 const useFileRouter = await initFileRouter({
@@ -66,8 +65,8 @@ const useFileRouter = await initFileRouter({
 
 **name**: `ignoreFilesRegex`, **default value**: `[]`
 
-Put regexp patterns into `ignoreFilesRegex` property to ignore folders and files. It can be tests or just any
-internal functionality.
+To ignore certain folders and files, you can use regular expressions in the `ignoreFilesRegex` property.
+This is useful for ignoring tests or any internal functionality that you don't want to include.
 
 
 ```js
@@ -82,7 +81,7 @@ Use functions or objects with methods in the target files. And **default export 
 
 ### Function
 
-The function will be invoked on any request method: `get`, `post`, `patch`, etc.
+The function will be invoked for any request method, such as `GET`, `POST`, `PATCH`, and so on.
 
 ```js
 export default function(req, res, routeParams) {
@@ -92,10 +91,10 @@ export default function(req, res, routeParams) {
 
 :::tip Note
 
-1. Anything what goes in `useFileRouter` won't be mutated. Route params are passed always as the last argument.
-For instance, for Express.js it will be: `function(req, res, next, routeParams)`.
+1. Anything that is passed into useFileRouter will not be mutated. Route parameters are always passed
+as the last argument. For instance, in Express.js, it will be: `function(req, res, next, routeParams)`.
 
-2. The function will be invoked with any method: `GET`, `POST`, etc.
+2. The function can be invoked with any method: `GET`, `POST`, etc.
 
 :::
 
@@ -105,8 +104,9 @@ in this file `/users/[productId]/orders/[orderId].js` these params are available
 
 ### Object with methods
 
-Specify functions for each method type using objects. The rules for functions are identical.
-The main difference only that it belongs to method. Not listed method function will lead to the 404 error.
+Specify functions for each method in the object. The rules for nested functions are identical,
+with the only difference being that they belong to the method. Any method that does not list a
+function will result in a 404 error.
 
 ```js
 export default {
