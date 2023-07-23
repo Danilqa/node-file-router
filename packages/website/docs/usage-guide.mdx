@@ -40,9 +40,47 @@ It works with any popular types: `ts`, `js`, `cjs`, and `mjs`.
 
 :::
 
+## Configuration
+
+### Source of files
+
+**name**: `baseDir`, **default value**: `./api`
+
+Set the destination path for folder which the library will scan during requests. By default, the `api` is taken.
+
+```js
+const useFileRouter = await initFileRouter({
+  baseDir: `/routes`
+});
+```
+
+For relative path seeking, use `__dirname`:
+
+```js
+const useFileRouter = await initFileRouter({
+  baseDir: `${__dirname}/api`
+});
+```
+
+### Ignoring files by pattern
+
+**name**: `ignoreFilesRegex`, **default value**: `[]`
+
+Put regexp patterns into `ignoreFilesRegex` property to ignore folders and files. It can be tests or just any
+internal functionality.
+
+
+```js
+const useFileRouter = await initFileRouter({
+  ignoreFilesRegex: [/^_.*$/, /.\.some-spec/]
+});
+```
+
+## Files Type
+
 Use functions or objects with methods in the target files. And **default export them**.
 
-## Function
+### Function
 
 The function will be invoked on any request method: `get`, `post`, `patch`, etc.
 
@@ -54,8 +92,10 @@ export default function(req, res, routeParams) {
 
 :::tip Note
 
-Anything what goes in `useFileRouter` won't be mutated. Route params are passed always as the last argument.
+1. Anything what goes in `useFileRouter` won't be mutated. Route params are passed always as the last argument.
 For instance, for Express.js it will be: `function(req, res, next, routeParams)`.
+
+2. The function will be invoked with any method: `GET`, `POST`, etc.
 
 :::
 
@@ -63,7 +103,7 @@ Get the route params from dynamic paths in the last argument. For instance,
 in this file `/users/[productId]/orders/[orderId].js` these params are available:
 `{ productId, orderId }`. More details are described on the [route matching part](/docs/route-matching).
 
-## Object with methods
+### Object with methods
 
 Specify functions for each method type using objects. The rules for functions are identical.
 The main difference only that it belongs to method. Not listed method function will lead to the 404 error.
