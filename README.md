@@ -1,7 +1,7 @@
 # Node File Router
 
 <img align="right" width="92" height="92" title="Node File Router Logo"
-src="./docs/images/logo.png" />
+src="./static/images/logo.png" />
 
 A file-based routing for Node.js.
 

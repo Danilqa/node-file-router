@@ -1,7 +1,7 @@
 {
   "name": "node-file-router",
   "version": "1.0.0",
-  "description": "",
+  "description": "A file-based routing for Node.js",
   "scripts": {
     "build:esm": "cross-env BABEL_ENV=esm babel src --extensions '.ts' --out-dir 'dist/esm' --out-file-extension .mjs --source-maps",
     "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts' --out-dir 'dist/cjs' --source-maps",
@@ -20,9 +20,17 @@
     "import": "./esm/file-router.mjs",
     "require": "./cjs/file-router.js"
   },
-  "keywords": [],
-  "author": "Daniil Sitdikov",
+  "keywords": ["router", "file router", "routing", "express"],
+  "author": "Daniil Sitdikov <hello.boriskas@gmail.com>",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kentcdodds/starwars-names/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Danilqa/node-file-router/issues"
+  },
+  "homepage": "https://danilqa.github.io/node-file-router",
   "engines": {
     "node": ">=14.8.0"
   },
