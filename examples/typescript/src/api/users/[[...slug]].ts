@@ -1,7 +1,7 @@
-import { randomUUID, UUID } from 'node:crypto';
-import { IncomingMessage, ServerResponse } from 'node:http';
-
+import { randomUUID } from 'node:crypto';
 import { parseJson } from '../../utils/server.utils';
+import type { UUID } from 'node:crypto';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 
 const db: Record<UUID, Record<string, string>> = {};
 
@@ -21,5 +21,5 @@ export default {
 
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(db[id]));
-  },
-}
+  }
+};

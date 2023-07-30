@@ -1,5 +1,5 @@
 import * as http from 'node:http';
-import { initFileRouter } from "../../src/file-router";
+import { initFileRouter } from '../../src/file-router';
 
 async function run() {
   const useFileRouter = await initFileRouter({ baseDir: `${__dirname}/api` });

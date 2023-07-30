@@ -9,7 +9,9 @@ async function run() {
   });
 
   const port = 4001;
-  server.listen(4001, () => console.log(`Server running at http://localhost:${port}/`));
+  server.listen(4001, () =>
+    console.log(`Server running at http://localhost:${port}/`)
+  );
 }
 
 run();

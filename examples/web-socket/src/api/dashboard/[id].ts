@@ -10,4 +10,4 @@ export default {
   hide: (message, socket, server, { id }) => {
     notifyAll(server.clients, socket, `dashboard ${id} was hidden ${message}`);
   }
-}
+};

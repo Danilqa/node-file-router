@@ -1,6 +1,9 @@
-import { IncomingMessage, ServerResponse } from 'node:http';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 
-export default function productsHandler(_: IncomingMessage, res: ServerResponse) {
+export default function productsHandler(
+  _: IncomingMessage,
+  res: ServerResponse
+) {
   res.setHeader('Content-Type', 'application/json');
   res.end('hello');
 }

@@ -1,7 +1,8 @@
-import { randomUUID, UUID } from 'node:crypto';
-import { IncomingMessage, ServerResponse } from 'node:http';
+import { randomUUID } from 'node:crypto';
 import { parseJson } from '../../utils/server.utils';
-import { Dictionary } from '../../../../src/types/dictionary';
+import type { UUID } from 'node:crypto';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+import type { Dictionary } from '../../../../src/types/dictionary';
 
 interface RouteParams {
   slug: [UUID];
@@ -30,5 +31,5 @@ export default {
 
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(db[id]));
-  },
-}
+  }
+};

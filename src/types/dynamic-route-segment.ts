@@ -1,4 +1,4 @@
-import { ParsedDynamicSegment } from '../components/dynamic-routes/common/route-params-parser';
+import type { ParsedDynamicSegment } from '../components/dynamic-routes/common/route-params-parser';
 
 export interface DynamicRouteSegment {
   type: string;

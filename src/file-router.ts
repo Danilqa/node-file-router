@@ -1,10 +1,10 @@
 import * as path from 'node:path';
-
 import { FileRouteResolver } from './components/file-route-resolver';
 import { isFunction, isRecordWith } from './utils/object.utils';
 import { resolveNotFoundHandler } from './components/not-found-resolver';
-import { Adapter } from './types/adapter';
 import { httpAdapter } from './adapters/http-adapter';
+import type { Adapter } from './types/adapter';
+import type { RequestHandler } from './types/request-handler';
 
 interface Options {
   baseDir?: string;
@@ -13,20 +13,26 @@ interface Options {
 }
 
 export async function initFileRouter({
-    baseDir = path.join(process.cwd(), '/api'),
-    ignoreFilesRegex,
-    adapter = httpAdapter
+  baseDir = path.join(process.cwd(), '/api'),
+  ignoreFilesRegex,
+  adapter = httpAdapter
 }: Options) {
   const { getPathname, defaultNotFoundHandler, getMethod } = adapter;
-  const fileRouteResolver = new FileRouteResolver({ baseDir, ignoreFilesRegex });
+  const fileRouteResolver = new FileRouteResolver({
+    baseDir,
+    ignoreFilesRegex
+  });
 
   const routeHandlers = await fileRouteResolver.getHandlers();
-  const notFoundHandler = await resolveNotFoundHandler(baseDir) || defaultNotFoundHandler;
+  const notFoundHandler =
+    (await resolveNotFoundHandler(baseDir)) || defaultNotFoundHandler;
 
   return function requestHandler(...args: unknown[]) {
     const pathname = getPathname(...args);
 
-    const matchedRoute = routeHandlers.find(({ regex }) => regex.test(pathname))
+    const matchedRoute = routeHandlers.find(({ regex }) =>
+      regex.test(pathname)
+    );
     if (!matchedRoute) {
       notFoundHandler(...args);
       return;
@@ -37,12 +43,12 @@ export async function initFileRouter({
     const routeParams = matchedRoute.getRouteParams(pathname);
 
     const method = getMethod && getMethod(...args);
-    if (isRecordWith<Function>(handler) && method && handler[method]) {
+    if (isRecordWith<RequestHandler>(handler) && method && handler[method]) {
       handler[method](...args, routeParams);
     } else if (isFunction(handler)) {
       handler(...args, routeParams);
     } else {
       notFoundHandler(...args, routeParams);
     }
-  }
+  };
 }

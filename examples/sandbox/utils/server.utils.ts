@@ -1,10 +1,12 @@
-import { IncomingMessage } from 'node:http';
+import type { IncomingMessage } from 'node:http';
 
-export function parseJson<T = Record<string, string>>(request: IncomingMessage): Promise<T> {
+export function parseJson<T = Record<string, string>>(
+  request: IncomingMessage
+): Promise<T> {
   return new Promise((resolve, reject) => {
     let data = '';
 
-    request.on('data', chunk => {
+    request.on('data', (chunk) => {
       data += chunk;
     });
 

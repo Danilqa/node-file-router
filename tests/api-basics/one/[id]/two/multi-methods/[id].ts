@@ -1,6 +1,6 @@
-import { createTestRequestHandler } from '../../../../../test-utils.js';
+import { createTestRequestHandler } from '../../../../../test-utils';
 
 export default {
   get: createTestRequestHandler(__filename),
-  post: createTestRequestHandler(__filename),
-}
+  post: createTestRequestHandler(__filename)
+};

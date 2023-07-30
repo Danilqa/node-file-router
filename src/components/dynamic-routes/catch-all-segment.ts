@@ -1,5 +1,5 @@
-import { DynamicRouteSegment } from '../../types/dynamic-route-segment';
 import { createRouteSegmentParamsParser } from './common/route-params-parser';
+import type { DynamicRouteSegment } from '../../types/dynamic-route-segment';
 
 const pattern = /\[(\.\.\.\w+)]$/g;
 
@@ -8,8 +8,8 @@ export const catchAllSegment: DynamicRouteSegment = {
   parse: createRouteSegmentParamsParser({
     pattern,
     paramExtractor: (value: string) => value.split('/'),
-    sanitizeParam: param => param.slice('[...'.length, -']'.length),
+    sanitizeParam: (param) => param.slice('[...'.length, -']'.length),
     routeParamPattern: '(?<:key>.*)'
   }),
-  isMatch: route => new RegExp(pattern).test(route),
-}
+  isMatch: (route) => new RegExp(pattern).test(route)
+};
