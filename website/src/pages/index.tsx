@@ -11,7 +11,7 @@ function HomepageHeader() {
   return (
     <header className={clsx('hero', styles.heroBanner)}>
       <div className="container">
-        <img alt='logo' src='/img/logo.png' width={200}/>
+        <img alt='logo' src={require('@site/static/img/logo.png').default} width={200}/>
         <h1 className="hero__title">Node File Router</h1>
         <p className="hero__subtitle">A file-based routing for Node.js</p>
         <div className={styles.buttons}>

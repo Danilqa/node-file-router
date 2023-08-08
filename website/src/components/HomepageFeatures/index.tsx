@@ -51,7 +51,11 @@ function Feature({ title, imageName, description }: FeatureItem) {
   return (
     <div className={clsx('col col--3')}>
       <div className="text--center">
-        <img className={styles.featureImg} src={`/img/${imageName}`} alt='feature image'/>
+        <img
+          className={styles.featureImg}
+          src={require(`@site/static/img/${imageName}`).default}
+          alt='feature image'
+        />
       </div>
       <div className="text--center padding-horiz--md">
         <h3>{title}</h3>
