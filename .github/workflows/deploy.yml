@@ -20,6 +20,9 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    defaults:
+      run:
+        working-directory: website
     runs-on: ubuntu-latest
     steps:
       - uses: pnpm/action-setup@v2
@@ -30,10 +33,6 @@ jobs:
         with:
           node-version: 18
           cache: pnpm
-
-      - name: Change to website directory
-        run: echo "Changing to website directory"
-        working-directory: ./website
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
