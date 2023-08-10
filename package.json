@@ -17,7 +17,7 @@
   "module": "./esm/file-router.mjs",
   "main": "../cjs/file-router.js",
   "types": "./types/file-router.d.ts",
-  "files": ["build"],
+  "files": ["dist"],
   "exports": {
     "import": "./esm/file-router.mjs",
     "require": "./cjs/file-router.js"
