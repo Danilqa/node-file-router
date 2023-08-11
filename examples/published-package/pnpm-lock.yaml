@@ -6,12 +6,12 @@ settings:
 
 dependencies:
   node-file-router:
-    specifier: 0.1.0
-    version: 0.1.0
+    specifier: 0.1.3
+    version: 0.1.3
 
 packages:
 
-  /node-file-router@0.1.0:
-    resolution: {integrity: sha512-PTPqD8MdNcbPxf4Ty4ZDstULxGoQgeKcCFJ1qGlwj74uZQ3CYK2Yb1kUmuLI+s5Q+3NcC6RAW/DR2X9LwAEDKw==}
+  /node-file-router@0.1.3:
+    resolution: {integrity: sha512-SDorA7uwOTa8RPMKWsb2tsXMDYibfvAbpeocwi84f73au4ceihi0J0/nkoxVEwXB8kzcbchOrJUxeIs/SUB2PA==}
     engines: {node: '>=14.8.0'}
     dev: false

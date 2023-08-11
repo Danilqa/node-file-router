@@ -16,7 +16,7 @@ export async function initFileRouter({
   baseDir = path.join(process.cwd(), '/api'),
   ignoreFilesRegex,
   adapter = httpAdapter
-}: Options) {
+}: Options = {}) {
   const { getPathname, defaultNotFoundHandler, getMethod } = adapter;
   const fileRouteResolver = new FileRouteResolver({
     baseDir,
