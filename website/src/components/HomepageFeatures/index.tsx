@@ -53,6 +53,7 @@ function Feature({ title, imageName, description }: FeatureItem) {
       <div className="text--center">
         <img
           className={styles.featureImg}
+          loading='lazy'
           src={require(`@site/static/img/${imageName}`).default}
           alt='feature image'
         />

@@ -1,3 +1,6 @@
+import { initFileRouter } from '../src/file-router';
+import { expect } from 'vitest';
+
 export function createTestRequestHandler(url) {
   const filePath = url.replace(process.cwd(), '').replace('/tests', '');
 
@@ -16,5 +19,17 @@ export function createTestMethodsRequestRunner(requestHandler) {
       { url, headers: { host: 'site' }, method },
       { end: onSuccess }
     );
+  };
+}
+
+export function expectAfterInit(baseDir) {
+  return {
+    toThrowError: async (messageLike: RegExp | string) => {
+      try {
+        await initFileRouter({ baseDir });
+      } catch (e) {
+        expect(e.message).toMatch(messageLike);
+      }
+    }
   };
 }

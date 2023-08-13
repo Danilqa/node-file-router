@@ -45,3 +45,13 @@ export default function(req, res, { categories }) {
 
 Visit [website](https://danilqa.github.io/node-file-router/docs/getting-started) to get started and view 
 the full documentation.
+
+# Examples
+
+Visit [examples folder](https://github.com/Danilqa/node-file-router/tree/main/examples) to see samples with 
+different module systems, adapters, and use cases.
+
+# Community
+
+The community can be found on [Github Discussion](https://github.com/Danilqa/node-file-router/discussions), where you can ask questions, voice ideas, 
+and share your projects.

@@ -49,17 +49,11 @@ By default, the `api` folder is used.
 
 ```js
 const useFileRouter = await initFileRouter({
-  baseDir: `/routes`
+  baseDir: 'routes'
 });
 ```
 
-To seek relative paths, use `__dirname`:
-
-```js
-const useFileRouter = await initFileRouter({
-  baseDir: `${__dirname}/api`
-});
-```
+The relative path is related to the current working directory of the Node.js process.
 
 ### Ignoring files by pattern
 

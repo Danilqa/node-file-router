@@ -1,6 +1,6 @@
-import { initFileRouter } from 'node-file-router/src/file-router';
 import WebSocket from 'ws';
 import type { SocketAdapter } from '../types/socket-adapter';
+import { initFileRouter } from 'node-file-router';
 
 async function run() {
   const port = 8085;
@@ -8,7 +8,7 @@ async function run() {
   const server = new WebSocket.Server({ port });
 
   const useFileRouter = await initFileRouter({
-    baseDir: `${__dirname}/api`,
+    baseDir: './src/api',
     adapter: <SocketAdapter>{
       getPathname: (incomeMessage) => incomeMessage.path,
       getMethod: (incomeMessage) => incomeMessage.action,

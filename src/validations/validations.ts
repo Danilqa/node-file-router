@@ -1,4 +1,5 @@
 import path from 'node:path';
+import fs from 'node:fs/promises';
 
 import { FileRouterError } from '../utils/error.utils';
 import { getType } from '../utils/common.utils';
@@ -24,4 +25,13 @@ export function validateFileFormat<M extends Dictionary<unknown>>(
   }
 
   return module;
+}
+
+export async function validateBaseDirExistence(filePath: string) {
+  const normalizedPath = path.normalize(filePath);
+  return fs.stat(normalizedPath).catch(() => {
+    throw new FileRouterError(
+      `The folder on the "${filePath}" isn't found. Create it or provide "baseDir" with the valid path.`,
+    );
+  });
 }

@@ -1,6 +1,4 @@
-function indexHandler(req, res) {
+module.exports = function indexHandler(req, res) {
   res.setHeader('Content-Type', 'text/html');
-  res.end('<h1>Hello!</h1>');
+  res.end('<h1>Welcome to CDN!</h1>');
 }
-
-module.exports = indexHandler;

@@ -2,7 +2,7 @@ const http = require('node:http');
 const { initFileRouter } = require('node-file-router');
 
 async function run() {
-  const useFileRouter = await initFileRouter({ baseDir: `${__dirname}/api` });
+  const useFileRouter = await initFileRouter();
 
   const server = http.createServer((req, res) => {
     useFileRouter(req, res);

@@ -1,6 +1,6 @@
 {
   "name": "node-file-router",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A file-based routing for Node.js",
   "scripts": {
     "build:esm": "cross-env BABEL_ENV=esm babel src --extensions '.ts' --out-dir 'dist/esm' --out-file-extension .mjs --source-maps",
@@ -11,8 +11,8 @@
     "dev:sandbox": "ts-node examples/sandbox/server.ts",
     "dev:sandbox:inspect": "node --loader ts-node --inspect examples/sandbox/server.ts",
     "test": "vitest run",
-    "lint": "eslint .",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint ."
   },
   "module": "./esm/file-router.mjs",
   "main": "../cjs/file-router.js",
@@ -22,6 +22,7 @@
     "require": "./cjs/file-router.js"
   },
   "keywords": [
+    "nodejs",
     "router",
     "file router",
     "routing",

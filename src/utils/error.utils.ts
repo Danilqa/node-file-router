@@ -6,7 +6,7 @@ export class FileRouterError extends Error {
   constructor(message: string) {
     super(message);
 
-    this.name = 'ValidationError';
+    this.name = 'FileRouterError';
     this.message = useRedBoldText(message);
     /* c8 ignore next */
     this.stack = this.stack ? useRedBoldText(this.stack) : undefined;
