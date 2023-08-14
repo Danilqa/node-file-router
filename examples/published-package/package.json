@@ -13,6 +13,6 @@
     "node": ">=14.8.0"
   },
   "dependencies": {
-    "node-file-router": "0.1.3"
+    "node-file-router": "0.1.4"
   }
 }

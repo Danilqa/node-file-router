@@ -3,6 +3,11 @@
 <img align="right" width="92" height="92" title="Node File Router Logo"
 src="./static/images/logo.png" />
 
+[![ci Status](https://github.com/danilqa/node-file-router/actions/workflows/deploy.yml/badge.svg)](https://github.com/Danilqa/node-file-router/actions)
+[![npm downloads](https://snyk.io/test/github/danilqa/node-file-router/badge.svg)](https://snyk.io/test/github/danilqa/node-file-router)
+[![npm downloads](https://img.shields.io/npm/dt/node-file-router.svg)](https://www.npmjs.com/package/node-file-router)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/danilqa/node-file-router/blob/main/LICENSE)
+
 A file-based routing for Node.js.
 
 * **Technology Agnostic**: 
@@ -53,5 +58,4 @@ different module systems, adapters, and use cases.
 
 # Community
 
-The community can be found on [Github Discussion](https://github.com/Danilqa/node-file-router/discussions), where you can ask questions, voice ideas, 
-and share your projects.
+Ask questions, voice ideas, and share your projects on [Github Discussion](https://github.com/Danilqa/node-file-router/discussions).
