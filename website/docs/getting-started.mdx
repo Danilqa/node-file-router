@@ -11,7 +11,14 @@ import CodeBlock from '@theme/CodeBlock';
 The library creates a simple and intuitive method of routing your application's URLs
 based on your file and folder structure.
 
+## Introduction
+
+This tutorial uses JavaScript and CommonJS module types to keep things simple and quick to get started.
+Ready-to-run examples with TypeScript, ECMAScript module types, and more can be found in the "examples" folder.
+
 ## Install
+
+💿 Add `node-file-router` to your dependency list.
 
 <Tabs>
   <TabItem value="npm" label="npm" default>
@@ -33,4 +40,195 @@ based on your file and folder structure.
 
 ### What you'll need
 
-- [Node.js](https://nodejs.org/en/download/) version 16 or above
+- [Node.js](https://nodejs.org/en/download/) version 14 or above
+
+## Initialization
+
+Create an `server.js` file and do the following:
+
+```js
+// 1. Import default http module and node-file-router
+const http = require('node:http');
+const { initFileRouter } = require('node-file-router');
+
+// 2. Create an entry-point function
+async function run() {
+  // 3. Initialize node-file-router and the handler function
+  const useFileRouter = await initFileRouter();
+
+  const server = http.createServer((req, res) => {
+    // 4. Create a server and invoke created function on each request
+    useFileRouter(req, res);
+  });
+
+  // 5. Start listening a server on 4000 port
+  const port = 4000;
+  server.listen(port, () =>
+    console.log(`Server running at http://localhost:${port}/`)
+  );
+}
+
+// 6. Run entry-point function
+run();
+```
+
+## A first route
+
+We will create a home route that displays welcome content.
+
+1. Create an `api` folder at the root of your project.
+  ```
+  ├── api
+  ├── server.js
+  ├── package.json
+  ```
+2. Create a file named `index.js` inside this folder:
+  ```
+  ├── api
+    ├── index.js
+  ├── server.js
+  ├── package.json
+  ```
+
+  ```js
+  module.exports = function index(req, res) {
+    res.end("Welcome to our shop!");
+  }
+  ```
+3. Run a server using: `node server.js` command
+4. Open a browser and navigate to http://localhost:4000.<br/>
+You should see the message `Welcome to our shop!` displayed.
+
+Congratulations! 🎉 You've created a first file route
+
+## Add http methods
+
+1. Create a folder called `products` and an `index.js` file inside it. Additionally,
+we need the `parseJson` utility function inside the `utils` folder.
+  ```js
+  module.exports = {
+    parseJson(request) {
+      return new Promise((resolve, reject) => {
+        let data = '';
+
+        request.on('data', (chunk) => {
+          data += chunk;
+        });
+
+        request.on('end', () => {
+          try {
+            const parsedData = JSON.parse(data);
+            resolve(parsedData);
+          } catch (e) {
+            reject(e);
+          }
+        });
+      });
+    }
+  }
+  ```
+
+  ```
+  ├── api
+    ├── products
+      ├── /index.js
+    ├── index.js
+  ├── utils
+    ├── http.utils.js
+  ├── server.js
+  ├── package.json
+  ```
+
+2. Implement `get` and `post` methods:
+  ```js
+  const { parseJson } = require('../../utils/http.utils');
+
+  module.exports = {
+    get: (req, res) => {
+      res.end('list of products');
+    },
+    post: async (req, res) => {
+      const newProduct = await parseJson(req);
+      res.end(`a product will be created: ${JSON.stringify(newProduct)}`);
+    }
+  }
+  ```
+
+3. Open a browser and go to http://localhost:4000/products. <br/>
+You should see a `list of products` message displayed.
+
+4. Make a POST request using `curl`, `Postman` or any tool you like on `http://localhost:4000/products` <br/>
+The response should display `a product will be created` along with your content.
+
+Perfect! 🎉 Let's move on
+
+# Dynamic routes
+
+1. Create a new file with the name `[id]`.
+  ```
+  ├── api
+    ├── products
+      ├── [id].js
+      ...
+    ├── index.js
+  ...
+  ```
+
+2. Fill it the same way as you did before:
+  ```js
+  module.exports = {
+    // Add the `routeParams` argument as the final argument to the function. This argument will contain
+    // all the taken route parameters.
+    get: (req, res, routeParams) => {
+      const { id } = routeParams;
+      res.end(`product ${id} info`);
+    }
+  };
+  ```
+
+3. Open a browser and go to `http://localhost:4000/products/123`. <br/>
+The page should display a message: `product 123`.
+
+Alright, let's make it more sophisticated.
+
+Say, we want to address the following case:
+`/catalog/tag-1/tag-2/tag-n`
+
+4. Create a `catalog` folder with `[[...categories]].js` inside.
+
+  ```
+  ├── api
+    ├── catalog
+      ├── [[...categories]].js
+      ...
+    ├── index.js
+  ...
+  ```
+
+  And add a single method function:
+    ```js
+    module.exports = {
+      get: (req, res, routeParams) => {
+        const { categories } = routeParams;
+
+        // This type of route also covers just "/catalog"
+        if (!categories) {
+          return res.end('all products');
+        }
+
+        res.end(`get products that have such tags: ${categories}`);
+      },
+    };
+    ```
+
+5. Open a browser and go to `http://localhost:4000/catalog/men/sneakers/nike`. <br/>
+The page should display a list of categories: `'men','sneakers','nike'`
+
+🥁 That's it!
+
+# What's next?
+
+1. [Discover more capabilities of the routing system](/docs/route-matching)
+2. [Configuration and More Details](/docs/route-matching)
+3. [Examples with Express, WebSockets, ECMAScript, and more](https://github.com/Danilqa/node-file-router/tree/main/examples)
+4. [How to create your own custom adapter and use it with your favorite framework](/docs/custom-adapter)
