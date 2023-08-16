@@ -31,7 +31,7 @@ export async function validateBaseDirExistence(filePath: string) {
   const normalizedPath = path.normalize(filePath);
   return fs.stat(normalizedPath).catch(() => {
     throw new FileRouterError(
-      `The folder on the "${filePath}" isn't found. Create it or provide "baseDir" with the valid path.`,
+      `The folder on the "${filePath}" isn't found. Create it or provide "baseDir" with the valid path.`
     );
   });
 }

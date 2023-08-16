@@ -4,7 +4,7 @@
     "es6": true,
     "node": true
   },
-  "ignorePatterns": ["**/website/*", "**/examples/*"],
+  "ignorePatterns": ["website/**/*", "examples/**/*"],
   "extends": [
     "airbnb-base",
     "prettier",

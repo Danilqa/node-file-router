@@ -12,7 +12,7 @@
     "dev:sandbox:inspect": "node --loader ts-node --inspect examples/sandbox/server.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "lint": "eslint ."
+    "lint": "eslint src"
   },
   "module": "./esm/file-router.mjs",
   "main": "../cjs/file-router.js",
