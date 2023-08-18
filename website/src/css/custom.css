@@ -11,14 +11,14 @@
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 html[data-theme='dark'] {
-  --ifm-color-primary: #e15f41;
+  --ifm-color-primary: #fcb045;
   --ifm-color-primary-dark: #cb563b;
   --ifm-color-primary-darker: #b44c34;
   --ifm-color-primary-darkest: #9e432e;
   --ifm-color-primary-light: #e46f54;
   --ifm-color-primary-lighter: #e46f54;
   --ifm-color-primary-lightest: #ed9f8d;
-  --ifm-navbar-link-hover-color: #e15f41;
+  --ifm-navbar-link-hover-color: #fcb045;
   --ifm-background-color: #121212;
   --ifm-background-surface-color: #121212;
   --ifm-footer-background-color: #121212;
@@ -39,3 +39,13 @@ html[data-theme='dark'] {
 .footer--dark {
   --ifm-footer-background-color: #121212;
 }
+
+div[class^=announcementBar_] {
+  background: linear-gradient(
+    90deg, 
+    rgba(131,58,180,1) 0%, 
+    rgba(253,29,29,1) 50%,
+    rgba(252,176,69,1) 100%
+  );
+}
+
