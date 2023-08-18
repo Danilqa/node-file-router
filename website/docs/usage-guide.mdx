@@ -2,11 +2,18 @@
 sidebar_position: 1
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Usage Guide
 
 1. To initialize all routes, invoke the `initFileRouter` function. This is an asynchronous function that
 constructs a table of URL patterns and creates a function that calls the matched file.
 2. Call the created function on each request, passing in the `request`, `response`, and any other necessary parameters.
+
+<Tabs>
+<TabItem value="pure-node" label="Pure Node" default>
+
 
 ```js
 import * as http from 'node:http';
@@ -19,6 +26,24 @@ const server = http.createServer((req, res) => {
   // ... your code below
 });
 ```
+</TabItem>
+<TabItem value="express-js" label="Express.js">
+
+
+```js
+import { initFileRouter } from 'node-file-router';
+import express from 'express';
+
+const fileRouter = await initFileRouter();
+
+const app = express();
+
+app.listen(4004);
+app.use(fileRouter);
+```
+
+</TabItem>
+</Tabs>
 
 :::tip Note
 
