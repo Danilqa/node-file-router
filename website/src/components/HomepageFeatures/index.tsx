@@ -23,7 +23,7 @@ const FeatureList: FeatureItem[] = [
     imageName: 'feature-two.png',
     description: (
       <>
-        ES6 and ES modules ready. TypeScript support out of box.
+        Common JS and ES modules ready. TypeScript support out of box.
       </>
     ),
   },
