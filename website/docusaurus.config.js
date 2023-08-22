@@ -58,6 +58,16 @@ const config = {
     ],
   ],
 
+  headTags: [
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'google-site-verification',
+        content: 'GI5WtzEa-lIFbJOOhIsXUlf7AYquxeK8_gk5sMULUPc',
+      },
+    },
+  ],
+
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
