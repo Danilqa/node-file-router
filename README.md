@@ -21,7 +21,8 @@ A file-based routing for Node.js.
 * **100%** test coverage
 
 ```js
-// file: /api/documents/[documentId]/drafts/[draftId].js
+// https://api-shop.com/documents/12/drafts/78
+// -> file: /api/documents/[documentId]/drafts/[draftId].js
 
 export default {
   get(req, res, routeParams) {
@@ -39,7 +40,7 @@ export default {
 
 ```js
 // https://api-shop.com/summer/sneakers/nike
-// file: /api/shop/[...categories].ts
+// -> file: /api/shop/[...categories].ts
 
 export default function(req, res, { categories }) {
   // categories -> ['summer', 'sneakers', 'nike'];

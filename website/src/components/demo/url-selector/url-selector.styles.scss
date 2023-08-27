@@ -27,10 +27,6 @@
     font-size: 16px;
   }
 
-  &--selected {
-    opacity: 1;
-  }
-
   &__slug {
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -59,4 +55,8 @@
     background-repeat: no-repeat;
     margin-right: 10px;
   }
+}
+
+.url-bar.url-bar--selected {
+  opacity: 1;
 }
