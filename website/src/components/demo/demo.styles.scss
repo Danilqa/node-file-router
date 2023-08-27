@@ -1,0 +1,32 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+}
+
+.urls-selector {
+  display: flex;
+  flex-direction: column;
+  border-radius: 50px;
+  border: 2px solid #fff;
+  padding: 20px 10px;
+  justify-content: center;
+}
+
+.url {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #fff;
+  margin-top: 10px;
+}
+
+.explorer {
+  width: 400px;
+  height: 100%;
+}
+
+.browser {
+  width: 300px;
+  height: 100%;
+}
+

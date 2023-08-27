@@ -12,6 +12,7 @@
     "dev:sandbox:inspect": "node --loader ts-node --inspect examples/sandbox/server.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "test-ci": "vitest run --coverage.enabled --coverage.reporter='text-summary'",
     "lint": "eslint src"
   },
   "module": "./esm/file-router.mjs",
