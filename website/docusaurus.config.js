@@ -124,7 +124,7 @@ const config = {
       announcementBar: {
         id: 'support_us',
         content:
-        '⭐️ If you like Node File Router, give it a star on <a href="https://github.com/Danilqa/node-file-router" target="_blank">Github</a>', 
+        '⭐️ Support the project by giving it a star on <a href="https://github.com/Danilqa/node-file-router" target="_blank">Github</a>',
         backgroundColor: 'rgb(131, 58, 180)',
         textColor: '#fff',
         isCloseable: false,

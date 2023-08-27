@@ -1,0 +1,36 @@
+.catalog-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0 10px;
+
+  @for $i from 1 through 10 {
+    &--level-#{$i} {
+      padding-left: #{$i * 16}px;
+    }
+  }
+
+  &--selected {
+    background-color: #292929;
+  }
+
+  &__js-file {
+    width: 20px;
+    height: 20px;
+    background-image: url('/img/js-file.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  &__arrow {
+    width: 20px;
+    height: 20px;
+    background-image: url('/img/arrow.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+
+    &--closed {
+      transform: rotate(-90deg);
+    }
+  }
+}

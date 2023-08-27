@@ -1,20 +1,20 @@
 import React from 'react';
-import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import HomepageFeatures from '../../src/components/HomepageFeatures';
+import { Features } from '@site/src/components/features/features';
+import { Demo } from '@site/src/components/demo/demo';
 
-import styles from './index.module.css';
+import './index.styles.scss';
 
 function HomepageHeader() {
   return (
-    <header className={clsx('hero', styles.heroBanner)}>
+    <header className="hero">
       <div className="container">
-        <img alt='logo' src={require('@site/static/img/logo.png').default} width={200}/>
+        <img alt="logo" src={require('@site/static/img/logo.png').default} width={200}/>
         <h1 className="hero__title">Node File Router</h1>
         <p className="hero__subtitle">A file-based routing for Node.js</p>
-        <div className={styles.buttons}>
+        <div className="actions">
           <Link
             className="button button--secondary button--lg"
             to="/docs/getting-started">
@@ -28,13 +28,15 @@ function HomepageHeader() {
 
 export default function Home() {
   const { siteConfig } = useDocusaurusContext();
+
   return (
     <Layout
       title={siteConfig.title}
       description="A file-based routing for Node.js">
       <HomepageHeader/>
       <main>
-        <HomepageFeatures/>
+        <Demo/>
+        <Features/>
       </main>
     </Layout>
   );
