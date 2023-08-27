@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 
-import './demo.styles.scss';
 import { UrlSelector } from '@site/src/components/demo/url-selector/url-selector';
 import { FileExplorer } from '@site/src/components/demo/file-explorer/file-explorer';
 import { CatalogPage, ProductPage } from '@site/src/components/demo/browser-content/browser-content';
+
+import './demo.styles.scss';
 
 const CONTENT = [
   {
