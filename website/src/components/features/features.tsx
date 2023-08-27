@@ -1,14 +1,15 @@
 import React, { ReactElement } from 'react';
 import clsx from 'clsx';
-import styles from './styles.module.css';
 
-type FeatureItem = {
+import './features.styles.scss';
+
+interface FeatureItem {
   title: string;
   imageName: string,
   description: ReactElement;
-};
+}
 
-const FeatureList: FeatureItem[] = [
+const FEATURES: FeatureItem[] = [
   {
     title: 'Technology Agnostic',
     imageName: 'feature-one.png',
@@ -52,10 +53,10 @@ function Feature({ title, imageName, description }: FeatureItem) {
     <div className={clsx('col col--3')}>
       <div className="text--center">
         <img
-          className={styles.featureImg}
-          loading='lazy'
+          className="features-list__image"
+          loading="lazy"
           src={require(`@site/static/img/${imageName}`).default}
-          alt='feature image'
+          alt="feature image"
         />
       </div>
       <div className="text--center padding-horiz--md">
@@ -66,12 +67,12 @@ function Feature({ title, imageName, description }: FeatureItem) {
   );
 }
 
-export default function HomepageFeatures() {
+export function Features() {
   return (
-    <section className={styles.features}>
+    <section className="features-list">
       <div className="container">
         <div className="row">
-          {FeatureList.map((props, idx) => (
+          {FEATURES.map((props, idx) => (
             <Feature key={idx} {...props} />
           ))}
         </div>
