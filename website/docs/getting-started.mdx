@@ -78,16 +78,16 @@ We will create a home route that displays welcome content.
 
 1. Create an `api` folder at the root of your project.
   ```
-  ├── api
+  ├── api/ <-
   ├── server.js
-  ├── package.json
+  └── package.json
   ```
 2. Create a file named `index.js` inside this folder:
   ```
-  ├── api
-    ├── index.js
+  ├── api/
+  │  └── index.js <-
   ├── server.js
-  ├── package.json
+  └── package.json
   ```
 
   ```js
@@ -96,15 +96,23 @@ We will create a home route that displays welcome content.
   }
   ```
 3. Run a server using: `node server.js` command
-4. Open a browser and navigate to http://localhost:4000.<br/>
+4. Open a browser and navigate to `http://localhost:4000`.<br/>
 You should see the message `Welcome to our shop!` displayed.
 
-Congratulations! 🎉 You've created a first file route
+#### Congratulations! 🎉 You've created a first file route
 
 ## Add http methods
 
-1. Create a folder called `products` and an `index.js` file inside it. Additionally,
-we need the `parseJson` utility function inside the `utils` folder.
+1. Before we start, we need a small utility function which will parse json from a request.
+Create a folder `utils` and put `http.utils.js` file inside.
+  ```
+  ├── api/
+  ├── ...
+  ├── utils/
+  │  └── http.utils.js <-
+  ...
+  ```
+
   ```js
   module.exports = {
     parseJson(request) {
@@ -128,15 +136,13 @@ we need the `parseJson` utility function inside the `utils` folder.
   }
   ```
 
+2. Create a folder called `products` and an `index.js` file inside it.
   ```
-  ├── api
-    ├── products
-      ├── /index.js
-    ├── index.js
-  ├── utils
-    ├── http.utils.js
-  ├── server.js
-  ├── package.json
+  ├── api/
+  │  ├── products/ <-
+  │  │  └── index.js <-
+  │  └── ...
+  ...
   ```
 
 2. Implement `get` and `post` methods:
@@ -160,17 +166,17 @@ You should see a `list of products` message displayed.
 4. Make a POST request using `curl`, `Postman` or any tool you like on `http://localhost:4000/products` <br/>
 The response should display `a product will be created` along with your content.
 
-Perfect! 🎉 Let's move on
+#### Perfect! 🎉 Let's move on
 
 # Dynamic routes
 
-1. Create a new file with the name `[id]`.
+1. Create a new file with the name `[id]` inside the `product` folder.
   ```
-  ├── api
-    ├── products
-      ├── [id].js
-      ...
-    ├── index.js
+  ├── api/
+  │  ├── products/
+  │  │  ├── ...
+  │  │  └── [id].js <-
+  │  └── index.js
   ...
   ```
 
@@ -197,15 +203,15 @@ Say, we want to address the following case:
 4. Create a `catalog` folder with `[[...categories]].js` inside.
 
   ```
-  ├── api
-    ├── catalog
-      ├── [[...categories]].js
-      ...
-    ├── index.js
+  ├── api/
+  │  ├── catalog/
+  │  │  ├── ...
+  │  │  └── [[...categories]].js
+  │  ├── index.js
   ...
   ```
 
-  And add a single method function:
+  And add a single `get` method:
     ```js
     module.exports = {
       get: (req, res, routeParams) => {
@@ -224,7 +230,7 @@ Say, we want to address the following case:
 5. Open a browser and go to `http://localhost:4000/catalog/men/sneakers/nike`. <br/>
 The page should display a list of categories: `'men','sneakers','nike'`
 
-🥁 That's it!
+#### 🥁 That's it!
 
 # What's next?
 
