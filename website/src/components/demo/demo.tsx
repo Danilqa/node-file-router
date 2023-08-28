@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { UrlSelector } from '@site/src/components/demo/url-selector/url-selector';
 import { FileExplorer } from '@site/src/components/demo/file-explorer/file-explorer';
@@ -10,9 +10,9 @@ const CONTENT = [
   {
     url: [
       '/collections/',
-      <span className="url-bar__slug url-bar__slug--color-2">12</span>,
+      <span key="slug-1" className="url-bar__slug url-bar__slug--color-2">12</span>,
       '/products/',
-      <span className="url-bar__slug url-bar__slug--color-4">25</span>,
+      <span key="slug-2" className="url-bar__slug url-bar__slug--color-4">25</span>,
       '/'
     ],
     fileCatalog: {
@@ -37,11 +37,11 @@ const CONTENT = [
   {
     url: [
       '/catalog/',
-      <span className="url-bar__slug url-bar__slug--color-1">men</span>,
+      <span key="slug-1" className="url-bar__slug url-bar__slug--color-1">men</span>,
       '/',
-      <span className="url-bar__slug url-bar__slug--color-2">denim</span>,
+      <span key="slug-2" className="url-bar__slug url-bar__slug--color-2">denim</span>,
       '/',
-      <span className="url-bar__slug url-bar__slug--color-3">black</span>,
+      <span key="slug-3" className="url-bar__slug url-bar__slug--color-3">black</span>,
       '/'
     ],
     fileCatalog: {
@@ -60,14 +60,32 @@ const CONTENT = [
   }
 ];
 
+const DELAY_BEFORE_SWITCH_URL_MS = 5000;
+
 export function Demo() {
   const [urlIndex, setUrlIndex] = useState(0);
+  const [isInteracted, setIsInteracted] = useState(false);
 
-  const urls = CONTENT.map(item => item.url);
+  const urls = useMemo(() => CONTENT.map(item => item.url), []);
+
+  useEffect(() => {
+    if (isInteracted) return;
+
+    const intervalId = setInterval(
+      () => setUrlIndex(prevIndex => ((prevIndex + 1) % CONTENT.length)),
+      DELAY_BEFORE_SWITCH_URL_MS
+    );
+    return () => clearInterval(intervalId);
+  }, [isInteracted]);
+
+  const onSelected = useCallback((index: number) => {
+    setIsInteracted(true);
+    setUrlIndex(index);
+  }, []);
 
   return (
     <div className="demo-container">
-      <UrlSelector selectedIndex={urlIndex} data={urls} onSelect={setUrlIndex}/>
+      <UrlSelector selectedIndex={urlIndex} data={urls} onSelect={onSelected}/>
       <div className="demo-container__gap">
         <div className="link-arrow"/>
       </div>

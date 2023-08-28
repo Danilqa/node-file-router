@@ -18,7 +18,7 @@ export const UrlSelector = memo<Props>(({ selectedIndex, data, onSelect }) => {
           className={clsx('url-bar', i === selectedIndex && 'url-bar--selected')}
           onClick={() => onSelect(i)}
         >
-          <div className="url-bar--icon"/>
+          <div key='icon' className="url-bar--icon"/>
           {content}
         </div>)
       )}
