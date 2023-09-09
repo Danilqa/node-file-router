@@ -4,9 +4,12 @@ sidebar_position: 1
 
 # Usage with Bun
 
+[Bun](https://bun.sh/) is a toolkit for JavaScript and TypeScript development, allowing you to run, build, test,
+and debug a full-stack application.
+
 ## Initialization
 
-Node File Router can be used with [Bun](https://bun.sh/) environment.
+1\. Set up an entry point:
 
 ```js
 // 1. Import node-file-router
@@ -24,7 +27,21 @@ const server = Bun.serve({
 console.log(`Listening on http://localhost:${server.port}`);
 ```
 
-## Handlers
+2\. Override the default 404 handler:
+
+```
+├── api/
+│  └── _404.js
+...
+```
+
+```js
+export default function notFound() {
+  return new Response('404');
+}
+```
+
+## Handlers implementation
 
 ### Basic handler
 
