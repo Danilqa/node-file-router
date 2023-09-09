@@ -5,6 +5,7 @@ import {
 } from './test-utils';
 import { initFileRouter } from '../src/file-router';
 import { describe, expect, it, beforeAll, vi, afterEach } from 'vitest';
+import type { RequestHandler } from '../src/types/request-handler';
 
 const currentCwd = process.cwd();
 vi.mock('process', () => ({
@@ -40,8 +41,8 @@ describe('RequestHandler', () => {
   });
 
   describe('#BasicCases', () => {
-    let basicCasesRequestHandler;
-    let notFoundCasesRequestHandler;
+    let basicCasesRequestHandler: RequestHandler;
+    let notFoundCasesRequestHandler: RequestHandler;
 
     beforeAll(async () => {
       basicCasesRequestHandler = await initFileRouter({
@@ -156,7 +157,7 @@ describe('RequestHandler', () => {
   });
 
   describe('#DynamicCases', () => {
-    let dynamicSegmentsHandler;
+    let dynamicSegmentsHandler: RequestHandler;
 
     beforeAll(async () => {
       dynamicSegmentsHandler = await initFileRouter({

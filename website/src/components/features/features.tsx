@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import clsx from 'clsx';
+import Link from '@docusaurus/Link';
 
 import './features.styles.scss';
 
@@ -15,7 +16,10 @@ const FEATURES: FeatureItem[] = [
     imageName: 'feature-one.png',
     description: (
       <>
-        Works well with pure Node.js, Express.js, WebSockets, and even more!
+        Works well with <Link href='/docs/usage-guide'>pure Node.js</Link>,{' '}
+        <Link href='/docs/use-with-bun'>Bun</Link>,{' '}
+        <Link href='/docs/usage-guide'>Express.js</Link>,{' '}
+        <Link href='https://github.com/Danilqa/node-file-router/tree/main/examples/web-socket/src'>WebSockets</Link>, and even more!
       </>
     ),
   },
