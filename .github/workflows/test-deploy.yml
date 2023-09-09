@@ -7,7 +7,7 @@ on:
 
 jobs:
   test-deploy-library:
-    name: Test deployment
+    name: Library test deployment
     runs-on: ubuntu-latest
     steps:
       - uses: pnpm/action-setup@v2
@@ -26,13 +26,13 @@ jobs:
         run: pnpm lint
 
       - name: Tests
-        run: pnpm test
+        run: pnpm test:coverage
 
       - name: Test build website
         run: pnpm build
 
   test-deploy-website:
-    name: Test deployment
+    name: Website Test deployment
     runs-on: ubuntu-latest
     steps:
       - uses: pnpm/action-setup@v2

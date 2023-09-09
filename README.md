@@ -5,13 +5,13 @@ src="./static/images/logo.png" />
 
 [![ci Status](https://github.com/danilqa/node-file-router/actions/workflows/deploy.yml/badge.svg)](https://github.com/Danilqa/node-file-router/actions)
 [![npm downloads](https://snyk.io/test/github/danilqa/node-file-router/badge.svg)](https://snyk.io/test/github/danilqa/node-file-router)
-[![npm downloads](https://img.shields.io/npm/dt/node-file-router.svg)](https://www.npmjs.com/package/node-file-router)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/danilqa/node-file-router/blob/main/LICENSE)
 
 A file-based routing for Node.js.
 
 * **Technology Agnostic**: 
   * Pure Node HTTP
+  * Bun
   * Express
   * Sockets
   * ... whatever compatible with the interface

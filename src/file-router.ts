@@ -45,8 +45,7 @@ export async function initFileRouter({
       regex.test(pathname)
     );
     if (!matchedRoute) {
-      notFoundHandler(...args);
-      return;
+      return notFoundHandler(...args);
     }
 
     const { handler } = matchedRoute;
@@ -55,11 +54,13 @@ export async function initFileRouter({
 
     const method = getMethod && getMethod(...args);
     if (isRecordWith<RequestHandler>(handler) && method && handler[method]) {
-      handler[method](...args, routeParams);
-    } else if (isFunction(handler)) {
-      handler(...args, routeParams);
-    } else {
-      notFoundHandler(...args, routeParams);
+      return handler[method](...args, routeParams);
     }
+
+    if (isFunction(handler)) {
+      return handler(...args, routeParams);
+    }
+
+    return notFoundHandler(...args, routeParams);
   };
 }

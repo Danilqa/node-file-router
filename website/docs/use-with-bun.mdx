@@ -1,0 +1,72 @@
+---
+sidebar_position: 1
+---
+
+# Usage with Bun
+
+## Initialization
+
+Node File Router can be used with [Bun](https://bun.sh/) environment.
+
+```js
+// 1. Import node-file-router
+import { initFileRouter } from 'node-file-router';
+
+// 2. Initialize the main request handler
+const useFileRouter = await initFileRouter();
+
+// 3. Start serving server and attach request handler to fetch
+const server = Bun.serve({
+  port: 3123,
+  fetch: useFileRouter
+});
+
+console.log(`Listening on http://localhost:${server.port}`);
+```
+
+## Handlers
+
+### Basic handler
+
+Bun operates with a `Response` object that should be returned. Therefore, the API handlers look like the following:
+
+```
+├── api/
+│  └── products.js
+...
+```
+
+```js
+export default function productsRoute(req) {
+  return new Response('products');
+}
+```
+
+### Request and Response
+
+```
+├── api/users
+│  └── [id].js
+...
+```
+
+Since we have a response on return, the route params object is the second argument.
+
+```js
+const db = {
+  13: { id: '13', name: 'Dan' }
+}
+
+export default {
+  async put(req, routeParams) {
+    db[routeParams.id] = await req.json();
+
+    return new Response(
+      JSON.stringify(db[routeParams.id]),
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+}
+```
+
+

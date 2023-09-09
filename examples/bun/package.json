@@ -1,0 +1,17 @@
+{
+  "name": "bun-sample",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "bun --watch server.js"
+  },
+  "keywords": [],
+  "author": "Daniil Sitdikov",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.8.0"
+  },
+  "dependencies": {
+    "node-file-router": "workspace:../../dist"
+  }
+}
