@@ -57,6 +57,10 @@ the full documentation.
 Visit [examples folder](https://github.com/Danilqa/node-file-router/tree/main/examples) to see samples with 
 different module systems, adapters, and use cases.
 
+# Developing
+
+To begin development and contribution, read [this guide](/contributing/developing.md)
+
 # Community
 
 Ask questions, voice ideas, and share your projects on [Github Discussion](https://github.com/Danilqa/node-file-router/discussions).
