@@ -59,7 +59,7 @@ different module systems, adapters, and use cases.
 
 # Developing
 
-To begin development and contribution, read [this guide](/contributing/developing.md)
+To begin development and contribution, read [this guide](/contributing/developing.md).
 
 # Community
 
