@@ -3,13 +3,13 @@
   "version": "0.2.0",
   "description": "A powerful file-based routing for Node.js",
   "scripts": {
+    "dev:sandbox": "tsnd examples/sandbox/server.ts",
+    "dev:sandbox:inspect": "tsnd --inspect -- examples/sandbox/server.ts",
+    "dev:link": "pnpm link ./dist",
+    "build": "pnpm build:cjs && pnpm build:esm && pnpm build:types && node ./dev/scripts/copy-files.js",
     "build:esm": "cross-env BABEL_ENV=esm babel src --extensions '.ts' --out-dir 'dist/esm' --out-file-extension .mjs --source-maps",
     "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts' --out-dir 'dist/cjs' --source-maps",
     "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist/types --rootDir src",
-    "build": "pnpm build:cjs && pnpm build:esm && pnpm build:types && node ./dev/scripts/copy-files.js",
-    "dev:link": "pnpm link ./dist",
-    "dev:sandbox": "ts-node examples/sandbox/server.ts",
-    "dev:sandbox:inspect": "node --loader ts-node --inspect examples/sandbox/server.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint src"
@@ -50,8 +50,8 @@
     "@babel/preset-env": "7.21.5",
     "@babel/preset-typescript": "7.21.5",
     "@types/node": "20.1.4",
-    "@typescript-eslint/eslint-plugin": "^6.2.0",
-    "@typescript-eslint/parser": "^6.2.0",
+    "@typescript-eslint/eslint-plugin": "6.2.0",
+    "@typescript-eslint/parser": "6.2.0",
     "@vitest/coverage-c8": "0.31.0",
     "babel-plugin-add-import-extension": "1.6.0",
     "cross-env": "7.0.3",
@@ -60,7 +60,7 @@
     "eslint-config-prettier": "8.9.0",
     "eslint-plugin-prettier": "5.0.0",
     "prettier": "3.0.0",
-    "ts-node": "10.9.1",
+    "ts-node-dev": "2.0.0",
     "typescript": "5.0.4",
     "vitest": "0.31.0"
   }
