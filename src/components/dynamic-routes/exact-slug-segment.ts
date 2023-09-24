@@ -4,7 +4,7 @@ import type { DynamicRouteSegment } from '../../types/dynamic-route-segment';
 const pattern = /\[(\w+)]/g;
 
 export const exactSlugSegment: DynamicRouteSegment = {
-  type: 'catch-all',
+  type: 'exact-slug',
   parse: createRouteSegmentParamsParser({
     pattern,
     paramExtractor: (value) => value,

@@ -267,6 +267,17 @@ describe('RequestHandler', () => {
         expect(routeParams).toEqual({ id: '1', ids: ['4', '5', '6'] });
       });
     });
+
+    it('should process correctly for catch all segment before other types', () => {
+      const run = createTestRequestRunner(dynamicSegmentsHandler);
+
+      run('/combination/one/two/three/plain/image.jpg', ({ routeParams, filePath }) => {
+        expect(filePath).toEqual(
+          '/api-dynamic-segments/combination/[...operations]/plain/[slug].ts'
+        );
+        expect(routeParams).toEqual({ operations: ['one', 'two', 'three'], slug: 'image.jpg' });
+      });
+    });
   });
 
   describe('#Validations', () => {
