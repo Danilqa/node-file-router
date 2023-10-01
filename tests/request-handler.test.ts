@@ -165,14 +165,54 @@ describe('RequestHandler', () => {
       });
     });
 
-    it('should correctly map methods from filename', () => {
+    it('should correctly map methods from filename for plain routes', () => {
       const run = createTestMethodsRequestRunner(requestHandler);
-      run('/nested/some-route', 'get', ({ req }) => 
+      run('/plain/some-route', 'get', ({ req }) => 
         expect(req.method).toBe('get')
       );
-      run('/nested/some-route', 'post', ({ req }) =>
+      run('/plain/some-route', 'post', ({ req }) =>
         expect(req.method).toBe('post')
       );
+      run('/plain/some-route', 'put', (res) =>
+        expect(res).toBe('404 Not Found')
+      );
+    });
+
+    it('should correctly map methods from filename for exact slug', () => {
+      const run = createTestMethodsRequestRunner(requestHandler);
+      run('/dynamic/exact/one', 'get', ({ req, routeParams }) => {
+        expect(req.method).toBe('get');
+        expect(routeParams.slug).toBe('one');
+      });
+      run('/dynamic/exact/one', 'put', (res) =>
+        expect(res).toBe('404 Not Found')
+      );
+    });
+
+    it('should correctly map methods from filename for catch all slugs', () => {
+      const run = createTestMethodsRequestRunner(requestHandler);
+      run('/dynamic/catch-all/a/b/c', 'get', ({ req, routeParams }) => {
+        expect(req.method).toBe('get');
+        expect(routeParams.params).toEqual(['a', 'b', 'c']);
+      });
+      run('/dynamic/catch-all/a/b/c', 'put', (res) =>
+        expect(res).toBe('404 Not Found')
+      );
+    });
+
+    it('should correctly map methods from filename for optional catch all slugs', () => {
+      const run = createTestMethodsRequestRunner(requestHandler);
+      run('/dynamic/optional-catch-all/a/b/c', 'get', ({ req, routeParams }) => {
+        expect(req.method).toBe('get');
+        expect(routeParams.params).toEqual(['a', 'b', 'c']);
+      });
+      run('/dynamic/optional-catch-all', 'get', ({ req, routeParams }) => {
+        expect(req.method).toBe('get');
+        expect(routeParams.params).toEqual(undefined);
+      });
+      run('/dynamic/optional-catch-all', 'put', (res) => {
+        expect(res).toBe('404 Not Found');
+      });
     });
   });
 
