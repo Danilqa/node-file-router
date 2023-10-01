@@ -119,7 +119,8 @@ export class FileRouteResolver {
       ''
     );
 
-    const { route, paramExtractors } = this.parseDynamicParams(initialRoute);
+    const [method, pureRouteName] = this.extractMethodFromRoute(initialRoute);
+    const { route, paramExtractors } = this.parseDynamicParams(pureRouteName);
 
     const isIndex = FileRouteResolver.indexFilePattern.test(entry.name);
     const routeKey = isIndex ? route.replace(/\/index$/, '') : route;
@@ -127,6 +128,7 @@ export class FileRouteResolver {
     const regex = new RegExp(`^${routeKey}/?$`);
 
     return new RouteHandler({
+      method,
       fileName: entry.name,
       handler,
       regex,
@@ -151,5 +153,19 @@ export class FileRouteResolver {
         },
         { route: initialRoute, paramExtractors: {} }
       );
+  }
+
+  private extractMethodFromRoute(route: string): [string | undefined, string] {
+    const pattern = /\.\[([^\]]+)\](\..+)?$/;
+
+    const match = route.match(pattern);
+    if (!match) {
+      return [undefined, route];
+    }
+
+    const [, method] = match;
+    const pureRoute = route.replace(pattern, '');
+
+    return [method, pureRoute];
   }
 }

@@ -156,6 +156,26 @@ describe('RequestHandler', () => {
     });
   });
 
+  describe('#MethodWithFiles', () => {
+    let requestHandler: RequestHandler;
+
+    beforeAll(async () => {
+      requestHandler = await initFileRouter({
+        baseDir: 'api-methods-in-files'
+      });
+    });
+
+    it('should correctly map methods from filename', () => {
+      const run = createTestMethodsRequestRunner(requestHandler);
+      run('/nested/some-route', 'get', ({ req }) => 
+        expect(req.method).toBe('get')
+      );
+      run('/nested/some-route', 'post', ({ req }) =>
+        expect(req.method).toBe('post')
+      );
+    });
+  });
+
   describe('#DynamicCases', () => {
     let dynamicSegmentsHandler: RequestHandler;
 

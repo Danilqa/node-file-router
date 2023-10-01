@@ -41,18 +41,17 @@ export async function initFileRouter({
   return function requestHandler(...args: unknown[]) {
     const pathname = getPathname(...args);
 
-    const matchedRoute = routeHandlers.find(({ regex }) =>
-      regex.test(pathname)
+    const method = getMethod && getMethod(...args);
+    const matchedRoute = routeHandlers.find(
+      ({ regex, method: routeMethod }) =>
+        regex.test(pathname) && (!routeMethod || method === routeMethod)
     );
     if (!matchedRoute) {
       return notFoundHandler(...args);
     }
 
     const { handler } = matchedRoute;
-
     const routeParams = matchedRoute.getRouteParams(pathname);
-
-    const method = getMethod && getMethod(...args);
     if (isRecordWith<RequestHandler>(handler) && method && handler[method]) {
       return handler[method](...args, routeParams);
     }
