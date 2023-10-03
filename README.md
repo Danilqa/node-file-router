@@ -39,8 +39,8 @@ export default {
 ```
 
 ```js
-// https://api-shop.com/summer/sneakers/nike
-// -> file: /api/shop/[...categories].ts
+// GET: https://api-shop.com/summer/sneakers/nike
+// -> file: /api/shop/[...categories].[get].ts
 
 export default function(req, res, { categories }) {
   // categories -> ['summer', 'sneakers', 'nike'];
@@ -49,8 +49,28 @@ export default function(req, res, { categories }) {
 
 # Documentation
 
-Visit [website](https://danilqa.github.io/node-file-router/docs/getting-started) to get started and view 
+Visit [website](https://danilqa.github.io/node-file-router/) to get started and view 
 the full documentation.
+
+Usage:
+* [Getting started](https://danilqa.github.io/node-file-router/docs/getting-started)
+* [Usage guide](https://danilqa.github.io/node-file-router/docs/usage-guide)
+  * [Configuration](https://danilqa.github.io/node-file-router/docs/usage-guide#configuration)
+* [Usage with Bun](https://danilqa.github.io/node-file-router/docs/use-with-bun)
+
+Methods routing:
+* [Any method](https://danilqa.github.io/node-file-router/docs/usage-guide#any-method)
+* [Object with methods](https://danilqa.github.io/node-file-router/docs/usage-guide#object-with-methods)
+* [Methods in filenames](https://danilqa.github.io/node-file-router/docs/usage-guide#methods-in-filenames)
+
+Route matching:
+* [Plain match](https://danilqa.github.io/node-file-router/docs/route-matching#direct-matching) - /plain/route/
+* [Exact slug](https://danilqa.github.io/node-file-router/docs/route-matching#exact-matching) - /[id]/
+* [Catching all](https://danilqa.github.io/node-file-router/docs/route-matching#catching-all) - /[id1]/[id2]/[idn]/
+* [Optional catching all](https://danilqa.github.io/node-file-router/docs/route-matching#optional-catching-all) - ?/[id1]/[id2]/[idn]/
+
+Support other protocols and frameworks:
+* [Custom adapter](https://danilqa.github.io/node-file-router/docs/custom-adapter)
 
 # Examples
 

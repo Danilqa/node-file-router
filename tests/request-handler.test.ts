@@ -167,7 +167,7 @@ describe('RequestHandler', () => {
 
     it('should correctly map methods from filename for plain routes', () => {
       const run = createTestMethodsRequestRunner(requestHandler);
-      run('/plain/some-route', 'get', ({ req }) => 
+      run('/plain/some-route', 'get', ({ req }) =>
         expect(req.method).toBe('get')
       );
       run('/plain/some-route', 'post', ({ req }) =>
@@ -202,15 +202,32 @@ describe('RequestHandler', () => {
 
     it('should correctly map methods from filename for optional catch all slugs', () => {
       const run = createTestMethodsRequestRunner(requestHandler);
-      run('/dynamic/optional-catch-all/a/b/c', 'get', ({ req, routeParams }) => {
-        expect(req.method).toBe('get');
-        expect(routeParams.params).toEqual(['a', 'b', 'c']);
-      });
+      run(
+        '/dynamic/optional-catch-all/a/b/c',
+        'get',
+        ({ req, routeParams }) => {
+          expect(req.method).toBe('get');
+          expect(routeParams.params).toEqual(['a', 'b', 'c']);
+        }
+      );
       run('/dynamic/optional-catch-all', 'get', ({ req, routeParams }) => {
         expect(req.method).toBe('get');
         expect(routeParams.params).toEqual(undefined);
       });
       run('/dynamic/optional-catch-all', 'put', (res) => {
+        expect(res).toBe('404 Not Found');
+      });
+    });
+
+    it('should correctly map methods from filename for index files', () => {
+      const run = createTestMethodsRequestRunner(requestHandler);
+      run('/root', 'get', ({ req }) => {
+        expect(req.method).toBe('get');
+      });
+      run('/root', 'post', ({ req }) => {
+        expect(req.method).toBe('post');
+      });
+      run('/root', 'put', (res) => {
         expect(res).toBe('404 Not Found');
       });
     });

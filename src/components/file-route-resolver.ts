@@ -24,8 +24,9 @@ export class FileRouteResolver {
   private static readonly fileExtensionPattern = new RegExp(
     `\\.(${FileRouteResolver.fileExtensions})$`
   );
+  // Matches: index.js and index.[get].js
   private static readonly indexFilePattern = new RegExp(
-    `index\\.(${FileRouteResolver.fileExtensions})$`
+    `index(\\.\\[[^\\]]+\\])?\\.(${FileRouteResolver.fileExtensions})$`
   );
 
   private readonly baseDir: string;

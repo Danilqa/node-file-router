@@ -29,3 +29,14 @@ export const CatalogPage = memo(() => {
     </div>
   )
 });
+
+export const FavouritesPage = memo(() => {
+  return (
+    <div className="browser-content favourites-page">
+      <div className="favourites-page__item"></div>
+      <div className="favourites-page__item"></div>
+      <div className="favourites-page__item"></div>
+      <div className="favourites-page__item"></div>
+    </div>
+  )
+});

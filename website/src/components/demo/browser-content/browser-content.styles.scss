@@ -52,3 +52,14 @@ $element-color: #C0C0C0;
     background-color: $element-color;
   }
 }
+
+.favourites-page {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  &__item {
+    flex-grow: 1;
+    background-color: $element-color;
+  }
+}
