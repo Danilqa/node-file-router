@@ -37,7 +37,7 @@ const FEATURES: FeatureItem[] = [
     imageName: 'feature-three.png',
     description: (
       <>
-        Inspired by Next.js and has similar interface. Supports dynamic routes with wildcard params.
+        Inspired by Next.js and Nuxt, it has a similar interface. It supports dynamic routes with wildcard parameters.
       </>
     ),
   },
