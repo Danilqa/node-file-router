@@ -1,7 +1,7 @@
 import { createRouteSegmentParamsParser } from './common/route-params-parser';
 import type { DynamicRouteSegment } from '../../types/dynamic-route-segment';
 
-const pattern = /\/\[\[(\.\.\.\w+)]]$/g;
+const pattern = /\/\[\[(\.\.\.\w+)]]/g;
 
 export const optionalCatchAllSegment: DynamicRouteSegment = {
   type: 'optional-catch-all',
