@@ -7,6 +7,8 @@ import TabItem from '@theme/TabItem';
 
 # Usage Guide
 
+## Initialization
+
 1. To initialize all routes, invoke the `initFileRouter` function. This is an asynchronous function that
 constructs a table of URL patterns and creates a function that calls the matched file.
 2. Call the created function on each request, passing in the `request`, `response`, and any other necessary parameters.
@@ -65,7 +67,7 @@ It works with any popular types: `ts`, `js`, `cjs`, and `mjs`.
 
 ## Configuration
 
-### Source of files
+### Source of Files
 
 **name**: `baseDir`, **default value**: `./api`
 
@@ -80,7 +82,7 @@ const useFileRouter = await initFileRouter({
 
 The relative path is related to the current working directory of the Node.js process.
 
-### Ignoring files by pattern
+### Ignoring Files by Pattern
 
 **name**: `ignoreFilesRegex`, **default value**: `[]`
 
@@ -94,11 +96,18 @@ const useFileRouter = await initFileRouter({
 });
 ```
 
-## Files Type
+## Methods Routing
 
-Use functions or objects with methods in the target files. And **default export them**.
+The library provides different options to route methods.
 
-### Function
+:::tip Note
+
+Anything that is passed into useFileRouter will not be mutated. Route parameters are always passed
+as the last argument. For instance, in Express.js, it will be: `function(req, res, next, routeParams)`.
+
+:::
+
+### Any Method
 
 The function will be invoked for any request method, such as `GET`, `POST`, `PATCH`, and so on.
 
@@ -108,20 +117,11 @@ export default function(req, res, routeParams) {
 }
 ```
 
-:::tip Note
-
-1. Anything that is passed into useFileRouter will not be mutated. Route parameters are always passed
-as the last argument. For instance, in Express.js, it will be: `function(req, res, next, routeParams)`.
-
-2. The function can be invoked with any method: `GET`, `POST`, etc.
-
-:::
-
 Get the route params from dynamic paths in the last argument. For instance,
 in this file `/users/[productId]/orders/[orderId].js` these params are available:
 `{ productId, orderId }`. More details are described on the [route matching part](/docs/route-matching).
 
-### Object with methods
+### Object with Methods
 
 Specify functions for each method in the object. The rules for nested functions are identical,
 with the only difference being that they belong to the method. Any method that does not list a
@@ -140,5 +140,55 @@ export default {
   patch(req, res, routeParams) {
     // ...
   },
+}
+```
+
+### Methods in Filenames
+
+Use the `.[method].` suffix to directly specify methods in the filenames. This approach can be used for
+all types of routes.
+
+Plain routes:
+```
+├── user/
+│  ├── login.[post].js
+│  └── logout.[post].js
+...
+```
+
+Exact slug:
+```
+├── drafts/
+│  ├── [id].[post].js
+│  └── [id].[get].js
+...
+```
+
+Catch all:
+```
+├── catalog/
+│  └── [...categories].[get].js
+...
+```
+
+Optional catch all:
+```
+├── tags/
+│  └── [[...ids]].[post].js
+...
+```
+
+Index files:
+```
+├── auth/
+│  └── index.[post].js
+...
+```
+
+The content of the file is represented as a function:
+
+```js
+export default function(req, res, routeParams) {
+  // ... your code
 }
 ```

@@ -7,6 +7,7 @@ import type { ParamExtractor } from '../dynamic-routes/common/route-params-parse
 import type { RequestHandler } from '../../types/request-handler';
 
 interface Props {
+  method?: string;
   fileName: string;
   handler: RequestHandler | Record<string, RequestHandler>;
   regex: RegExp;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export class RouteHandler {
+  method?: string;
   fileName: string;
   handler: RequestHandler | Record<string, RequestHandler>;
   regex: RegExp;

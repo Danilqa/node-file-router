@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { UrlSelector } from '@site/src/components/demo/url-selector/url-selector';
 import { FileExplorer } from '@site/src/components/demo/file-explorer/file-explorer';
-import { CatalogPage, ProductPage } from '@site/src/components/demo/browser-content/browser-content';
+import { CatalogPage, FavouritesPage, ProductPage } from '@site/src/components/demo/browser-content/browser-content';
 
 import './demo.styles.scss';
 
@@ -37,7 +37,7 @@ const CONTENT = [
   {
     url: [
       '/catalog/',
-      <span key="slug-1" className="url-bar__slug url-bar__slug--color-1">men</span>,
+      <span key="slug-1" className="url-bar__slug url-bar__slug--color-1">women</span>,
       '/',
       <span key="slug-2" className="url-bar__slug url-bar__slug--color-2">denim</span>,
       '/',
@@ -57,7 +57,28 @@ const CONTENT = [
       ]
     },
     content: <CatalogPage/>,
-  }
+  },
+  {
+    url: [
+      '/profile/favourites/'
+    ],
+    fileCatalog: {
+      name: 'api', children: [
+        {
+          name: 'profile', children: [
+            { name: 'favourites.[get].js', isJsFile: true, isSelected: true },
+            { name: 'favourites.[post].js', isJsFile: true },
+          ],
+        },
+        {
+          name: 'brands', children: [
+            { name: '[id].[get].js', isJsFile: true },
+          ],
+        }
+      ]
+    },
+    content: <FavouritesPage/>,
+  },
 ];
 
 const DELAY_BEFORE_SWITCH_URL_MS = 5000;
