@@ -51,7 +51,8 @@
         "avoidEscape": true
       }
     ],
-    "no-unused-vars": "warn",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["error"],
     "no-console": "off",
     "import/extensions": "off",
     "import/prefer-default-export": "off",
