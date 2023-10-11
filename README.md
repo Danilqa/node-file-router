@@ -7,7 +7,7 @@ src="./static/images/logo.png" />
 [![npm downloads](https://snyk.io/test/github/danilqa/node-file-router/badge.svg)](https://snyk.io/test/github/danilqa/node-file-router)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/danilqa/node-file-router/blob/main/LICENSE)
 
-A file-based routing for Node.js.
+A powerful file-based routing for Node.js.
 
 * **Technology Agnostic**: 
   * Pure Node HTTP
@@ -20,31 +20,37 @@ A file-based routing for Node.js.
 * **TypeScript** support
 * **100%** test coverage
 
-```js
-// https://api-shop.com/documents/12/drafts/78
-// -> file: /api/documents/[documentId]/drafts/[draftId].js
+```
+api/
+├── profile/
+│   └── orders.[post].ts - methods in any filenames
+├── catalog/
+│   └── [[...tags]].ts - several segments
+├── collection/
+│   └── [cid]/ - slugs in folders
+│       └── products/
+│           └── [pid].ts - slugs in files
+├── index.ts - root
+└── _404.ts - not found response    
+```
 
+* [POST]: /profile/orders → `/api/profile/orders.[post].ts`
+* /catalog/men/black/denim → `/api/catalog/[[...tags]].ts`
+* /collection/77/products/13 → `/api/collection/[cid]/products/[pid].ts`
+* / → `index.ts`
+
+Methods in a file:
+```js
 export default {
-  get(req, res, routeParams) {
-    const { documentId, draftId } = routeParams;
-    res.end(`Requested document ${documentId} and his draft ${draftId}`);
-  },
-  post(req, res, routeParams) {
-    const { documentId, draftId } = routeParams;
-    res.end(`Created draft ${draftId} for document ${documentId}`);
-  },
-  patch(req, res, routeParams) {
-  },
+  get(req, res, routeParams) {},
+  post(req, res, routeParams) {},
+  patch(req, res, routeParams) {},
 }
 ```
 
+Single response function:
 ```js
-// GET: https://api-shop.com/summer/sneakers/nike
-// -> file: /api/shop/[...categories].[get].ts
-
-export default function(req, res, { categories }) {
-  // categories -> ['summer', 'sneakers', 'nike'];
-}
+export default function (req, res, routeParams) {}
 ```
 
 # Documentation
