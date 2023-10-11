@@ -34,10 +34,10 @@ api/
 └── _404.ts - not found response    
 ```
 
-POST /profile/orders -> `/api/profile/orders.[post].ts` \
-/catalog/men/black/denim -> `/api/catalog/[[...tags]].ts` \
-/collection/77/products/13 -> `/api/collection/[cid]/products/[pid].ts` \
-/ -> `index.ts`
+* [POST]: /profile/orders → `/api/profile/orders.[post].ts`
+* /catalog/men/black/denim → `/api/catalog/[[...tags]].ts`
+* /collection/77/products/13 → `/api/collection/[cid]/products/[pid].ts`
+* / → `index.ts`
 
 Methods in a file:
 ```js
@@ -50,7 +50,7 @@ export default {
 
 Single response function:
 ```js
-export default function(req, res, routeParams) {}
+export default function (req, res, routeParams) {}
 ```
 
 # Documentation
