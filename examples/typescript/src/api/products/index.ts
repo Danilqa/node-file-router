@@ -1,7 +1,6 @@
-import type { ServerResponse } from 'node:http';
-import type { Request } from 'node-file-router/types/types/request';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 
-export default function usersHandler(_: Request, res: ServerResponse) {
+export default function usersHandler(_: IncomingMessage, res: ServerResponse) {
   res.setHeader('Content-Type', 'application/json');
   res.end(
     JSON.stringify([
