@@ -7,7 +7,7 @@ src="./static/images/logo.png" />
 [![npm downloads](https://snyk.io/test/github/danilqa/node-file-router/badge.svg)](https://snyk.io/test/github/danilqa/node-file-router)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/danilqa/node-file-router/blob/main/LICENSE)
 
-A file-based routing for Node.js.
+A powerful file-based routing for Node.js.
 
 * **Technology Agnostic**: 
   * Pure Node HTTP
@@ -23,14 +23,14 @@ A file-based routing for Node.js.
 ```
 api/
 ├── profile/
-│   └── orders.[post].ts - methods in filenames
+│   └── orders.[post].ts - methods in any filenames
 ├── catalog/
 │   └── [[...tags]].ts - several segments
 ├── collection/
 │   └── [cid]/ - slugs in folders
 │       └── products/
 │           └── [pid].ts - slugs in files
-├── index.ts
+├── index.ts - root
 └── _404.ts - not found response    
 ```
 
