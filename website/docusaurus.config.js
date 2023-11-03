@@ -1,9 +1,6 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require('prism-react-renderer/themes/github');
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
-
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Node File Router',
@@ -116,10 +113,6 @@ const config = {
       footer: {
         style: 'dark',
         copyright: `© ${new Date().getFullYear()} Daniil Sitdikov`,
-      },
-      prism: {
-        theme: lightCodeTheme,
-        darkTheme: darkCodeTheme,
       },
       announcementBar: {
         id: 'support_us',
