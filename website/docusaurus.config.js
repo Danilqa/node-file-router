@@ -1,5 +1,6 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
+import { themes as prismThemes } from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -121,6 +122,10 @@ const config = {
         backgroundColor: 'rgb(131, 58, 180)',
         textColor: '#fff',
         isCloseable: false,
+      },
+      prism: {
+        theme: prismThemes.github,
+        darkTheme: prismThemes.dracula,
       },
     }),
 };

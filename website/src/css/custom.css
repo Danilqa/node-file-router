@@ -32,6 +32,11 @@ html[data-theme='dark'] {
   background-color: rgba(18, 18, 18, 0.9);
 }
 
+.navbar__logo {
+  width: 32px;
+  height: 32px;
+}
+
 .footer {
   border-top: 1px solid #333;
 }
@@ -42,8 +47,8 @@ html[data-theme='dark'] {
 
 div[class^=announcementBar_] {
   background: linear-gradient(
-    90deg, 
-    rgba(131,58,180,1) 0%, 
+    90deg,
+    rgba(131,58,180,1) 0%,
     rgba(253,29,29,1) 50%,
     rgba(252,176,69,1) 100%
   );

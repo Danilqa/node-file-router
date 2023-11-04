@@ -23,3 +23,5 @@ export const Item = memo<Props>(({ data, level = 0 }) => {
     </>
   )
 });
+
+Item.displayName = 'Item';

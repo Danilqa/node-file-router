@@ -17,6 +17,8 @@ export const ProductPage = memo(() => {
   )
 });
 
+ProductPage.displayName = 'ProductPage';
+
 export const CatalogPage = memo(() => {
   return (
     <div className="browser-content catalog-page">
@@ -30,6 +32,8 @@ export const CatalogPage = memo(() => {
   )
 });
 
+CatalogPage.displayName = 'CatalogPage';
+
 export const FavouritesPage = memo(() => {
   return (
     <div className="browser-content favourites-page">
@@ -40,3 +44,5 @@ export const FavouritesPage = memo(() => {
     </div>
   )
 });
+
+FavouritesPage.displayName = 'FavouritesPage';

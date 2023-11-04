@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { memo, ReactElement } from 'react';
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 
@@ -52,9 +52,9 @@ const FEATURES: FeatureItem[] = [
   },
 ];
 
-function Feature({ title, imageName, description }: FeatureItem) {
-  return (
-    <div className={clsx('col col--3')}>
+const Feature = memo<FeatureItem>( ({ title, imageName, description }) =>
+  (
+    <div className="col col--3">
       <div className="text--center">
         <img
           className="features-list__image"
@@ -68,10 +68,10 @@ function Feature({ title, imageName, description }: FeatureItem) {
         <p>{description}</p>
       </div>
     </div>
-  );
-}
+  )
+);
 
-export function Features() {
+export const Features = memo(() => {
   return (
     <section className="features-list">
       <div className="container">
@@ -83,4 +83,6 @@ export function Features() {
       </div>
     </section>
   );
-}
+});
+
+Features.displayName = 'Features';

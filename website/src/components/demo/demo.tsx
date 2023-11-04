@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { UrlSelector } from '@site/src/components/demo/url-selector/url-selector';
 import { FileExplorer } from '@site/src/components/demo/file-explorer/file-explorer';
@@ -83,7 +83,7 @@ const CONTENT = [
 
 const DELAY_BEFORE_SWITCH_URL_MS = 5000;
 
-export function Demo() {
+export const Demo = memo(() => {
   const [urlIndex, setUrlIndex] = useState(0);
   const [isInteracted, setIsInteracted] = useState(false);
 
@@ -117,4 +117,6 @@ export function Demo() {
       {CONTENT[urlIndex].content}
     </div>
   )
-}
+});
+
+Demo.displayName = 'Demo';
