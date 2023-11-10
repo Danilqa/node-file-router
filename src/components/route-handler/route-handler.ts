@@ -13,6 +13,7 @@ interface Props {
   regex: RegExp;
   paramExtractors: Record<string, ParamExtractor>;
   nestingLevel: number;
+  fullPath: string;
 }
 
 export class RouteHandler {
@@ -21,6 +22,7 @@ export class RouteHandler {
   handler: RequestHandler | Record<string, RequestHandler>;
   regex: RegExp;
   nestingLevel: number;
+  fullPath: string;
 
   private paramExtractors: Record<string, ParamExtractor>;
 
