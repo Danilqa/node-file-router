@@ -1,19 +1,18 @@
 import React, { memo, ReactElement } from 'react';
-import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 
 import './features.styles.scss';
 
 interface FeatureItem {
   title: string;
-  imageName: string,
+  imageUrl: string,
   description: ReactElement;
 }
 
 const FEATURES: FeatureItem[] = [
   {
     title: 'Technology Agnostic',
-    imageName: 'feature-one.png',
+    imageUrl: 'https://ucarecdn.com/b0a21a09-e725-4369-8044-a40f51aca7a4',
     description: (
       <>
         Works well with <Link href='/docs/usage-guide'>pure Node.js</Link>,{' '}
@@ -25,7 +24,7 @@ const FEATURES: FeatureItem[] = [
   },
   {
     title: 'Works Everywhere',
-    imageName: 'feature-two.png',
+    imageUrl: 'https://ucarecdn.com/8db22162-ba55-4aa6-ae8b-ac04118f271e',
     description: (
       <>
         Common JS and ES modules ready. TypeScript support out of box.
@@ -34,7 +33,7 @@ const FEATURES: FeatureItem[] = [
   },
   {
     title: 'Powerful',
-    imageName: 'feature-three.png',
+    imageUrl: 'https://ucarecdn.com/18fc8087-3813-4482-b9f7-9d2b1f2d7170',
     description: (
       <>
         Inspired by Next.js and Nuxt, it has a similar interface. It supports dynamic routes with wildcard parameters.
@@ -43,7 +42,7 @@ const FEATURES: FeatureItem[] = [
   },
   {
     title: 'High Quality',
-    imageName: 'feature-four.png',
+    imageUrl: 'https://ucarecdn.com/9ac1eae1-2d12-4813-9b61-be84fb1382f5',
     description: (
       <>
         0 dependencies and 100% test coverage.
@@ -52,14 +51,14 @@ const FEATURES: FeatureItem[] = [
   },
 ];
 
-const Feature = memo<FeatureItem>( ({ title, imageName, description }) =>
+const Feature = memo<FeatureItem>( ({ title, imageUrl, description }) =>
   (
     <div className="col col--3">
       <div className="text--center">
         <img
           className="features-list__image"
           loading="lazy"
-          src={require(`@site/static/img/${imageName}`).default}
+          src={`${imageUrl}/-/preview/400x400/-/quality/smart_retina/-/format/auto/`}
           alt="feature image"
         />
       </div>
