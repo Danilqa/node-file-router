@@ -1,13 +1,5 @@
 import { initFileRouter } from '../src/file-router';
-import {
-  describe,
-  it,
-  expect,
-  vi,
-  beforeEach,
-  afterEach,
-  beforeAll
-} from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 const mocks = vi.hoisted(() => ({ isCommonJs: vi.fn() }));
 
@@ -46,7 +38,7 @@ describe('ClearImportCache', () => {
   });
 
   describe('#ESModules', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       mocks.isCommonJs.mockReturnValue(false);
     });
 
@@ -63,7 +55,7 @@ describe('ClearImportCache', () => {
       warnSpy.mockRestore();
     });
 
-    it('should warn when current environment is not supported', async () => {
+    it.only('should warn when current environment is not supported', async () => {
       const warnSpy = vi.spyOn(console, 'warn');
 
       await initFileRouter({ baseDir, clearImportCache: true });

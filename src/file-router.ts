@@ -6,7 +6,6 @@ import { isFunction, isRecordWith } from './utils/object.utils';
 import { resolveNotFoundHandler } from './components/not-found-resolver';
 import { httpAdapter } from './adapters/http-adapter';
 import { validateBaseDirExistence } from './validations/validations';
-import { removeImportsCache } from './utils/file.utils';
 
 import type { Adapter } from './types/adapter';
 import type { RequestHandler } from './types/request-handler';
@@ -34,15 +33,11 @@ export async function initFileRouter({
 
   const fileRouteResolver = new FileRouteResolver({
     baseDir: normalizedBaseDir,
-    ignoreFilesRegex
+    ignoreFilesRegex,
+    clearImportCache
   });
 
   const routeHandlers = await fileRouteResolver.getHandlers();
-
-  if (clearImportCache) {
-    const handlersPaths = routeHandlers.map((handler) => handler.fullPath);
-    removeImportsCache(handlersPaths);
-  }
 
   const notFoundHandler =
     (await resolveNotFoundHandler(normalizedBaseDir)) || defaultNotFoundHandler;

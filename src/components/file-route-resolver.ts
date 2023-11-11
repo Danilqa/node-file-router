@@ -5,6 +5,7 @@ import { exactSlugSegment } from './dynamic-routes/exact-slug-segment';
 import { catchAllSegment } from './dynamic-routes/catch-all-segment';
 import { optionalCatchAllSegment } from './dynamic-routes/optional-catch-all-segment';
 import { RouteHandler } from './route-handler/route-handler';
+import { isCommonJs } from '../utils/env.utils';
 import { validateFileFormat } from '../validations/validations';
 import type { ParamExtractor } from './dynamic-routes/common/route-params-parser';
 import type { Dirent } from 'node:fs';
@@ -12,6 +13,7 @@ import type { Dirent } from 'node:fs';
 interface Props {
   baseDir: string;
   ignoreFilesRegex?: RegExp[];
+  clearImportCache: boolean;
 }
 
 interface RouteWithParams {
@@ -31,10 +33,17 @@ export class FileRouteResolver {
 
   private readonly baseDir: string;
   private readonly ignoreFilesRegex: RegExp[];
+  private readonly clearImportCache: boolean = false;
 
   constructor(data: Props) {
     this.baseDir = data.baseDir;
     this.ignoreFilesRegex = data.ignoreFilesRegex || [];
+
+    if (data.clearImportCache && !isCommonJs()) {
+      console.warn('Cache clearing is only supported for CommonJS modules');
+    } else {
+      this.clearImportCache = data.clearImportCache;
+    }
   }
 
   async getHandlers(directory = this.baseDir): Promise<RouteHandler[]> {
@@ -111,6 +120,10 @@ export class FileRouteResolver {
     routePath: string,
     nestingLevel: number
   ): Promise<RouteHandler> {
+    if (this.clearImportCache) {
+      delete require.cache[fullPath];
+    }
+
     const handler = await import(fullPath)
       .then((module) => validateFileFormat(fullPath, module))
       .then((module) => module.default);
