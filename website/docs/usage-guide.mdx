@@ -96,6 +96,33 @@ const useFileRouter = await initFileRouter({
 });
 ```
 
+### Clear Import Cache
+
+**name**: `cleanImportCache`, **default value**: `false`\
+**env:** works only with CommonJS modules for now
+
+By default, Node.js caches the imported files. This means that if you change route handler files during runtime,
+the changes will not be applied even if you initialize the file router.
+
+To avoid this, you can enable the `clearImportCache` option and reinitialize the router. It will clean the cache before
+importing a file.
+
+For example:
+
+```js
+let useFileRouter = await initFileRouter();
+
+const server = http.createServer(async (req, res) => {
+  if (req.url === '/refresh') {
+    useFileRouter = await initFileRouter({ clearImportCache: true });
+    res.end('done');
+    return;
+  }
+
+  useFileRouter(req, res);
+});
+```
+
 ## Methods Routing
 
 The library offers various options for routing methods.
