@@ -144,7 +144,6 @@ export class FileRouteResolver {
     return new RouteHandler({
       method,
       fileName: entry.name,
-      fullPath,
       handler,
       regex,
       nestingLevel,
