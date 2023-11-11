@@ -42,10 +42,6 @@ describe('ClearImportCache', () => {
       mocks.isCommonJs.mockReturnValue(false);
     });
 
-    afterEach(() => {
-      vi.restoreAllMocks();
-    });
-
     it('should not warn by default', async () => {
       const warnSpy = vi.spyOn(console, 'warn');
 
@@ -55,7 +51,7 @@ describe('ClearImportCache', () => {
       warnSpy.mockRestore();
     });
 
-    it.only('should warn when current environment is not supported', async () => {
+    it('should warn when current environment is not supported', async () => {
       const warnSpy = vi.spyOn(console, 'warn');
 
       await initFileRouter({ baseDir, clearImportCache: true });
