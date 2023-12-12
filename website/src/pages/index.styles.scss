@@ -1,5 +1,5 @@
 .hero {
-  padding: 4rem 0;
+  padding: 40px 0;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -9,8 +9,12 @@
   }
 }
 
-.actions {
+.hero__actions {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.hero__badges {
+  margin-top: 50px;
 }
