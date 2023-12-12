@@ -27,7 +27,7 @@ export const Hero = memo(() => (
             src={useBaseUrl('/img/devhunt-site-badge.svg')}
             width={243}
             height={54}
-            alt='2-nd place on DevHunt | product of the week'
+            alt='2-nd place on DevHunt | Product of the Week'
           />
         </a>
       </div>
