@@ -5,6 +5,7 @@ import { exactSlugSegment } from './dynamic-routes/exact-slug-segment';
 import { catchAllSegment } from './dynamic-routes/catch-all-segment';
 import { optionalCatchAllSegment } from './dynamic-routes/optional-catch-all-segment';
 import { RouteHandler } from './route-handler/route-handler';
+import { MiddlewareHandler } from './route-handler/middleware-handler';
 import { isCommonJs } from '../utils/env.utils';
 import { validateFileFormat } from '../validations/validations';
 import type { ParamExtractor } from './dynamic-routes/common/route-params-parser';
@@ -26,6 +27,9 @@ export class FileRouteResolver {
   private static readonly fileExtensionPattern = new RegExp(
     `\\.(${FileRouteResolver.fileExtensions})$`
   );
+  private static readonly middlewareFilePattern = new RegExp(
+    `middleware\\.(${FileRouteResolver.fileExtensions})$`
+  );
   // Matches: index.js and index.[get].js
   private static readonly indexFilePattern = new RegExp(
     `index(\\.\\[[^\\]]+\\])?\\.(${FileRouteResolver.fileExtensions})$`
@@ -46,39 +50,54 @@ export class FileRouteResolver {
     }
   }
 
-  async getHandlers(directory = this.baseDir): Promise<RouteHandler[]> {
-    return this.scanDirectory(directory).then((handlers) =>
-      handlers.sort(this.compareByNestingLevelAndType)
-    );
+  async getHandlers(
+    directory = this.baseDir
+  ): Promise<[MiddlewareHandler[], RouteHandler[]]> {
+    const [mg, rh] = await this.scanDirectory(directory);
+
+    return [
+      mg.sort((left, right) => left.nestingLevel - right.nestingLevel),
+      rh.sort(this.compareByNestingLevelAndType)
+    ];
   }
 
   private async scanDirectory(
     directory = this.baseDir,
     parentRoute = '',
     nestingLevel = 0
-  ): Promise<RouteHandler[]> {
+  ): Promise<[MiddlewareHandler[], RouteHandler[]]> {
     const entries = await fs.readdir(directory, { withFileTypes: true });
     const routeHandlers: RouteHandler[] = [];
+    const middlewareHandlers: MiddlewareHandler[] = [];
 
     const processEntry = async (entry: Dirent) => {
       const fullPath = path.join(directory, entry.name);
       const routePath = `${parentRoute}/${entry.name}`;
 
       if (entry.isDirectory()) {
-        const childHandlers = await this.scanDirectory(
-          fullPath,
-          routePath,
-          nestingLevel + 1
-        );
+        const [childMiddlewareHandlers, childHandlers] =
+          await this.scanDirectory(fullPath, routePath, nestingLevel + 1);
         routeHandlers.push(...childHandlers);
+        middlewareHandlers.push(...childMiddlewareHandlers);
       } else if (entry.isFile() && this.isValidFile(entry.name)) {
-        const routeHandler = await this.processFileEntry(
-          fullPath,
-          entry,
-          routePath,
-          nestingLevel
-        );
-        routeHandlers.push(routeHandler);
+        if (FileRouteResolver.middlewareFilePattern.test(entry.name)) {
+          const middlewareHandler = await this.processMiddlwewareEntry(
+            fullPath,
+            routePath,
+            nestingLevel
+          );
+
+          middlewareHandlers.push(middlewareHandler);
+        } else {
+          const routeHandler = await this.processFileEntry(
+            fullPath,
+            entry,
+            routePath,
+            nestingLevel
+          );
+
+          routeHandlers.push(routeHandler);
+        }
       }
     };
 
@@ -86,7 +105,7 @@ export class FileRouteResolver {
       await processEntry(entry);
     }
 
-    return routeHandlers;
+    return [middlewareHandlers, routeHandlers];
   }
 
   private isValidFile(name: string): boolean {
@@ -112,6 +131,31 @@ export class FileRouteResolver {
     ].some((dynamicRoute) => dynamicRoute.isMatch(left.fileName));
 
     return isDynamic ? 1 : -1;
+  }
+
+  private async processMiddlwewareEntry(
+    fullPath: string,
+    filePath: string,
+    nestingLevel: number
+  ) {
+    if (this.clearImportCache) {
+      delete require.cache[fullPath];
+    }
+
+    const handler = await import(fullPath)
+      .then((module) => validateFileFormat(fullPath, module))
+      .then((module) => module.default);
+
+    const routePath = filePath.replace(
+      FileRouteResolver.middlewareFilePattern,
+      ''
+    );
+
+    return new MiddlewareHandler({
+      path: routePath,
+      handler,
+      nestingLevel
+    });
   }
 
   private async processFileEntry(

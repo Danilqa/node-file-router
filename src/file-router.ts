@@ -7,6 +7,7 @@ import { resolveNotFoundHandler } from './components/not-found-resolver';
 import { httpAdapter } from './adapters/http-adapter';
 import { validateBaseDirExistence } from './validations/validations';
 
+import { executeWithMiddlewares } from './components/middleware-executer';
 import type { Adapter } from './types/adapter';
 import type { RequestHandler } from './types/request-handler';
 
@@ -37,7 +38,7 @@ export async function initFileRouter({
     clearImportCache
   });
 
-  const routeHandlers = await fileRouteResolver.getHandlers();
+  const [middlewares, routeHandlers] = await fileRouteResolver.getHandlers();
 
   const notFoundHandler =
     (await resolveNotFoundHandler(normalizedBaseDir)) || defaultNotFoundHandler;
@@ -46,24 +47,33 @@ export async function initFileRouter({
     const pathname = getPathname(...args);
 
     const method = getMethod && getMethod(...args);
-    const matchedRoute = routeHandlers.find(
-      ({ regex, method: routeMethod }) =>
-        regex.test(pathname) && (!routeMethod || method === routeMethod)
-    );
-    if (!matchedRoute) {
-      return notFoundHandler(...args);
+    const matchedMiddlewares = middlewares
+      .filter(({ regexp }) => regexp.test(`${pathname}/`))
+      .map(({ handler }) => handler);
+
+    function runHandler() {
+      const matchedRoute = routeHandlers.find(
+        ({ regex, method: routeMethod }) =>
+          regex.test(pathname) && (!routeMethod || method === routeMethod)
+      );
+
+      if (!matchedRoute) {
+        return notFoundHandler(...args);
+      }
+
+      const { handler } = matchedRoute;
+      const routeParams = matchedRoute.getRouteParams(pathname);
+      if (isRecordWith<RequestHandler>(handler) && method && handler[method]) {
+        return handler[method](...args, routeParams);
+      }
+
+      if (isFunction(handler)) {
+        return handler(...args, routeParams);
+      }
+
+      return notFoundHandler(...args, routeParams);
     }
 
-    const { handler } = matchedRoute;
-    const routeParams = matchedRoute.getRouteParams(pathname);
-    if (isRecordWith<RequestHandler>(handler) && method && handler[method]) {
-      return handler[method](...args, routeParams);
-    }
-
-    if (isFunction(handler)) {
-      return handler(...args, routeParams);
-    }
-
-    return notFoundHandler(...args, routeParams);
+    return executeWithMiddlewares(matchedMiddlewares, runHandler, ...args);
   };
 }
