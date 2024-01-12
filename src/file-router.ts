@@ -49,7 +49,7 @@ export async function initFileRouter({
     const method = getMethod && getMethod(...args);
     const matchedMiddlewares = middlewares
       .filter(({ regexp }) => regexp.test(`${pathname}/`))
-      .map(({ handler }) => handler);
+      .flatMap(({ handler }) => (Array.isArray(handler) ? handler : [handler]));
 
     function runHandler() {
       const matchedRoute = routeHandlers.find(
@@ -69,6 +69,12 @@ export async function initFileRouter({
 
       if (isFunction(handler)) {
         return handler(...args, routeParams);
+      }
+
+      if (Array.isArray(handler)) {
+        const routeHandler = handler.at(-1);
+        const routeMiddlewares = handler.slice(0, -1);
+        return executeWithMiddlewares(routeMiddlewares, routeHandler, ...args);
       }
 
       return notFoundHandler(...args, routeParams);

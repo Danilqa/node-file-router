@@ -7,9 +7,9 @@ export default async function testMiddleware(
   res: ServerResponse,
   next: () => Promise<void>
 ) {
-  console.log('before');
+  console.log(`${req.url} before root`);
 
   await next();
 
-  console.log('after');
+  console.log(`${req.url}  after root`);
 }

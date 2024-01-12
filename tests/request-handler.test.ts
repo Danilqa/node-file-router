@@ -1,5 +1,6 @@
 import {
   createTestMethodsRequestRunner,
+  createTestMiddlewareRequestRunner,
   createTestRequestRunner,
   expectAfterInit
 } from './test-utils';
@@ -19,6 +20,7 @@ describe('RequestHandler', () => {
 
   describe('#Initialization', () => {
     it('should init file router with the default params', async () => {
+      expect.assertions(1);
       const requestHandler = await initFileRouter();
 
       const run = createTestRequestRunner(requestHandler);
@@ -29,6 +31,7 @@ describe('RequestHandler', () => {
     });
 
     it('should init file router with an absolute path', async () => {
+      expect.assertions(1);
       const baseDir = `${process.cwd()}/tests/api`;
 
       const requestHandler = await initFileRouter({ baseDir });
@@ -66,10 +69,11 @@ describe('RequestHandler', () => {
           toFile: '/api-basics/one/[id]/two/[subId].ts'
         },
         {
-          fromUrl: '/one/55/two/three/55',
+          fromUrl: '/one/55/two/three/30',
           toFile: '/api-basics/one/[id]/two/three/[id].ts'
         }
       ];
+      expect.assertions(mappingTestCases.length * 2);
       const run = createTestRequestRunner(basicCasesRequestHandler);
 
       mappingTestCases.forEach(({ fromUrl, toFile }) => {
@@ -79,28 +83,36 @@ describe('RequestHandler', () => {
     });
 
     it('should parse a relative reference url', () => {
+      expect.assertions(1);
       const run = createTestRequestRunner(basicCasesRequestHandler);
+
       run('//site.com/example', ({ filePath }) =>
         expect(filePath).toBe('/api-basics/example.ts')
       );
     });
 
     it('should parse http reference url', () => {
+      expect.assertions(1);
       const run = createTestRequestRunner(basicCasesRequestHandler);
+
       run('http://site.com/example', ({ filePath }) =>
         expect(filePath).toBe('/api-basics/example.ts')
       );
     });
 
     it('should parse https reference url', () => {
+      expect.assertions(1);
       const run = createTestRequestRunner(basicCasesRequestHandler);
+
       run('https://site.com/example', ({ filePath }) =>
         expect(filePath).toBe('/api-basics/example.ts')
       );
     });
 
     it('should skip ignoring files', () => {
+      expect.assertions(2);
       const run = createTestRequestRunner(basicCasesRequestHandler);
+
       run('/one/123/index.some-spec', (res) =>
         expect(res).toBe('404 Not Found')
       );
@@ -348,12 +360,18 @@ describe('RequestHandler', () => {
     it('should process correctly for catch all segment before other types', () => {
       const run = createTestRequestRunner(dynamicSegmentsHandler);
 
-      run('/combination/one/two/three/plain/image.jpg', ({ routeParams, filePath }) => {
-        expect(filePath).toEqual(
-          '/api-dynamic-segments/combination/[...operations]/plain/[slug].ts'
-        );
-        expect(routeParams).toEqual({ operations: ['one', 'two', 'three'], slug: 'image.jpg' });
-      });
+      run(
+        '/combination/one/two/three/plain/image.jpg',
+        ({ routeParams, filePath }) => {
+          expect(filePath).toEqual(
+            '/api-dynamic-segments/combination/[...operations]/plain/[slug].ts'
+          );
+          expect(routeParams).toEqual({
+            operations: ['one', 'two', 'three'],
+            slug: 'image.jpg'
+          });
+        }
+      );
     });
   });
 
@@ -386,6 +404,77 @@ describe('RequestHandler', () => {
       await expectAfterInit('not-valid-api-no-default').toThrowError(
         'does not contain a default export'
       );
+    });
+  });
+
+  describe('#Middlewares', () => {
+    let middlewaresRequestHandler: RequestHandler;
+
+    beforeAll(async () => {
+      middlewaresRequestHandler = await initFileRouter({
+        baseDir: 'api-middlewares'
+      });
+    });
+
+    it('should run the root middleware', () => {
+      expect.assertions(1);
+      const run = createTestMiddlewareRequestRunner(middlewaresRequestHandler);
+
+      run('/', ({ marks }) => {
+        expect(marks).toEqual(['before:m-root', 'root-index', 'after:m-root']);
+      });
+    });
+
+    it('should run the list middleware', ({ expect: _expect }) => {
+      const run = createTestMiddlewareRequestRunner(middlewaresRequestHandler);
+
+      run('/middlewares-list', ({ marks }) => {
+        _expect(marks).toEqual([
+          'before:m-root',
+          'before:m-list-a',
+          'before:m-list-b',
+          'before:m-list-c',
+          'list',
+          'after:m-list-c',
+          'after:m-list-b',
+          'after:m-list-a',
+          'after:m-root'
+        ]);
+      });
+    });
+
+    it('should run the list middlewares and route with middlewares list', ({
+      expect: _expect
+    }) => {
+      const run = createTestMiddlewareRequestRunner(middlewaresRequestHandler);
+
+      run('/middlewares-list/route-with-middlewares', ({ marks }) => {
+        _expect(marks).toEqual([
+          'before:m-root',
+          'before:m-list-a',
+          'before:m-list-b',
+          'before:m-list-c',
+          'before:a',
+          'before:b',
+          'before:c',
+          'route-with-middlewares',
+          'after:c',
+          'after:b',
+          'after:a',
+          'after:m-list-c',
+          'after:m-list-b',
+          'after:m-list-a',
+          'after:m-root'
+        ]);
+      });
+    });
+
+    it('should run the root middleware', ({ expect: _expect }) => {
+      const run = createTestMiddlewareRequestRunner(middlewaresRequestHandler);
+
+      run('/', ({ marks }) => {
+        _expect(marks).toEqual(['before:m-root', 'root-index', 'after:m-root']);
+      });
     });
   });
 });
