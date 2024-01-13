@@ -426,6 +426,20 @@ describe('RequestHandler', () => {
       expect(marks).toEqual(['before:m-root', 'root-index', 'after:m-root']);
     });
 
+    it('should run the root middleware for dynamic route', async () => {
+      const runForMiddleware = createTestMiddlewareRequestRunner(
+        middlewaresRequestHandler
+      );
+      const runForRoute = createTestRequestRunner(middlewaresRequestHandler);
+
+      const { marks } = await runForMiddleware('/nested/123');
+      expect(marks).toEqual(['before:m-root', '[id]', 'after:m-root']);
+
+      runForRoute('/nested/123', ({ routeParams }) =>
+        expect(routeParams).toEqual({ id: '123' })
+      );
+    });
+
     it('should run the list middleware', async () => {
       const run = createTestMiddlewareRequestRunner(middlewaresRequestHandler);
 

@@ -38,7 +38,11 @@ export function createTestRequestHandler(url: string, label = 'route-handler') {
 
 export function createTestRequestRunner(requestHandler: RequestHandler) {
   return (url: string, onSuccess: SuccessCallback) => {
-    requestHandler({ url, headers: { host: 'site' } }, { end: onSuccess }, []);
+    requestHandler(
+      { url, headers: { host: 'site' } },
+      { end: onSuccess, registerCall: () => {} },
+      []
+    );
   };
 }
 
