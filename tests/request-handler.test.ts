@@ -416,65 +416,62 @@ describe('RequestHandler', () => {
       });
     });
 
-    it('should run the root middleware', () => {
-      expect.assertions(1);
+    it('should run the root middleware', async () => {
       const run = createTestMiddlewareRequestRunner(middlewaresRequestHandler);
 
-      run('/', ({ marks }) => {
-        expect(marks).toEqual(['before:m-root', 'root-index', 'after:m-root']);
-      });
+      const { marks } = await run('/');
+
+      expect(marks).toEqual(['before:m-root', 'root-index', 'after:m-root']);
     });
 
-    it('should run the list middleware', ({ expect: _expect }) => {
+    it('should run the list middleware', async () => {
       const run = createTestMiddlewareRequestRunner(middlewaresRequestHandler);
 
-      run('/middlewares-list', ({ marks }) => {
-        _expect(marks).toEqual([
-          'before:m-root',
-          'before:m-list-a',
-          'before:m-list-b',
-          'before:m-list-c',
-          'list',
-          'after:m-list-c',
-          'after:m-list-b',
-          'after:m-list-a',
-          'after:m-root'
-        ]);
-      });
+      const { marks } = await run('/middlewares-list');
+
+      expect(marks).toEqual([
+        'before:m-root',
+        'before:m-list-a',
+        'before:m-list-b',
+        'before:m-list-c',
+        'list',
+        'after:m-list-c',
+        'after:m-list-b',
+        'after:m-list-a',
+        'after:m-root'
+      ]);
     });
 
-    it('should run the list middlewares and route with middlewares list', ({
-      expect: _expect
-    }) => {
+    it('should run the list middlewares and route with middlewares list', async () => {
       const run = createTestMiddlewareRequestRunner(middlewaresRequestHandler);
 
-      run('/middlewares-list/route-with-middlewares', ({ marks }) => {
-        _expect(marks).toEqual([
-          'before:m-root',
-          'before:m-list-a',
-          'before:m-list-b',
-          'before:m-list-c',
-          'before:a',
-          'before:b',
-          'before:c',
-          'route-with-middlewares',
-          'after:c',
-          'after:b',
-          'after:a',
-          'after:m-list-c',
-          'after:m-list-b',
-          'after:m-list-a',
-          'after:m-root'
-        ]);
-      });
+      const { marks } = await run('/middlewares-list/route-with-middlewares');
+
+      expect(marks).toEqual([
+        'before:m-root',
+        'before:m-list-a',
+        'before:m-list-b',
+        'before:m-list-c',
+        'before:a',
+        'before:b',
+        'before:c',
+        'route-with-middlewares',
+        'after:c',
+        'after:b',
+        'after:a',
+        'after:m-list-c',
+        'after:m-list-b',
+        'after:m-list-a',
+        'after:m-root'
+      ]);
     });
 
-    it('should run the root middleware', ({ expect: _expect }) => {
+    it('should run the root middleware', async () => {
       const run = createTestMiddlewareRequestRunner(middlewaresRequestHandler);
 
-      run('/', ({ marks }) => {
-        _expect(marks).toEqual(['before:m-root', 'root-index', 'after:m-root']);
-      });
+      const { marks } = await run('/');
+
+      expect(marks).toEqual(['before:m-root', 'root-index', 'after:m-root']);
     });
   });
 });

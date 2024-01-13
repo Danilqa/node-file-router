@@ -12,13 +12,13 @@ type SuccessCallback = (props: {
   routeParams: Dictionary<string>;
 }) => void;
 
-type MiddlewareSuccessCallback = (props: {
-  marks: string[];
-  req: IncomingMessage;
-}) => void;
+interface CallRegisterProps {
+  req?: IncomingMessage;
+  marks?: string[];
+}
 
 export interface MiddlewareResponseMock {
-  endMiddleware: MiddlewareSuccessCallback;
+  registerCall: (props: CallRegisterProps) => void;
 }
 
 export function createTestRequestHandler(url: string, label = 'route-handler') {
@@ -54,15 +54,20 @@ export function createTestMethodsRequestRunner(requestHandler: RequestHandler) {
 export function createTestMiddlewareRequestRunner(
   requestHandler: RequestHandler
 ) {
-  return (url: string, onSuccess: MiddlewareSuccessCallback) => {
-    requestHandler(
+  return async (url: string) => {
+    let result: CallRegisterProps = {};
+    await requestHandler(
       { url, headers: { host: 'site' } },
       {
         end: () => {},
-        endMiddleware: onSuccess
+        registerCall: (props: CallRegisterProps) => {
+          result = props;
+        }
       },
       []
     );
+
+    return result;
   };
 }
 
@@ -78,10 +83,7 @@ export function expectAfterInit(baseDir: string) {
   };
 }
 
-export function createTestMiddlewareRequestHandler(
-  label: string,
-  isRoot = false
-) {
+export function createTestMiddlewareRequestHandler(label: string) {
   return async (
     req: IncomingMessage,
     res: MiddlewareResponseMock,
@@ -92,8 +94,6 @@ export function createTestMiddlewareRequestHandler(
     await next();
     marks.push(`after:${label}`);
 
-    if (isRoot) {
-      res.endMiddleware({ req, marks });
-    }
+    res.registerCall({ req, marks });
   };
 }

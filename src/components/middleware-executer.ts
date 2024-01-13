@@ -18,5 +18,5 @@ export async function executeWithMiddlewares(
     }
   };
 
-  await next();
+  return next();
 }
