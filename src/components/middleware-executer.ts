@@ -1,6 +1,6 @@
 import type { RequestHandler } from '../types/request-handler';
 
-type MiddlewareHandler = (...args: unknown[]) => Promise<unknown>;
+type MiddlewareHandler = (...args: any[]) => Promise<any>;
 
 export async function executeWithMiddlewares(
   middlewares: MiddlewareHandler[],
@@ -10,13 +10,16 @@ export async function executeWithMiddlewares(
   const queue = [...middlewares, nextRouteHandler];
   let index = 0;
 
+  const results: any[] = [];
   const next = async () => {
     if (index < queue.length) {
       const currentIndex = index;
       index += 1;
-      await queue[currentIndex](...initialArgs, next);
+      results[index] = await queue[currentIndex](...initialArgs, next);
     }
   };
 
-  return next();
+  await next();
+
+  return results.pop();
 }

@@ -12,13 +12,14 @@ type SuccessCallback = (props: {
   routeParams: Dictionary<string>;
 }) => void;
 
-interface CallRegisterProps {
+interface MiddlewareResult {
   req?: IncomingMessage;
   marks?: string[];
+  result?: string;
 }
 
 export interface MiddlewareResponseMock {
-  registerCall: (props: CallRegisterProps) => void;
+  registerCall: (props: MiddlewareResult) => void;
 }
 
 export function createTestRequestHandler(url: string, label = 'route-handler') {
@@ -55,19 +56,19 @@ export function createTestMiddlewareRequestRunner(
   requestHandler: RequestHandler
 ) {
   return async (url: string) => {
-    let result: CallRegisterProps = {};
-    await requestHandler(
+    let runnerResult: MiddlewareResult = {};
+    const result = await requestHandler(
       { url, headers: { host: 'site' } },
       {
         end: () => {},
-        registerCall: (props: CallRegisterProps) => {
-          result = props;
+        registerCall: (props: MiddlewareResult) => {
+          runnerResult = props;
         }
       },
       []
     );
 
-    return result;
+    return { ...runnerResult, result };
   };
 }
 
@@ -83,7 +84,10 @@ export function expectAfterInit(baseDir: string) {
   };
 }
 
-export function createTestMiddlewareRequestHandler(label: string) {
+export function createTestMiddlewareRequestHandler(
+  label: string,
+  hasInterruption = false
+) {
   return async (
     req: IncomingMessage,
     res: MiddlewareResponseMock,
@@ -91,9 +95,15 @@ export function createTestMiddlewareRequestHandler(label: string) {
     next: () => Promise<void>
   ) => {
     marks.push(`before:${label}`);
-    await next();
-    marks.push(`after:${label}`);
 
+    if (hasInterruption) {
+      res.registerCall({ req, marks });
+      return 'before:interrupted';
+    }
+
+    await next();
+
+    marks.push(`after:${label}`);
     res.registerCall({ req, marks });
   };
 }

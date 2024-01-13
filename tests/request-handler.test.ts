@@ -160,7 +160,7 @@ describe('RequestHandler', () => {
       });
     });
 
-    it("should returns 404 not found if method doesn't exists", () => {
+    it('should returns 404 not found if method does not exists', () => {
       const run = createTestMethodsRequestRunner(basicCasesRequestHandler);
       run('/one/1/two/multi-methods/3', 'put', (res) =>
         expect(res).toBe('404 Not Found')
@@ -390,14 +390,16 @@ describe('RequestHandler', () => {
 
     it('should throws error when file has invalid exported type', async () => {
       await expectAfterInit('not-valid-api-invalid-type/null').toThrowError(
-        'It should only export either a function or an object'
+        'It should only export either a function, an array or an object'
       );
     });
 
     it('should throws error when file has invalid exported type', async () => {
       await expectAfterInit(
         'not-valid-api-invalid-type/undefined'
-      ).toThrowError('It should only export either a function or an object');
+      ).toThrowError(
+        'It should only export either a function, an array or an object'
+      );
     });
 
     it('should throws error when file does not export default', async () => {
@@ -442,7 +444,7 @@ describe('RequestHandler', () => {
       ]);
     });
 
-    it('should run the list middlewares and route with middlewares list', async () => {
+    it('should run the list of middlewares and route with middlewares list', async () => {
       const run = createTestMiddlewareRequestRunner(middlewaresRequestHandler);
 
       const { marks } = await run('/middlewares-list/route-with-middlewares');
@@ -466,12 +468,56 @@ describe('RequestHandler', () => {
       ]);
     });
 
-    it('should run the root middleware', async () => {
+    it('should interrupt middleware chain', async () => {
       const run = createTestMiddlewareRequestRunner(middlewaresRequestHandler);
 
-      const { marks } = await run('/');
+      const { marks, result } = await run('/interruption/unreachable-route');
 
-      expect(marks).toEqual(['before:m-root', 'root-index', 'after:m-root']);
+      expect(result).toEqual('before:interrupted');
+      expect(marks).toEqual([
+        'before:m-root',
+        'before:md-interruption',
+        'after:m-root'
+      ]);
+    });
+
+    it('should interrupt the call chain of a file route before next', async () => {
+      const run = createTestMiddlewareRequestRunner(middlewaresRequestHandler);
+
+      const { marks, result } = await run('/interruption-in-list');
+
+      expect(result).toEqual('before:interrupted');
+      expect(marks).toEqual([
+        'before:m-root',
+        'before:a',
+        'before:b-interruption',
+        'after:a',
+        'after:m-root'
+      ]);
+    });
+
+    it('should interrupt the call chain in the root middleware', async () => {
+      const requestHandler = await initFileRouter({
+        baseDir: 'api-middlewares/interruption'
+      });
+      const run = createTestMiddlewareRequestRunner(requestHandler);
+
+      const { marks, result } = await run('/unreachable-route');
+
+      expect(result).toEqual('before:interrupted');
+      expect(marks).toEqual(['before:md-interruption']);
+    });
+
+    it('should interrupt the call chain in the root file handler', async () => {
+      const requestHandler = await initFileRouter({
+        baseDir: 'api-middlewares/interruption-in-list'
+      });
+      const run = createTestMiddlewareRequestRunner(requestHandler);
+
+      const { marks, result } = await run('/');
+
+      expect(result).toEqual('before:interrupted');
+      expect(marks).toEqual(['before:a', 'before:b-interruption', 'after:a']);
     });
   });
 });
