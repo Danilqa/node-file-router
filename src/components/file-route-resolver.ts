@@ -8,6 +8,7 @@ import { RouteHandler } from './route-handler/route-handler';
 import { MiddlewareHandler } from './route-handler/middleware-handler';
 import { isCommonJs } from '../utils/env.utils';
 import { validateFileFormat } from '../validations/validations';
+
 import type { ParamExtractor } from './dynamic-routes/common/route-params-parser';
 import type { Dirent } from 'node:fs';
 
@@ -53,11 +54,11 @@ export class FileRouteResolver {
   async getHandlers(
     directory = this.baseDir
   ): Promise<[MiddlewareHandler[], RouteHandler[]]> {
-    const [mg, rh] = await this.scanDirectory(directory);
+    const [middlewares, routes] = await this.scanDirectory(directory);
 
     return [
-      mg.sort((left, right) => left.nestingLevel - right.nestingLevel),
-      rh.sort(this.compareByNestingLevelAndType)
+      middlewares.sort((left, right) => left.nestingLevel - right.nestingLevel),
+      routes.sort(this.compareByNestingLevelAndType)
     ];
   }
 
@@ -70,42 +71,63 @@ export class FileRouteResolver {
     const routeHandlers: RouteHandler[] = [];
     const middlewareHandlers: MiddlewareHandler[] = [];
 
-    const processEntry = async (entry: Dirent) => {
-      const fullPath = path.join(directory, entry.name);
-      const routePath = `${parentRoute}/${entry.name}`;
-
-      if (entry.isDirectory()) {
-        const [childMiddlewareHandlers, childHandlers] =
-          await this.scanDirectory(fullPath, routePath, nestingLevel + 1);
-        routeHandlers.push(...childHandlers);
-        middlewareHandlers.push(...childMiddlewareHandlers);
-      } else if (entry.isFile() && this.isValidFile(entry.name)) {
-        if (FileRouteResolver.middlewareFilePattern.test(entry.name)) {
-          const middlewareHandler = await this.processMiddlewareEntry(
-            fullPath,
-            routePath,
-            nestingLevel
-          );
-
-          middlewareHandlers.push(middlewareHandler);
-        } else {
-          const routeHandler = await this.processFileEntry(
-            fullPath,
-            entry,
-            routePath,
-            nestingLevel
-          );
-
-          routeHandlers.push(routeHandler);
-        }
-      }
-    };
-
     for (const entry of entries) {
-      await processEntry(entry);
+      const [middlewares, routes] = await this.processEntry(
+        directory,
+        parentRoute,
+        nestingLevel,
+        entry
+      );
+
+      routeHandlers.push(...routes);
+      middlewareHandlers.push(...middlewares);
     }
 
     return [middlewareHandlers, routeHandlers];
+  }
+
+  private async processEntry(
+    directory: string,
+    parentRoute: string,
+    nestingLevel: number,
+    entry: Dirent
+  ) {
+    const routeHandlers: RouteHandler[] = [];
+    const middlewareHandlers: MiddlewareHandler[] = [];
+
+    const fullPath = path.join(directory, entry.name);
+    const routePath = `${parentRoute}/${entry.name}`;
+
+    if (entry.isDirectory()) {
+      const [childMiddlewareHandlers, childHandlers] = await this.scanDirectory(
+        fullPath,
+        routePath,
+        nestingLevel + 1
+      );
+      routeHandlers.push(...childHandlers);
+      middlewareHandlers.push(...childMiddlewareHandlers);
+    } else if (entry.isFile() && this.isValidFile(entry.name)) {
+      if (FileRouteResolver.middlewareFilePattern.test(entry.name)) {
+        const middlewareHandler = await this.processMiddlewareEntry(
+          fullPath,
+          routePath,
+          nestingLevel
+        );
+
+        middlewareHandlers.push(middlewareHandler);
+      } else {
+        const routeHandler = await this.processFileEntry(
+          fullPath,
+          entry,
+          routePath,
+          nestingLevel
+        );
+
+        routeHandlers.push(routeHandler);
+      }
+    }
+
+    return [middlewareHandlers, routeHandlers] as const;
   }
 
   private isValidFile(name: string): boolean {
