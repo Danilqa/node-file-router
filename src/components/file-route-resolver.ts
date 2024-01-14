@@ -81,7 +81,7 @@ export class FileRouteResolver {
         middlewareHandlers.push(...childMiddlewareHandlers);
       } else if (entry.isFile() && this.isValidFile(entry.name)) {
         if (FileRouteResolver.middlewareFilePattern.test(entry.name)) {
-          const middlewareHandler = await this.processMiddlwewareEntry(
+          const middlewareHandler = await this.processMiddlewareEntry(
             fullPath,
             routePath,
             nestingLevel
@@ -133,7 +133,7 @@ export class FileRouteResolver {
     return isDynamic ? 1 : -1;
   }
 
-  private async processMiddlwewareEntry(
+  private async processMiddlewareEntry(
     fullPath: string,
     filePath: string,
     nestingLevel: number

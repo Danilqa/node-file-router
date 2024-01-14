@@ -18,6 +18,10 @@ interface Options {
   clearImportCache?: boolean;
 }
 
+export type FileRouterRequestHandler = <R>(
+  ...args: unknown[]
+) => Promise<void | R | undefined>;
+
 export async function initFileRouter({
   baseDir = 'api',
   ignoreFilesRegex,
@@ -39,47 +43,60 @@ export async function initFileRouter({
   });
 
   const [middlewares, routeHandlers] = await fileRouteResolver.getHandlers();
-
   const notFoundHandler =
     (await resolveNotFoundHandler(normalizedBaseDir)) || defaultNotFoundHandler;
 
-  return function requestHandler(...args: unknown[]) {
-    const pathname = getPathname(...args);
-
-    const method = getMethod && getMethod(...args);
-    const matchedMiddlewares = middlewares
+  function extractMiddlewares(pathname: string) {
+    return middlewares
       .filter(({ regexp }) => regexp.test(`${pathname}/`))
       .flatMap(({ handler }) => (Array.isArray(handler) ? handler : [handler]));
+  }
 
-    function runHandler() {
-      const matchedRoute = routeHandlers.find(
-        ({ regex, method: routeMethod }) =>
-          regex.test(pathname) && (!routeMethod || method === routeMethod)
-      );
+  function runHandler<R>(
+    pathname: string,
+    method: string | undefined,
+    args: unknown[]
+  ) {
+    const matchedRoute = routeHandlers.find(
+      ({ regex, method: routeMethod }) =>
+        regex.test(pathname) && (!routeMethod || method === routeMethod)
+    );
 
-      if (!matchedRoute) {
-        return notFoundHandler(...args);
-      }
-
-      const { handler } = matchedRoute;
-      const routeParams = matchedRoute.getRouteParams(pathname);
-      if (isRecordWith<RequestHandler>(handler) && method && handler[method]) {
-        return handler[method](...args, routeParams);
-      }
-
-      if (isFunction(handler)) {
-        return handler(...args, routeParams);
-      }
-
-      if (Array.isArray(handler)) {
-        const routeHandler = handler.at(-1);
-        const routeMiddlewares = handler.slice(0, -1);
-        return executeWithMiddlewares(routeMiddlewares, routeHandler, ...args);
-      }
-
-      return notFoundHandler(...args, routeParams);
+    if (!matchedRoute) {
+      return notFoundHandler(...args);
     }
 
-    return executeWithMiddlewares(matchedMiddlewares, runHandler, ...args);
+    const { handler } = matchedRoute;
+    const routeParams = matchedRoute.getRouteParams(pathname);
+
+    if (isRecordWith<RequestHandler>(handler) && method && handler[method]) {
+      return handler[method](...args, routeParams);
+    }
+
+    if (isFunction(handler)) {
+      return handler(...args, routeParams);
+    }
+
+    if (Array.isArray(handler)) {
+      const [routeMiddlewares, routeHandler] = [
+        handler.slice(0, -1),
+        handler.at(-1)
+      ];
+      return executeWithMiddlewares<R>(routeMiddlewares, routeHandler, args);
+    }
+
+    return notFoundHandler(...args, routeParams);
+  }
+
+  return function requestHandler<R>(...args: unknown[]) {
+    const pathname = getPathname(...args);
+    const method = getMethod ? getMethod(...args) : undefined;
+    const matchedMiddlewares = extractMiddlewares(pathname);
+
+    return executeWithMiddlewares<R>(
+      matchedMiddlewares,
+      () => runHandler<R>(pathname, method, args),
+      args
+    );
   };
 }

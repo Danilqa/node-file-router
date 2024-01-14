@@ -5,7 +5,9 @@ import {
 
 export default [
   createTestMiddlewareRequestHandler('a'),
-  createTestMiddlewareRequestHandler('b-interruption', true),
+  createTestMiddlewareRequestHandler('b-interruption', {
+    hasInterruption: true
+  }),
   createTestMiddlewareRequestHandler('c'),
   createTestRequestHandler(__filename, 'route-with-middlewares')
 ];

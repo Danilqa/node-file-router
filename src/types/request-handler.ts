@@ -1,2 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type RequestHandler = (...args: any[]) => Promise<void> | void;
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export type RequestHandler = <T = unknown>(
+  ...args: any[]
+) => Promise<T> | T | void;

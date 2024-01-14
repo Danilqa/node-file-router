@@ -6,7 +6,7 @@ import {
 } from './test-utils';
 import { initFileRouter } from '../src/file-router';
 import { describe, expect, it, beforeAll, vi, afterEach } from 'vitest';
-import type { RequestHandler } from '../src/types/request-handler';
+import type { FileRouterRequestHandler } from '../src/file-router';
 
 const currentCwd = process.cwd();
 vi.mock('process', () => ({
@@ -44,8 +44,8 @@ describe('RequestHandler', () => {
   });
 
   describe('#BasicCases', () => {
-    let basicCasesRequestHandler: RequestHandler;
-    let notFoundCasesRequestHandler: RequestHandler;
+    let basicCasesRequestHandler: FileRouterRequestHandler;
+    let notFoundCasesRequestHandler: FileRouterRequestHandler;
 
     beforeAll(async () => {
       basicCasesRequestHandler = await initFileRouter({
@@ -169,7 +169,7 @@ describe('RequestHandler', () => {
   });
 
   describe('#MethodWithFiles', () => {
-    let requestHandler: RequestHandler;
+    let requestHandler: FileRouterRequestHandler;
 
     beforeAll(async () => {
       requestHandler = await initFileRouter({
@@ -246,7 +246,7 @@ describe('RequestHandler', () => {
   });
 
   describe('#DynamicCases', () => {
-    let dynamicSegmentsHandler: RequestHandler;
+    let dynamicSegmentsHandler: FileRouterRequestHandler;
 
     beforeAll(async () => {
       dynamicSegmentsHandler = await initFileRouter({
@@ -410,7 +410,7 @@ describe('RequestHandler', () => {
   });
 
   describe('#Middlewares', () => {
-    let middlewaresRequestHandler: RequestHandler;
+    let middlewaresRequestHandler: FileRouterRequestHandler;
 
     beforeAll(async () => {
       middlewaresRequestHandler = await initFileRouter({
@@ -532,6 +532,33 @@ describe('RequestHandler', () => {
 
       expect(result).toEqual('before:interrupted');
       expect(marks).toEqual(['before:a', 'before:b-interruption', 'after:a']);
+    });
+
+    it('should catch and handle error of the file route', async () => {
+      const requestHandler = await initFileRouter({
+        baseDir: 'api-middlewares/error-handler/in-file-route'
+      });
+
+      const run = createTestMiddlewareRequestRunner(requestHandler);
+      const { marks } = await run('/');
+
+      expect(marks).toEqual(['before:root', 'list', 'handled-error:root']);
+    });
+
+    it('should catch and handle error of middlewares file', async () => {
+      const requestHandler = await initFileRouter({
+        baseDir: 'api-middlewares/error-handler/in-middleware'
+      });
+
+      const run = createTestMiddlewareRequestRunner(requestHandler);
+      const { marks } = await run('/unreachable-route');
+
+      expect(marks).toEqual([
+        'before:a',
+        'before:b',
+        'before:c',
+        'handled-error:a',
+      ]);
     });
   });
 });
