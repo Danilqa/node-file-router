@@ -105,6 +105,11 @@ const config = {
             label: 'Custom Adapter'
           },
           {
+            to: 'docs/middlewares',
+            position: 'left',
+            label: 'Middlewares'
+          },
+          {
             href: 'https://github.com/danilqa/node-file-router',
             label: 'GitHub',
             position: 'right',
