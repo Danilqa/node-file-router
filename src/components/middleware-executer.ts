@@ -1,4 +1,4 @@
-import type { RequestHandler } from '../types/request-handler';
+import type { RequestHandler } from '../types/request-handlers';
 
 export async function executeWithMiddlewares<R>(
   middlewares: RequestHandler[],

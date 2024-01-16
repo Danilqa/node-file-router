@@ -3,6 +3,8 @@ sidebar_position: 5
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Middlewares
 
@@ -17,6 +19,8 @@ to the entire application, to specific routes, or to a scope of routes within a 
 />
 
 ## Usage
+
+For more examples, see the [examples](https://github.com/Danilqa/node-file-router/tree/main/examples/typescript) folder.
 
 ### File Location and Scopes
 
@@ -50,6 +54,10 @@ Depending on the platform, you can utilize `req` and `res` objects, just the `re
 you need.
 
 Here's an example of a middleware implementation in a Node.js/Express.js API:
+
+<Tabs>
+<TabItem value="js" label="JavaScript" default>
+
 ```js
 export default function useMyMiddleware(req, res, next) {
   // Code before
@@ -61,6 +69,31 @@ export default function useMyMiddleware(req, res, next) {
   // Code after
 }
 ```
+
+</TabItem>
+<TabItem value="ts" label="TypeScript">
+
+```ts
+import { IncomingMessage, ServerResponse } from 'node:http';
+import { NextFunction } from 'node-file-router';
+
+export default function useMyMiddleware(
+  req: IncomingMessage,
+  res: ServerResponse,
+  next: NextFunction
+) {
+  // Code before
+  // ...
+
+  await next(); // <-- The router's code or next middleware (on nested levels)
+
+  // ...
+  // Code after
+}
+```
+
+</TabItem>
+</Tabs>
 
 ### List of Middlewares
 
@@ -109,22 +142,29 @@ in how to handle such errors inside other middlewares, see the [Error Handling](
 This is an example code of a middleware that checks if the user is authenticated. All middlewares after this one
 including the matched request handler, will not be executed.
 
-Here's an example of an authentication middleware in a Bun.js API, demonstrating how to interrupt
+Here's an example of an authentication middleware, demonstrating how to interrupt
 the middleware chain:
 
+<Tabs>
+<TabItem value="pure-node" label="Pure Node.js" default>
+
 ```js
-export async function useAuth(req, next) {
-  const auth = req.headers.get('Authorization');
+export async function useAuth(req, res, next) {
+  const auth = req.headers.authorization;
   // Some logic to check if the user is authenticated
   if (!auth) {
-    return new Response('Unauthorized', { status: 401 });
+    return res
+      .writeHead(401, { 'Content-Type': 'text/html' })
+      .end('Not Authorized');
   }
 
   await next();
 }
 ```
 
-Using with the Node.js HTTP module or Express.js:
+</TabItem>
+<TabItem value="express.js" label="Express.js">
+
 ```js
 export async function useAuth(req, res, next) {
   const auth = req.headers.authorization;
@@ -136,6 +176,24 @@ export async function useAuth(req, res, next) {
   await next();
 }
 ```
+
+</TabItem>
+<TabItem value="Bun" label="Bun">
+
+```js
+export async function useAuth(req, next) {
+  const auth = req.headers.get('Authorization');
+  // Some logic to check if the user is authenticated
+  if (!auth) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  await next();
+}
+  ```
+
+</TabItem>
+</Tabs>
 
 The diagram illustrating the described process:
 <img
@@ -152,6 +210,24 @@ or the request handler itself might accidentally encounter an error. To manage t
 in a try/catch block within the middleware. Place this logic early in the middleware chain to ensure it captures
 errors from all subsequent middlewares and request handlers.
 
+<Tabs>
+<TabItem value="pure-node" label="Pure Node.js" default>
+
+```js
+export async function useErrorHandler(req, res, next) {
+  try {
+    await next();
+  } catch (error) {
+    return res
+      .writeHead(500, { 'Content-Type': 'text/html' })
+      .end(error.message);
+  }
+}
+```
+
+</TabItem>
+<TabItem value="express.js" label="Express.js">
+
 ```js
 export async function useErrorHandler(req, res, next) {
   try {
@@ -161,3 +237,19 @@ export async function useErrorHandler(req, res, next) {
   }
 }
 ```
+
+</TabItem>
+<TabItem value="Bun" label="Bun">
+
+```js
+export async function useErrorHandler(req, next) {
+  try {
+    await next();
+  } catch (error) {
+    return new Response(error.message, { status: 500 });
+  }
+}
+```
+
+</TabItem>
+</Tabs>

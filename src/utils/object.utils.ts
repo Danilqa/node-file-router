@@ -1,4 +1,4 @@
-import type { RequestHandler } from '../types/request-handler';
+import type { RequestHandler } from '../types/request-handlers';
 
 export function mapKeys<NK extends string, V>(
   replacer: (key: string) => NK

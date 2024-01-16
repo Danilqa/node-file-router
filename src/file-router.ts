@@ -9,7 +9,7 @@ import { validateBaseDirExistence } from './validations/validations';
 
 import { executeWithMiddlewares } from './components/middleware-executer';
 import type { Adapter } from './types/adapter';
-import type { RequestHandler } from './types/request-handler';
+import type { RequestHandler } from './types/request-handlers';
 
 interface Options {
   baseDir?: string;
@@ -17,10 +17,6 @@ interface Options {
   adapter?: Adapter;
   clearImportCache?: boolean;
 }
-
-export type FileRouterRequestHandler = <R>(
-  ...args: unknown[]
-) => Promise<void | R | undefined>;
 
 export async function initFileRouter({
   baseDir = 'api',
