@@ -557,7 +557,7 @@ describe('RequestHandler', () => {
         'before:a',
         'before:b',
         'before:c',
-        'handled-error:a',
+        'handled-error:a'
       ]);
     });
   });
