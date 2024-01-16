@@ -102,12 +102,12 @@ in the order they are listed.
 
 ```js
 // file: api/middlewares.js
-import { useLogger, useSentry, useAudit } from '../middlewares';
+import { useLogger, useAuthGuard, useErrorHandler } from '../middlewares';
 
 export default [
+  useErrorHandler,
   useLogger,
-  useSentry,
-  useAudit
+  useAuthGuard
 ];
 ```
 
