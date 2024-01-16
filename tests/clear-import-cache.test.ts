@@ -10,6 +10,9 @@ describe('ClearImportCache', () => {
   const testModulePath = `${__dirname}/api-clear-import-cache/fluid-route.ts`;
   const testModule = { id: '123' } as NodeModule;
 
+  const testMiddlewareModulePath = `${__dirname}/api-clear-import-cache/middleware.ts`;
+  const testMiddlewareModule = { id: '456' } as NodeModule;
+
   beforeEach(() => {
     vi.resetModules();
   });
@@ -22,18 +25,23 @@ describe('ClearImportCache', () => {
     beforeEach(() => {
       mocks.isCommonJs.mockReturnValue(true);
       require.cache[testModulePath] = testModule;
+      require.cache[testMiddlewareModulePath] = testMiddlewareModule;
     });
 
     it('should not remove module from cache by default', async () => {
       await initFileRouter({ baseDir });
 
       expect(require.cache[testModulePath]).toBe(testModule);
+      expect(require.cache[testMiddlewareModulePath]).toBe(
+        testMiddlewareModule
+      );
     });
 
     it('should remove cached module from cache when option is set', async () => {
       await initFileRouter({ baseDir, clearImportCache: true });
 
       expect(require.cache[testModulePath]).toBeUndefined();
+      expect(require.cache[testMiddlewareModulePath]).toBeUndefined();
     });
   });
 

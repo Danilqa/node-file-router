@@ -25,6 +25,7 @@ A powerful file-based routing for Node.js.
 ```
 api/
 ├── profile/
+│   ├── middlware.ts - middleware for profile
 │   └── orders.[post].ts - methods in any filenames
 ├── catalog/
 │   └── [[...tags]].ts - several segments
@@ -33,6 +34,7 @@ api/
 │       └── products/
 │           └── [pid].ts - slugs in files
 ├── index.ts - root
+├── middleware.ts - middleware for all routes
 └── _404.ts - not found response    
 ```
 
@@ -53,6 +55,15 @@ export default {
 Single response function:
 ```js
 export default function (req, res, routeParams) {}
+```
+
+Middlewares:
+```js
+export default [
+  useErrorHandler,
+  useLogger,
+  useAuthGuard,
+];
 ```
 
 # Documentation
@@ -79,6 +90,9 @@ Route matching:
 
 Support other protocols and frameworks:
 * [Custom adapter](https://danilqa.github.io/node-file-router/docs/custom-adapter)
+
+Middlewares:
+* [Usage and examples](https://danilqa.github.io/node-file-router/docs/middlewares)
 
 # Examples
 

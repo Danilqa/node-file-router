@@ -21,7 +21,7 @@ const useFileRouter = await initFileRouter();
 // 3. Start serving server and attach request handler to fetch
 const server = Bun.serve({
   port: 3123,
-  fetch: useFileRouter
+  fetch: (req) => useFileRouter(req)
 });
 
 console.log(`Listening on http://localhost:${server.port}`);

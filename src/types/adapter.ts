@@ -1,4 +1,4 @@
-import type { RequestHandler } from './request-handler';
+import type { RequestHandler } from './request-handlers';
 
 export interface Adapter {
   getPathname(...args: unknown[]): string;

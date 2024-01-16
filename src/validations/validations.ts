@@ -18,9 +18,9 @@ export function validateFileFormat<M extends Dictionary<unknown>>(
   }
 
   const exportType = getType(module.default);
-  if (!['object', 'function'].includes(exportType)) {
+  if (!['object', 'function', 'array'].includes(exportType)) {
     throw new FileRouterError(
-      `The file '${relativeFilePath}' is currently exporting ${exportType}. It should only export either a function or an object.`
+      `The file '${relativeFilePath}' is currently exporting ${exportType}. It should only export either a function, an array or an object.`
     );
   }
 

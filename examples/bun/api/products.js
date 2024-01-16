@@ -1,3 +1,3 @@
-export default function handleProducts(req) {
+export default function Products(req) {
   return new Response('products');
 }

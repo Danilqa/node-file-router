@@ -4,7 +4,7 @@ import { decodeSlugParam } from '../slug-param/slug-param';
 import type { Dictionary } from '../../types/dictionary';
 import type { ParamExtractor } from '../dynamic-routes/common/route-params-parser';
 
-import type { RequestHandler } from '../../types/request-handler';
+import type { RequestHandler } from '../../types/request-handlers';
 
 interface Props {
   method?: string;

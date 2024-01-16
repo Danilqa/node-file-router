@@ -1,0 +1,255 @@
+---
+sidebar_position: 5
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Middlewares
+
+Middlewares are functions that execute before the main API handler. They are used for performing tasks
+such as authentication verification, request logging, error handling, and more. You can apply middleware
+to the entire application, to specific routes, or to a scope of routes within a folder.
+
+<img
+  width={500}
+  alt='Middlewares Diagram Overview'
+  src={useBaseUrl('/img/diagrams/middlewares-diagram.svg')}
+/>
+
+## Usage
+
+For more examples, see the [examples](https://github.com/Danilqa/node-file-router/tree/main/examples/typescript) folder.
+
+### File Location and Scopes
+
+To implement middleware, create a file named `middleware.js` (or .ts, .cjs, etc.) and place it in the api folder.
+This file will be executed for every request.
+
+```
+├── api/
+│  └── middleware.js <-
+├── server.js
+└── package.json
+```
+
+To limit the scope, place the middleware file inside a specific folder. For example:
+```
+├── api/
+│  ├── users/
+│  │  ├── ...
+│  │  └── middleware.js <-
+│  └── index.js
+...
+```
+
+In this case, the middleware will only execute for endpoints under `/users/*`.
+
+### Middleware Declaration
+
+Each middleware receives all the arguments passed from the initial request handler, with the last argument always
+being the next function. This is provided automatically, giving you control over the incoming arguments.
+Depending on the platform, you can utilize `req` and `res` objects, just the `req` object, or any other arguments
+you need.
+
+Here's an example of a middleware implementation in a Node.js/Express.js API:
+
+<Tabs>
+<TabItem value="js" label="JavaScript" default>
+
+```js
+export default function useMyMiddleware(req, res, next) {
+  // Code before
+  // ...
+
+  await next(); // <-- The router's code or next middleware (on nested levels)
+
+  // ...
+  // Code after
+}
+```
+
+</TabItem>
+<TabItem value="ts" label="TypeScript">
+
+```ts
+import { IncomingMessage, ServerResponse } from 'node:http';
+import { NextFunction } from 'node-file-router';
+
+export default function useMyMiddleware(
+  req: IncomingMessage,
+  res: ServerResponse,
+  next: NextFunction
+) {
+  // Code before
+  // ...
+
+  await next(); // <-- The router's code or next middleware (on nested levels)
+
+  // ...
+  // Code after
+}
+```
+
+</TabItem>
+</Tabs>
+
+### List of Middlewares
+
+To compose multiple middlewares, arrange them in an array and export it as the default. They will execute sequentially
+in the order they are listed.
+
+```js
+// file: api/middlewares.js
+import { useLogger, useSentry, useAudit } from '../middlewares';
+
+export default [
+  useLogger,
+  useSentry,
+  useAudit
+];
+```
+
+## Usage in File Routes
+
+To use middlewares in file routes, just return an array with middlewares before the request handler.
+For instance:
+
+```js
+// file: api/users/[id].[post].js
+import { PersonSchema } from '../../schemas';
+
+export default [
+  useSchemaValidation(PersonSchema),
+  createUser
+];
+
+function createUser(req, res) {
+  // ...
+}
+```
+
+In this example setup, `useSchemaValidation(PersonSchema)` serves as a middleware that validates the request
+against `PersonSchema`.Once the request passes through this middleware, it then proceeds to the createUser function,
+which handles the actual request logic.
+
+## Interrupting the Chain
+
+To interrupt the chain of middlewares, call a return before `await next()` or throw an error. If you're interested
+in how to handle such errors inside other middlewares, see the [Error Handling](#error-handling) section.
+
+This is an example code of a middleware that checks if the user is authenticated. All middlewares after this one
+including the matched request handler, will not be executed.
+
+Here's an example of an authentication middleware, demonstrating how to interrupt
+the middleware chain:
+
+<Tabs>
+<TabItem value="pure-node" label="Pure Node.js" default>
+
+```js
+export async function useAuth(req, res, next) {
+  const auth = req.headers.authorization;
+  // Some logic to check if the user is authenticated
+  if (!auth) {
+    return res
+      .writeHead(401, { 'Content-Type': 'text/html' })
+      .end('Not Authorized');
+  }
+
+  await next();
+}
+```
+
+</TabItem>
+<TabItem value="express.js" label="Express.js">
+
+```js
+export async function useAuth(req, res, next) {
+  const auth = req.headers.authorization;
+  // Some logic to check if the user is authenticated
+  if (!auth) {
+    return res.status(401).send('Unauthorized');
+  }
+
+  await next();
+}
+```
+
+</TabItem>
+<TabItem value="Bun" label="Bun">
+
+```js
+export async function useAuth(req, next) {
+  const auth = req.headers.get('Authorization');
+  // Some logic to check if the user is authenticated
+  if (!auth) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  await next();
+}
+  ```
+
+</TabItem>
+</Tabs>
+
+The diagram illustrating the described process:
+<img
+  width={500}
+  alt='Interruptions Diagram'
+  src={useBaseUrl('/img/diagrams/interruptions-diagram.svg')}
+/>
+
+
+## Error Handling
+
+As mentioned previously, you can interrupt the middleware chain by throwing an error. Occasionally, other middlewares
+or the request handler itself might accidentally encounter an error. To manage these errors, simply wrap `await next()`
+in a try/catch block within the middleware. Place this logic early in the middleware chain to ensure it captures
+errors from all subsequent middlewares and request handlers.
+
+<Tabs>
+<TabItem value="pure-node" label="Pure Node.js" default>
+
+```js
+export async function useErrorHandler(req, res, next) {
+  try {
+    await next();
+  } catch (error) {
+    return res
+      .writeHead(500, { 'Content-Type': 'text/html' })
+      .end(error.message);
+  }
+}
+```
+
+</TabItem>
+<TabItem value="express.js" label="Express.js">
+
+```js
+export async function useErrorHandler(req, res, next) {
+  try {
+    await next();
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Bun" label="Bun">
+
+```js
+export async function useErrorHandler(req, next) {
+  try {
+    await next();
+  } catch (error) {
+    return new Response(error.message, { status: 500 });
+  }
+}
+```
+
+</TabItem>
+</Tabs>

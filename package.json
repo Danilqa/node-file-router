@@ -15,12 +15,12 @@
     "lint": "eslint src",
     "prepare": "husky install"
   },
-  "module": "./esm/file-router.mjs",
-  "main": "../cjs/file-router.js",
-  "types": "./types/file-router.d.ts",
+  "module": "./esm/index.mjs",
+  "main": "../cjs/index.js",
+  "types": "./types/index.d.ts",
   "exports": {
-    "import": "./esm/file-router.mjs",
-    "require": "./cjs/file-router.js"
+    "import": "./esm/index.mjs",
+    "require": "./cjs/index.js"
   },
   "keywords": [
     "nodejs",
