@@ -9,10 +9,10 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://danilqa.github.io',
+  url: process.env.URL || 'https://danilqa.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/node-file-router/',
+  baseUrl: process.env.BASE_URL || '/node-file-router/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
