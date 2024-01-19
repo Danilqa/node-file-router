@@ -1,11 +1,11 @@
 import {
-  createTestMethodsRequestRunner,
   createTestMiddlewareRequestRunner,
   createTestRequestRunner,
   expectAfterInit
 } from './test-utils';
-import { initFileRouter } from '../src/file-router';
+import { initFileRouter } from '../src';
 import { describe, expect, it, beforeAll, vi, afterEach } from 'vitest';
+import type { IncomingMessage } from 'node:http';
 import type { FileRouterRequestHandler } from 'node-file-router';
 
 const currentCwd = process.cwd();
@@ -20,26 +20,54 @@ describe('RequestHandler', () => {
 
   describe('#Initialization', () => {
     it('should init file router with the default params', async () => {
-      expect.assertions(1);
       const requestHandler = await initFileRouter();
 
       const run = createTestRequestRunner(requestHandler);
+      const { filePath } = await run('/');
 
-      run('/', ({ filePath }) => {
-        expect(filePath).toBe('/api/index.ts');
-      });
+      expect(filePath).toBe('/api/index.ts');
     });
 
     it('should init file router with an absolute path', async () => {
-      expect.assertions(1);
       const baseDir = `${process.cwd()}/tests/api`;
-
       const requestHandler = await initFileRouter({ baseDir });
       const run = createTestRequestRunner(requestHandler);
 
-      run('/', ({ filePath }) => {
-        expect(filePath).toBe('/api/index.ts');
+      const { filePath } = await run('/');
+
+      expect(filePath).toBe('/api/index.ts');
+    });
+  });
+
+  describe('#Adapter', () => {
+    const adapter = {
+      getPathname: (req: IncomingMessage) => req.url || '',
+      defaultNotFoundHandler: () => {},
+      getMethod: undefined
+    };
+
+    it('should handle request even getMethod is not defined', async () => {
+      const requestHandler = await initFileRouter({
+        baseDir: 'api-for-adapter',
+        adapter
       });
+      const run = createTestRequestRunner(requestHandler);
+
+      const { filePath } = await run('/exact');
+
+      expect(filePath).toBe('/api-for-adapter/exact.ts');
+    });
+
+    it('should override the default method', async () => {
+      const requestHandler = await initFileRouter({
+        baseDir: 'api-for-adapter',
+        adapter: { ...adapter, getMethod: () => 'custom' }
+      });
+      const run = createTestRequestRunner(requestHandler);
+
+      const { filePath } = await run('/endpoint');
+
+      expect(filePath).toBe('/api-for-adapter/endpoint.[custom].ts');
     });
   });
 
@@ -58,7 +86,7 @@ describe('RequestHandler', () => {
       });
     });
 
-    it('should invoke handler from mapped file', () => {
+    it('should invoke handler from mapped file', async () => {
       const mappingTestCases = [
         { fromUrl: '', toFile: '/api-basics/index.ts' },
         { fromUrl: '/example', toFile: '/api-basics/example.ts' },
@@ -73,98 +101,97 @@ describe('RequestHandler', () => {
           toFile: '/api-basics/one/[id]/two/three/[id].ts'
         }
       ];
-      expect.assertions(mappingTestCases.length * 2);
       const run = createTestRequestRunner(basicCasesRequestHandler);
 
-      mappingTestCases.forEach(({ fromUrl, toFile }) => {
-        run(fromUrl, ({ filePath }) => expect(filePath).toBe(toFile));
-        run(`${fromUrl}/`, ({ filePath }) => expect(filePath).toBe(toFile));
-      });
-    });
+      await Promise.all(
+        mappingTestCases.map(async ({ fromUrl, toFile }) => {
+          await run(fromUrl).then(({ filePath }) =>
+            expect(filePath).toBe(toFile)
+          );
 
-    it('should parse a relative reference url', () => {
-      expect.assertions(1);
-      const run = createTestRequestRunner(basicCasesRequestHandler);
-
-      run('//site.com/example', ({ filePath }) =>
-        expect(filePath).toBe('/api-basics/example.ts')
-      );
-    });
-
-    it('should parse http reference url', () => {
-      expect.assertions(1);
-      const run = createTestRequestRunner(basicCasesRequestHandler);
-
-      run('http://site.com/example', ({ filePath }) =>
-        expect(filePath).toBe('/api-basics/example.ts')
-      );
-    });
-
-    it('should parse https reference url', () => {
-      expect.assertions(1);
-      const run = createTestRequestRunner(basicCasesRequestHandler);
-
-      run('https://site.com/example', ({ filePath }) =>
-        expect(filePath).toBe('/api-basics/example.ts')
-      );
-    });
-
-    it('should skip ignoring files', () => {
-      expect.assertions(2);
-      const run = createTestRequestRunner(basicCasesRequestHandler);
-
-      run('/one/123/index.some-spec', (res) =>
-        expect(res).toBe('404 Not Found')
-      );
-      run('/one/123/_private-file', (res) => expect(res).toBe('404 Not Found'));
-    });
-
-    it('should take default 404 fallback when no mapping is found', () => {
-      const run = createTestRequestRunner(basicCasesRequestHandler);
-      run('/one/123/404', (res) => expect(res).toBe('404 Not Found'));
-    });
-
-    it('should take custom 404 fallback from _404.js file when no mapping is found', () => {
-      const run = createTestRequestRunner(notFoundCasesRequestHandler);
-      run('/one/123/404', ({ filePath }) =>
-        expect(filePath).toBe('/api-for-not-found/_404.ts')
-      );
-    });
-
-    it('should take params from [slug] handlers', () => {
-      const run = createTestRequestRunner(basicCasesRequestHandler);
-      run('/one/123', ({ routeParams }) =>
-        expect(routeParams).toEqual({ id: '123' })
-      );
-      run('/one/1/two/three/3', ({ routeParams }) =>
-        expect(routeParams).toEqual({ id: '3' })
-      );
-      run('/one/1/two/2', ({ routeParams }) =>
-        expect(routeParams).toEqual({
-          id: '1',
-          subId: '2'
+          await run(`${fromUrl}/`).then(({ filePath }) =>
+            expect(filePath).toBe(toFile)
+          );
         })
       );
     });
 
-    it('should invoke http-method based handlers', () => {
-      const run = createTestMethodsRequestRunner(basicCasesRequestHandler);
-      run('/one/1/two/multi-methods/3', 'post', ({ req, routeParams }) => {
-        expect(routeParams).toEqual({ id: '3' });
-        expect(req.method).toBe('post');
-      });
-
-      run('/one/1/two/multi-methods/3', 'get', ({ req, routeParams }) => {
-        expect(routeParams).toEqual({ id: '3' });
-        expect(req.method).toBe('get');
-      });
+    it('should parse a relative reference url', async () => {
+      const run = createTestRequestRunner(basicCasesRequestHandler);
+      const { filePath } = await run('//site.com/example');
+      expect(filePath).toBe('/api-basics/example.ts');
     });
 
-    it('should returns 404 not found if method does not exists', () => {
-      const run = createTestMethodsRequestRunner(basicCasesRequestHandler);
-      run('/one/1/two/multi-methods/3', 'put', (res) =>
+    it('should parse http reference url', async () => {
+      const run = createTestRequestRunner(basicCasesRequestHandler);
+      const { filePath } = await run('http://site.com/example');
+      expect(filePath).toBe('/api-basics/example.ts');
+    });
+
+    it('should parse https reference url', async () => {
+      const run = createTestRequestRunner(basicCasesRequestHandler);
+      const { filePath } = await run('https://site.com/example');
+      expect(filePath).toBe('/api-basics/example.ts');
+    });
+
+    it('should skip ignoring files', async () => {
+      const run = createTestRequestRunner(basicCasesRequestHandler);
+
+      await run<string>('/one/123/index.some-spec').then((res) =>
         expect(res).toBe('404 Not Found')
       );
+      await run<string>('/one/123/_private-file').then((res) =>
+        expect(res).toBe('404 Not Found')
+      );
+    });
+
+    it('should take default 404 fallback when no mapping is found', async () => {
+      const run = createTestRequestRunner(basicCasesRequestHandler);
+      const res = await run<string>('/one/123/404');
+      expect(res).toBe('404 Not Found');
+    });
+
+    it('should take custom 404 fallback from _404.js file when no mapping is found', async () => {
+      const run = createTestRequestRunner(notFoundCasesRequestHandler);
+      const { filePath } = await run('/one/123/404');
+      expect(filePath).toBe('/api-for-not-found/_404.ts');
+    });
+
+    it('should take params from [slug] handlers', async () => {
+      const run = createTestRequestRunner(basicCasesRequestHandler);
+
+      await run('/one/123').then(({ routeParams }) =>
+        expect(routeParams).toEqual({ id: '123' })
+      );
+      await run('/one/1/two/three/3').then(({ routeParams }) =>
+        expect(routeParams).toEqual({ id: '3' })
+      );
+      await run('/one/1/two/2').then(({ routeParams }) =>
+        expect(routeParams).toEqual({ id: '1', subId: '2' })
+      );
+    });
+
+    it('should invoke http-method based handlers', async () => {
+      const run = createTestRequestRunner(basicCasesRequestHandler);
+
+      await run('/one/1/two/multi-methods/3', 'post').then(
+        ({ req, routeParams }) => {
+          expect(routeParams).toEqual({ id: '3' });
+          expect(req?.method).toBe('post');
+        }
+      );
+      await run('/one/1/two/multi-methods/3', 'get').then(
+        ({ req, routeParams }) => {
+          expect(routeParams).toEqual({ id: '3' });
+          expect(req?.method).toBe('get');
+        }
+      );
+    });
+
+    it('should returns 404 not found if method does not exists', async () => {
+      const run = createTestRequestRunner(basicCasesRequestHandler);
+      const res = await run<string>('/one/1/two/multi-methods/3', 'put');
+      expect(res).toBe('404 Not Found');
     });
   });
 
@@ -177,69 +204,76 @@ describe('RequestHandler', () => {
       });
     });
 
-    it('should correctly map methods from filename for plain routes', () => {
-      const run = createTestMethodsRequestRunner(requestHandler);
-      run('/plain/some-route', 'get', ({ req }) =>
-        expect(req.method).toBe('get')
+    it('should correctly map methods from filename for plain routes', async () => {
+      const run = createTestRequestRunner(requestHandler);
+
+      await run('/plain/some-route', 'get').then(({ req }) =>
+        expect(req?.method).toBe('get')
       );
-      run('/plain/some-route', 'post', ({ req }) =>
-        expect(req.method).toBe('post')
+      await run('/plain/some-route', 'post').then(({ req }) =>
+        expect(req?.method).toBe('post')
       );
-      run('/plain/some-route', 'put', (res) =>
+      await run('/plain/some-route', 'put').then((res) =>
         expect(res).toBe('404 Not Found')
       );
     });
 
-    it('should correctly map methods from filename for exact slug', () => {
-      const run = createTestMethodsRequestRunner(requestHandler);
-      run('/dynamic/exact/one', 'get', ({ req, routeParams }) => {
+    it('should correctly map methods from filename for exact slug', async () => {
+      const run = createTestRequestRunner(requestHandler);
+
+      await run('/dynamic/exact/one', 'get').then(({ req, routeParams }) => {
         expect(req.method).toBe('get');
-        expect(routeParams.slug).toBe('one');
+        expect(routeParams?.slug).toBe('one');
       });
-      run('/dynamic/exact/one', 'put', (res) =>
+      await run<string>('/dynamic/exact/one', 'put').then((res) =>
         expect(res).toBe('404 Not Found')
       );
     });
 
-    it('should correctly map methods from filename for catch all slugs', () => {
-      const run = createTestMethodsRequestRunner(requestHandler);
-      run('/dynamic/catch-all/a/b/c', 'get', ({ req, routeParams }) => {
-        expect(req.method).toBe('get');
-        expect(routeParams.params).toEqual(['a', 'b', 'c']);
-      });
-      run('/dynamic/catch-all/a/b/c', 'put', (res) =>
-        expect(res).toBe('404 Not Found')
-      );
-    });
+    it('should correctly map methods from filename for catch all slugs', async () => {
+      const run = createTestRequestRunner(requestHandler);
 
-    it('should correctly map methods from filename for optional catch all slugs', () => {
-      const run = createTestMethodsRequestRunner(requestHandler);
-      run(
-        '/dynamic/optional-catch-all/a/b/c',
-        'get',
+      await run('/dynamic/catch-all/a/b/c', 'get').then(
         ({ req, routeParams }) => {
           expect(req.method).toBe('get');
-          expect(routeParams.params).toEqual(['a', 'b', 'c']);
+          expect(routeParams?.params).toEqual(['a', 'b', 'c']);
         }
       );
-      run('/dynamic/optional-catch-all', 'get', ({ req, routeParams }) => {
-        expect(req.method).toBe('get');
-        expect(routeParams.params).toEqual(undefined);
-      });
-      run('/dynamic/optional-catch-all', 'put', (res) => {
+      await run('/dynamic/catch-all/a/b/c', 'put').then((res) =>
+        expect(res).toBe('404 Not Found')
+      );
+    });
+
+    it('should correctly map methods from filename for optional catch all slugs', async () => {
+      const run = createTestRequestRunner(requestHandler);
+
+      await run('/dynamic/optional-catch-all/a/b/c', 'get').then(
+        ({ req, routeParams }) => {
+          expect(req.method).toBe('get');
+          expect(routeParams?.params).toEqual(['a', 'b', 'c']);
+        }
+      );
+      await run('/dynamic/optional-catch-all', 'get').then(
+        ({ req, routeParams }) => {
+          expect(req.method).toBe('get');
+          expect(routeParams?.params).toEqual(undefined);
+        }
+      );
+      await run('/dynamic/optional-catch-all', 'put').then((res) => {
         expect(res).toBe('404 Not Found');
       });
     });
 
-    it('should correctly map methods from filename for index files', () => {
-      const run = createTestMethodsRequestRunner(requestHandler);
-      run('/root', 'get', ({ req }) => {
+    it('should correctly map methods from filename for index files', async () => {
+      const run = createTestRequestRunner(requestHandler);
+
+      await run('/root', 'get').then(({ req }) => {
         expect(req.method).toBe('get');
       });
-      run('/root', 'post', ({ req }) => {
+      await run('/root', 'post').then(({ req }) => {
         expect(req.method).toBe('post');
       });
-      run('/root', 'put', (res) => {
+      await run('/root', 'put').then((res) => {
         expect(res).toBe('404 Not Found');
       });
     });
@@ -254,61 +288,64 @@ describe('RequestHandler', () => {
       });
     });
 
-    it('should get one route param from [...slug]', () => {
+    it('should get one route param from [...slug]', async () => {
       const run = createTestRequestRunner(dynamicSegmentsHandler);
-      run('/catch-all/1', ({ routeParams }) =>
+
+      await run('/catch-all/1').then(({ routeParams }) =>
         expect(routeParams).toEqual({ slug: ['1'] })
       );
-      run('/catch-all/1/', ({ routeParams }) =>
+      await run('/catch-all/1/').then(({ routeParams }) =>
         expect(routeParams).toEqual({ slug: ['1'] })
       );
     });
 
-    it('should get all route params from [...slug]', () => {
+    it('should get all route params from [...slug]', async () => {
       const run = createTestRequestRunner(dynamicSegmentsHandler);
-      run('/catch-all/1/2/3/4', ({ routeParams }) =>
+
+      await run('/catch-all/1/2/3/4').then(({ routeParams }) =>
         expect(routeParams).toEqual({ slug: ['1', '2', '3', '4'] })
       );
-      run('/catch-all/1/2/3/4/', ({ routeParams }) =>
+      await run('/catch-all/1/2/3/4/').then(({ routeParams }) =>
         expect(routeParams).toEqual({ slug: ['1', '2', '3', '4'] })
       );
     });
 
-    it('should take index file when it is defined', () => {
+    it('should take index file when it is defined', async () => {
       const run = createTestRequestRunner(dynamicSegmentsHandler);
-      run('/catch-all', ({ routeParams, filePath }) => {
+
+      await run('/catch-all').then(({ routeParams, filePath }) => {
         expect(filePath).toEqual('/api-dynamic-segments/catch-all/index.ts');
         expect(routeParams).toEqual({ slug: undefined });
       });
-      run('/catch-all/', ({ routeParams, filePath }) => {
+      await run('/catch-all/').then(({ routeParams, filePath }) => {
         expect(filePath).toEqual('/api-dynamic-segments/catch-all/index.ts');
         expect(routeParams).toEqual({ slug: undefined });
       });
     });
 
-    it('should catch index file in [[...slug]]', () => {
+    it('should catch index file in [[...slug]]', async () => {
       const run = createTestRequestRunner(dynamicSegmentsHandler);
 
-      run('/optional-catch-all', ({ routeParams }) =>
+      await run('/optional-catch-all').then(({ routeParams }) =>
         expect(routeParams).toEqual({ slug: undefined })
       );
-      run('/optional-catch-all/', ({ routeParams }) =>
+      await run('/optional-catch-all/').then(({ routeParams }) =>
         expect(routeParams).toEqual({ slug: undefined })
       );
     });
 
-    it('should catch one param in [[...slug]]', () => {
+    it('should catch one param in [[...slug]]', async () => {
       const run = createTestRequestRunner(dynamicSegmentsHandler);
 
-      run('/optional-catch-all/1', ({ routeParams }) =>
+      await run('/optional-catch-all/1').then(({ routeParams }) =>
         expect(routeParams).toEqual({ slug: ['1'] })
       );
-      run('/optional-catch-all/1/', ({ routeParams }) =>
+      await run('/optional-catch-all/1/').then(({ routeParams }) =>
         expect(routeParams).toEqual({ slug: ['1'] })
       );
     });
 
-    it('should catch files near slug [[...slug]] firstly', () => {
+    it('should catch files near slug [[...slug]] firstly', async () => {
       const mappingTestCases = [
         {
           fromUrl: '/optional-catch-all/with-other-files/test',
@@ -323,55 +360,62 @@ describe('RequestHandler', () => {
       ];
       const run = createTestRequestRunner(dynamicSegmentsHandler);
 
-      mappingTestCases.forEach(({ fromUrl, toFile }) => {
-        run(fromUrl, ({ filePath }) => expect(filePath).toBe(toFile));
-        run(`${fromUrl}/`, ({ filePath }) => expect(filePath).toBe(toFile));
-      });
-    });
-
-    it('should catch several params in [[...slug]]', () => {
-      const run = createTestRequestRunner(dynamicSegmentsHandler);
-
-      run('/optional-catch-all/1/2/3', ({ routeParams }) =>
-        expect(routeParams).toEqual({ slug: ['1', '2', '3'] })
-      );
-      run('/optional-catch-all/1/2/3/', ({ routeParams }) =>
-        expect(routeParams).toEqual({ slug: ['1', '2', '3'] })
+      await Promise.all(
+        mappingTestCases.map(async ({ fromUrl, toFile }) => {
+          await run(fromUrl).then(({ filePath }) =>
+            expect(filePath).toBe(toFile)
+          );
+          await run(`${fromUrl}/`).then(({ filePath }) =>
+            expect(filePath).toBe(toFile)
+          );
+        })
       );
     });
 
-    it('should catch all params during combination of dynamic segments', () => {
+    it('should catch several params in [[...slug]]', async () => {
       const run = createTestRequestRunner(dynamicSegmentsHandler);
 
-      run('/combination/1/sub/1/2', ({ routeParams, filePath }) => {
+      await run('/optional-catch-all/1/2/3').then(({ routeParams }) =>
+        expect(routeParams).toEqual({ slug: ['1', '2', '3'] })
+      );
+      await run('/optional-catch-all/1/2/3/').then(({ routeParams }) =>
+        expect(routeParams).toEqual({ slug: ['1', '2', '3'] })
+      );
+    });
+
+    it('should catch all params during combination of dynamic segments', async () => {
+      const run = createTestRequestRunner(dynamicSegmentsHandler);
+
+      await run('/combination/1/sub/1/2').then(({ routeParams, filePath }) => {
         expect(filePath).toEqual(
           '/api-dynamic-segments/combination/[id]/sub/[...ids].ts'
         );
         expect(routeParams).toEqual({ id: '1', ids: ['1', '2'] });
       });
-      run('/combination/1/sub/sub-sub/4/5/6', ({ routeParams, filePath }) => {
-        expect(filePath).toEqual(
-          '/api-dynamic-segments/combination/[id]/sub/sub-sub/[[...ids]].ts'
-        );
-        expect(routeParams).toEqual({ id: '1', ids: ['4', '5', '6'] });
-      });
-    });
-
-    it('should process correctly for catch all segment before other types', () => {
-      const run = createTestRequestRunner(dynamicSegmentsHandler);
-
-      run(
-        '/combination/one/two/three/plain/image.jpg',
+      await run('/combination/1/sub/sub-sub/4/5/6').then(
         ({ routeParams, filePath }) => {
           expect(filePath).toEqual(
-            '/api-dynamic-segments/combination/[...operations]/plain/[slug].ts'
+            '/api-dynamic-segments/combination/[id]/sub/sub-sub/[[...ids]].ts'
           );
-          expect(routeParams).toEqual({
-            operations: ['one', 'two', 'three'],
-            slug: 'image.jpg'
-          });
+          expect(routeParams).toEqual({ id: '1', ids: ['4', '5', '6'] });
         }
       );
+    });
+
+    it('should process correctly for catch all segment before other types', async () => {
+      const run = createTestRequestRunner(dynamicSegmentsHandler);
+
+      const { routeParams, filePath } = await run(
+        '/combination/one/two/three/plain/image.jpg'
+      );
+
+      expect(filePath).toEqual(
+        '/api-dynamic-segments/combination/[...operations]/plain/[slug].ts'
+      );
+      expect(routeParams).toEqual({
+        operations: ['one', 'two', 'three'],
+        slug: 'image.jpg'
+      });
     });
   });
 
@@ -434,10 +478,8 @@ describe('RequestHandler', () => {
 
       const { marks } = await runForMiddleware('/nested/123');
       expect(marks).toEqual(['before:m-root', '[id]', 'after:m-root']);
-
-      runForRoute('/nested/123', ({ routeParams }) =>
-        expect(routeParams).toEqual({ id: '123' })
-      );
+      const { routeParams } = await runForRoute('/nested/123');
+      expect(routeParams).toEqual({ id: '123' });
     });
 
     it('should run the list middleware', async () => {

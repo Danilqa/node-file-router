@@ -1,16 +1,16 @@
-import { initFileRouter } from '../src/file-router';
+import { initFileRouter } from '../src';
 import { expect } from 'vitest';
 
-import type { FileRouterRequestHandler } from '../src/file-router';
+import type { FileRouterRequestHandler } from '../src';
 import type { IncomingMessage } from 'node:http';
 import type { OutgoingMessage } from 'http';
 import type { Dictionary } from '../src/types/dictionary';
 
-type SuccessCallback = (props: {
+interface RequestResult {
   req: IncomingMessage;
   filePath: string;
-  routeParams: Dictionary<string>;
-}) => void;
+  routeParams?: Dictionary<string>;
+}
 
 interface MiddlewareResult {
   req?: IncomingMessage;
@@ -47,24 +47,23 @@ export function createTestRequestHandler(
 export function createTestRequestRunner(
   requestHandler: FileRouterRequestHandler
 ) {
-  return (url: string, onSuccess: SuccessCallback) => {
-    requestHandler(
-      { url, headers: { host: 'site' } },
-      { end: onSuccess, registerCall: () => {} },
-      []
-    );
-  };
-}
-
-export function createTestMethodsRequestRunner(
-  requestHandler: FileRouterRequestHandler
-) {
-  return (url: string, method: string, onSuccess: SuccessCallback) => {
-    requestHandler(
+  return async <R = RequestResult>(url: string, method?: string) => {
+    let result: R | undefined;
+    await requestHandler(
       { url, headers: { host: 'site' }, method },
-      { end: onSuccess },
+      {
+        end: (data: R) => {
+          result = data;
+        },
+        registerCall: () => {}
+      },
       []
     );
+    if (!result) {
+      throw new Error('Request handler did not return a result');
+    }
+
+    return result;
   };
 }
 
