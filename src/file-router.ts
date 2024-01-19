@@ -6,8 +6,8 @@ import { isFunction, isRecordWith } from './utils/object.utils';
 import { resolveNotFoundHandler } from './components/not-found-resolver';
 import { httpAdapter } from './adapters/http-adapter';
 import { validateBaseDirExistence } from './validations/validations';
-
 import { executeWithMiddlewares } from './components/middleware-executer';
+
 import type { Adapter } from './types/adapter';
 import type { RequestHandler } from './types/request-handlers';
 
