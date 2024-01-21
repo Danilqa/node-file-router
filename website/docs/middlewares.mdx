@@ -14,7 +14,8 @@ to the entire application, to specific routes, or to a scope of routes within a 
 
 <img
   width={500}
-  alt='Middlewares Diagram Overview'
+  height={404}
+  alt="Middlewares Diagram Overview"
   src={useBaseUrl('/img/diagrams/middlewares-diagram.svg')}
 />
 
@@ -75,7 +76,7 @@ export default function useMyMiddleware(req, res, next) {
 
 ```ts
 import { IncomingMessage, ServerResponse } from 'node:http';
-import { NextFunction } from 'node-file-router';
+import type { NextFunction } from 'node-file-router';
 
 export default function useMyMiddleware(
   req: IncomingMessage,
@@ -198,7 +199,8 @@ export async function useAuth(req, next) {
 The diagram illustrating the described process:
 <img
   width={500}
-  alt='Interruptions Diagram'
+  height={416}
+  alt="Interruptions Diagram"
   src={useBaseUrl('/img/diagrams/interruptions-diagram.svg')}
 />
 
