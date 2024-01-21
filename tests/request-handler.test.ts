@@ -5,8 +5,9 @@ import {
 } from './test-utils';
 import { initFileRouter } from '../src';
 import { describe, expect, it, beforeAll, vi, afterEach } from 'vitest';
+
 import type { IncomingMessage } from 'node:http';
-import type { FileRouterRequestHandler } from 'node-file-router';
+import type { FileRouterRequestHandler } from '../src';
 
 const currentCwd = process.cwd();
 vi.mock('process', () => ({

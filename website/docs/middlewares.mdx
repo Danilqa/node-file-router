@@ -255,3 +255,40 @@ export async function useErrorHandler(req, next) {
 
 </TabItem>
 </Tabs>
+
+## Shared State (Request Context)
+
+You can establish a shared state between middlewares and request handlers. To achieve this, pass your state object
+(or multiple ones) to the main request handler. For instance:
+
+```js
+// ...
+const server = http.createServer((req, res) => {
+  const ctx = {};
+  useFileRouter(req, res, ctx);
+});
+// ...
+```
+
+This state can then be accessed in any middleware:
+
+```js
+export default async function useMyMiddleware(req, res, ctx, next) {
+  // ...
+  ctx.myState = 'some value';
+  await next();
+  // ...
+}
+```
+
+Similarly, it can be accessed in the request handler:
+```js
+export default function createUser(req, res, ctx) {
+  // ...
+  console.log(ctx.myState); // 'some value'
+  // ...
+}
+```
+
+The `node-file-router` is designed for flexibility in its interface. You can introduce any number of arguments
+at the beginning, and these arguments will remain accessible throughout all stages of the processing chain.
