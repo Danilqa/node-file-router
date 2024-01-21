@@ -19,8 +19,14 @@
   "main": "../cjs/index.js",
   "types": "./types/index.d.ts",
   "exports": {
-    "import": "./esm/index.mjs",
-    "require": "./cjs/index.js"
+    "import": {
+      "types": "./types/index.d.ts",
+      "default": "./esm/index.mjs"
+    },
+    "require": {
+      "types": "./types/index.d.ts",
+      "default": "./cjs/index.js"
+    }
   },
   "keywords": [
     "nodejs",
@@ -40,7 +46,7 @@
     "type": "git",
     "url": "https://github.com/Danilqa/node-file-router"
   },
-  "homepage": "https://danilqa.github.io/node-file-router",
+  "homepage": "https://node-file-router.js.org",
   "engines": {
     "node": ">=14.8.0"
   },
