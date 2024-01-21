@@ -2,14 +2,23 @@
 sidebar_position: 1
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Usage with Bun
 
 [Bun](https://bun.sh/) is a toolkit for JavaScript and TypeScript development, allowing you to run, build, test,
-and debug a full-stack application.
+and debug a full-stack application. 
+
+For examples of projects, please refer to these resources: 
+[Bun](https://github.com/Danilqa/node-file-router/tree/main/examples/bun) or [Bun TypeScript](https://github.com/Danilqa/node-file-router/tree/main/examples/bun-typescript).
 
 ## Initialization
 
 1\. Set up an entry point:
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript" default>
 
 ```js
 // 1. Import node-file-router
@@ -27,6 +36,32 @@ const server = Bun.serve({
 console.log(`Listening on http://localhost:${server.port}`);
 ```
 
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+```ts
+// 1. Import node-file-router
+import { initFileRouter } from 'node-file-router';
+
+// 2. Initialize the main request handler
+const useFileRouter = await initFileRouter();
+
+// 3. Start serving server and attach request handler to fetch
+const server = Bun.serve({
+  port: 3123,
+  fetch: async (req) => {
+    const res = await useFileRouter<Response>(req);
+    return res || new Response('No Response is provided', { status: 500 });
+  }
+});
+
+console.log(`Listening on http://localhost:${server.port}`);
+
+```
+
+</TabItem>
+</Tabs>
+
 2\. Override the default 404 handler:
 
 ```
@@ -36,7 +71,7 @@ console.log(`Listening on http://localhost:${server.port}`);
 ```
 
 ```js
-export default function notFound() {
+export default function NotFound() {
   return new Response('404');
 }
 ```
@@ -53,11 +88,26 @@ Bun operates with a `Response` object that should be returned. Therefore, the AP
 ...
 ```
 
+<Tabs>
+<TabItem value="javascript" label="JavaScript" default>
+
 ```js
-export default function productsRoute(req) {
+export default function ProductsRoute(req) {
   return new Response('products');
 }
 ```
+
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+```ts
+export default function ProductsRoute(req: Request) {
+  return new Response('products');
+}
+```
+
+</TabItem>
+</Tabs>
 
 ### Request and Response
 
@@ -68,6 +118,9 @@ export default function productsRoute(req) {
 ```
 
 Since we have a response on return, the route params object is the second argument.
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript" default>
 
 ```js
 const db = {
@@ -86,4 +139,85 @@ export default {
 }
 ```
 
+</TabItem>
+<TabItem value="typescript" label="TypeScript" default>
+
+```ts
+interface User {
+  id: string,
+  name: string
+}
+
+interface Db {
+  [id: string]: User;
+}
+
+interface RouteParams {
+  id: string;
+}
+
+const db: Db = {
+  '13': { id: '13', name: 'Dan' }
+}
+
+function isUser(obj: unknown): obj is User {
+  return typeof obj === 'object' && obj !== null && 'id' in obj && 'name' in obj;
+}
+
+export default async function CreateOrUpdateUser(req: Request, routeParams: RouteParams) {
+  const maybeUser = await req.json();
+  if (!isUser(maybeUser)) {
+    return new Response('Invalid user', { status: 400 });
+  }
+
+  db[routeParams.id] = maybeUser;
+
+  return new Response(
+    JSON.stringify(db[routeParams.id]),
+    { headers: { 'Content-Type': 'application/json' }}
+  );
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Middlewares Implementation
+
+For detailed information, please refer to the [Middlewares Section](/docs/middlewares). Generally, the interface can be described as follows:
+
+<Tabs>
+<TabItem value="javascript" label="JavaScript" default>
+
+```js
+export default function useMyMiddleware(req, next) {
+  // Code before
+  // ...
+
+  await next(); // <-- The router's code or next middleware (on nested levels)
+
+  // ...
+  // Code after
+}
+```
+
+</TabItem>
+<TabItem value="typescript" label="TypeScript">
+
+```ts
+import type { NextFunction } from 'node-file-router';
+
+export default function useMyMiddleware(req: Request, next: NextFunction) {
+  // Code before
+  // ...
+
+  await next(); // <-- The router's code or next middleware (on nested levels)
+
+  // ...
+  // Code after
+}
+```
+
+</TabItem>
+</Tabs>
 

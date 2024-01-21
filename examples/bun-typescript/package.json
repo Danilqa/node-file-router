@@ -1,0 +1,15 @@
+{
+  "name": "bun-typescript",
+  "module": "server.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun --watch server.ts"
+  },
+  "dependencies": {
+    "node-file-router": "0.5.1"
+  },
+  "devDependencies": {
+    "bun-types": "latest",
+    "typescript": "5.3.3"
+  }
+}
