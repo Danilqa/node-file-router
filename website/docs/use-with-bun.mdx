@@ -40,10 +40,13 @@ console.log(`Listening on http://localhost:${server.port}`);
 <TabItem value="typescript" label="TypeScript">
 
 ```ts
+// 1. Import node-file-router
 import { initFileRouter } from 'node-file-router';
 
+// 2. Initialize the main request handler
 const useFileRouter = await initFileRouter();
 
+// 3. Start serving server and attach request handler to fetch
 const server = Bun.serve({
   port: 3123,
   fetch: async (req) => {
