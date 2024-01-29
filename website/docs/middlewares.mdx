@@ -158,7 +158,7 @@ In this example setup, `useSchemaValidation(PersonSchema)` serves as a middlewar
 against `PersonSchema`. Once the request passes through this middleware, it then proceeds to the createUser function,
 which handles the actual request logic.
 
-In the context of a route, route parameters become accessible to middleware functions after the `next` argument.
+In the context of a route handler, route parameters become accessible to middleware functions after the `next` argument.
 For example:
 
 <Tabs>
