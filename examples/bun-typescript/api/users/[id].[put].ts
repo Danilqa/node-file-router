@@ -22,7 +22,6 @@ function isUser(obj: unknown): obj is User {
 }
 
 async function useValidation(req: Request, next: NextFunction, routeParams: Record<string, string>) {
-  console.log({ routeParams });
   await next();
 }
 
