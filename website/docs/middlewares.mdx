@@ -117,6 +117,9 @@ export default [
 To use middlewares in file routes, just return an array with middlewares before the request handler.
 For instance:
 
+<Tabs>
+<TabItem value="node-express" label="Pure Node.js / Express.js" default>
+
 ```js
 // file: api/users/[id].[post].js
 import { PersonSchema } from '../../schemas';
@@ -126,14 +129,70 @@ export default [
   createUser
 ];
 
-function createUser(req, res) {
+function createUser(req, res, routeParams) {
   // ...
 }
 ```
 
+</TabItem>
+<TabItem value="bun" label="Bun">
+
+```js
+// file: api/users/[id].[post].js
+import { PersonSchema } from '../../schemas';
+
+export default [
+  useSchemaValidation(PersonSchema),
+  createUser
+];
+
+function createUser(req, routeParams) {
+  // ...
+}
+```
+
+</TabItem>
+</Tabs>
+
 In this example setup, `useSchemaValidation(PersonSchema)` serves as a middleware that validates the request
-against `PersonSchema`.Once the request passes through this middleware, it then proceeds to the createUser function,
+against `PersonSchema`. Once the request passes through this middleware, it then proceeds to the createUser function,
 which handles the actual request logic.
+
+In the context of a route, route parameters become accessible to middleware functions after the `next` argument.
+For example:
+
+<Tabs>
+<TabItem value="node-express" label="Pure Node.js / Express.js" default>
+
+```js
+// file: api/users/[id].[post].js
+export async function useValidation(req, res, next, routeParams) {
+  // ...
+}
+
+export default [
+  useValidation,
+  // ...
+];
+```
+
+</TabItem>
+<TabItem value="bun" label="Bun">
+
+```js
+// file: api/users/[id].[post].js
+export async function useValidation(req, next, routeParams) {
+  // ...
+}
+
+export default [
+  useValidation,
+  // ...
+];
+```
+
+</TabItem>
+</Tabs>
 
 ## Interrupting the Chain
 

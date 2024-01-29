@@ -1,3 +1,5 @@
+import { NextFunction } from 'node-file-router';
+
 interface User {
   id: string,
   name: string
@@ -19,7 +21,12 @@ function isUser(obj: unknown): obj is User {
   return typeof obj === 'object' && obj !== null && 'id' in obj && 'name' in obj;
 }
 
-export default async function CreateOrUpdateUser(req: Request, routeParams: RouteParams) {
+async function useValidation(req: Request, next: NextFunction, routeParams: Record<string, string>) {
+  console.log({ routeParams });
+  await next();
+}
+
+async function CreateOrUpdateUser(req: Request, routeParams: RouteParams) {
   const maybeUser = await req.json();
   if (!isUser(maybeUser)) {
     return new Response('Invalid user', { status: 400 });
@@ -32,3 +39,8 @@ export default async function CreateOrUpdateUser(req: Request, routeParams: Rout
     { headers: { 'Content-Type': 'application/json' } }
   );
 }
+
+export default [
+  useValidation,
+  CreateOrUpdateUser,
+];

@@ -16,6 +16,7 @@ interface MiddlewareResult {
   req?: IncomingMessage;
   marks?: string[];
   result?: string;
+  routeParams?: Dictionary<string>;
 }
 
 export interface MiddlewareResponseMock {
@@ -107,17 +108,18 @@ export function createTestMiddlewareRequestHandler(
     req: IncomingMessage,
     res: MiddlewareResponseMock,
     marks: string[],
-    next: () => Promise<void>
+    next: () => Promise<void>,
+    routeParams: Dictionary<string>
   ) => {
     marks.push(`before:${label}`);
 
     if (hasInterruption) {
-      res.registerCall({ req, marks });
+      res.registerCall({ req, marks, routeParams });
       return 'before:interrupted';
     }
 
     if (hasError) {
-      res.registerCall({ req, marks });
+      res.registerCall({ req, marks, routeParams });
       throw new Error(`error:${label}`);
     }
 
@@ -126,7 +128,7 @@ export function createTestMiddlewareRequestHandler(
         await next();
       } catch (e) {
         marks.push(`handled-error:${label}`);
-        res.registerCall({ req, marks });
+        res.registerCall({ req, marks, routeParams });
         return;
       }
     }
@@ -134,6 +136,6 @@ export function createTestMiddlewareRequestHandler(
     await next();
 
     marks.push(`after:${label}`);
-    res.registerCall({ req, marks });
+    res.registerCall({ req, marks, routeParams });
   };
 }

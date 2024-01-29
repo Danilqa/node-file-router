@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   node-file-router:
-    specifier: 0.5.1
-    version: 0.5.1
+    specifier: workspace:../../dist
+    version: link:../../dist
 
 devDependencies:
   bun-types:
@@ -38,11 +38,6 @@ packages:
       '@types/ws': 8.5.10
       undici-types: 5.28.2
     dev: true
-
-  /node-file-router@0.5.1:
-    resolution: {integrity: sha512-EGAf/QwvW34Dcyzze/1/Gba4nKAKs7aR4gR/t4gX4HaFr3FSUW+VaQW5/ETIzEyW14cKP/dj8/C2LrCsRWOtkA==}
-    engines: {node: '>=14.8.0'}
-    dev: false
 
   /typescript@5.3.3:
     resolution: {integrity: sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==}
