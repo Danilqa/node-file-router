@@ -6,7 +6,7 @@
     "start": "bun --watch server.ts"
   },
   "dependencies": {
-    "node-file-router": "0.5.1"
+    "node-file-router": "workspace:../../dist"
   },
   "devDependencies": {
     "bun-types": "latest",

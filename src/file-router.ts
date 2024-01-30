@@ -78,7 +78,13 @@ export async function initFileRouter({
         handler.slice(0, -1),
         handler.at(-1)
       ];
-      return executeWithMiddlewares<R>(routeMiddlewares, routeHandler, args);
+
+      return executeWithMiddlewares<R>(
+        routeMiddlewares,
+        routeHandler,
+        args,
+        routeParams
+      );
     }
 
     return notFoundHandler(...args, routeParams);

@@ -525,6 +525,27 @@ describe('RequestHandler', () => {
       ]);
     });
 
+    it('should handle single item in the array as route handler with route params', async () => {
+      const run = createTestRequestRunner(middlewaresRequestHandler);
+      const { routeParams } = await run('/middlewares-list/123/single-route');
+      expect(routeParams?.id).toEqual('123');
+    });
+
+    it('should handle nested single item in the array as route handler with route params', async () => {
+      const run = createTestRequestRunner(middlewaresRequestHandler);
+
+      const { routeParams } = await run('/middlewares-list/123/nested/456');
+
+      expect(routeParams?.id).toEqual('123');
+      expect(routeParams?.nestedId).toEqual('456');
+    });
+
+    it('should get route params in middlewares', async () => {
+      const run = createTestRequestRunner(middlewaresRequestHandler);
+      const { routeParams } = await run('/nested/7/unreachable');
+      expect(routeParams?.id).toEqual('7');
+    });
+
     it('should interrupt middleware chain', async () => {
       const run = createTestMiddlewareRequestRunner(middlewaresRequestHandler);
 
