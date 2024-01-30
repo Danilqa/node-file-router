@@ -21,7 +21,8 @@ function isUser(obj: unknown): obj is User {
   return typeof obj === 'object' && obj !== null && 'id' in obj && 'name' in obj;
 }
 
-async function useValidation(req: Request, next: NextFunction, routeParams: Record<string, string>) {
+async function useMiddleware(req: Request, next: NextFunction, routeParams: Record<string, string>) {
+  // ... some code
   await next();
 }
 
@@ -40,6 +41,6 @@ async function CreateOrUpdateUser(req: Request, routeParams: RouteParams) {
 }
 
 export default [
-  useValidation,
+  useMiddleware,
   CreateOrUpdateUser,
 ];
