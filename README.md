@@ -3,6 +3,7 @@
 <img align="right" width="92" height="92" title="Node File Router Logo"
 src="./static/images/logo.png" />
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f0e2838a1ddf48a89bec571a0f692834)](https://app.codacy.com/gh/Danilqa/node-file-router?utm_source=github.com&utm_medium=referral&utm_content=Danilqa/node-file-router&utm_campaign=Badge_Grade)
 [![product of the week](./static/images/devhunt-badge.svg)](https://devhunt.org/tool/node-file-router)
 
 [![ci Status](https://github.com/danilqa/node-file-router/actions/workflows/deploy.yml/badge.svg)](https://github.com/Danilqa/node-file-router/actions)
