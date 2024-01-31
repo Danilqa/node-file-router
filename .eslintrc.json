@@ -38,6 +38,10 @@
     }
   },
   "rules": {
+    "import/no-unresolved": [
+      "error",
+      { "commonjs": true, "caseSensitive": true, "ignore": ["vitest"] }
+    ],
     "prettier/prettier": [
       "error",
       {
