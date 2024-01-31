@@ -73,31 +73,31 @@ export default [
 npm i node-file-router
 ```
 
-Visit [website](https://danilqa.github.io/node-file-router/) to get started and view 
+Visit [website](https://node-file-router.js.org/) to get started and view 
 the full documentation.
 
 Usage:
-* [Getting started](https://danilqa.github.io/node-file-router/docs/getting-started)
-* [Usage guide](https://danilqa.github.io/node-file-router/docs/usage-guide)
-  * [Configuration](https://danilqa.github.io/node-file-router/docs/usage-guide#configuration)
-* [Usage with Bun](https://danilqa.github.io/node-file-router/docs/use-with-bun)
+* [Getting started](https://node-file-router.js.org/docs/getting-started)
+* [Usage guide](https://node-file-router.js.org/docs/usage-guide)
+  * [Configuration](https://node-file-router.js.org/docs/usage-guide#configuration)
+* [Usage with Bun](https://node-file-router.js.org/docs/use-with-bun)
 
 Methods routing:
-* [Any method](https://danilqa.github.io/node-file-router/docs/usage-guide#any-method)
-* [Object with methods](https://danilqa.github.io/node-file-router/docs/usage-guide#object-with-methods)
-* [Methods in filenames](https://danilqa.github.io/node-file-router/docs/usage-guide#methods-in-filenames)
+* [Any method](https://node-file-router.js.org/docs/usage-guide#any-method)
+* [Object with methods](https://node-file-router.js.org/docs/usage-guide#object-with-methods)
+* [Methods in filenames](https://node-file-router.js.org/docs/usage-guide#methods-in-filenames)
 
 Route matching:
-* [Plain match](https://danilqa.github.io/node-file-router/docs/route-matching#direct-matching) - /plain/route/
-* [Exact slug](https://danilqa.github.io/node-file-router/docs/route-matching#exact-matching) - /[id]/
-* [Catching all](https://danilqa.github.io/node-file-router/docs/route-matching#catching-all) - /[id1]/[id2]/[idn]/
-* [Optional catching all](https://danilqa.github.io/node-file-router/docs/route-matching#optional-catching-all) - ?/[id1]/[id2]/[idn]/
+* [Plain match](https://node-file-router.js.org/docs/route-matching#direct-matching) - /plain/route/
+* [Exact slug](https://node-file-router.js.org/docs/route-matching#exact-matching) - /[id]/
+* [Catching all](https://node-file-router.js.org/docs/route-matching#catching-all) - /[id1]/[id2]/[idn]/
+* [Optional catching all](https://node-file-router.js.org/docs/route-matching#optional-catching-all) - ?/[id1]/[id2]/[idn]/
 
 Support other protocols and frameworks:
-* [Custom adapter](https://danilqa.github.io/node-file-router/docs/custom-adapter)
+* [Custom adapter](https://node-file-router.js.org/docs/custom-adapter)
 
 Middlewares:
-* [Usage and examples](https://danilqa.github.io/node-file-router/docs/middlewares)
+* [Usage and examples](https://node-file-router.js.org/docs/middlewares)
 
 # Examples
 
