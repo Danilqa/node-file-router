@@ -5,6 +5,7 @@ src="./static/images/logo.png" />
 
 [![product of the week](./static/images/devhunt-badge.svg)](https://devhunt.org/tool/node-file-router)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f0e2838a1ddf48a89bec571a0f692834)](https://app.codacy.com/gh/Danilqa/node-file-router?utm_source=github.com&utm_medium=referral&utm_content=Danilqa/node-file-router&utm_campaign=Badge_Grade)
 [![ci Status](https://github.com/danilqa/node-file-router/actions/workflows/deploy.yml/badge.svg)](https://github.com/Danilqa/node-file-router/actions)
 [![npm downloads](https://snyk.io/test/github/danilqa/node-file-router/badge.svg)](https://snyk.io/test/github/danilqa/node-file-router)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/danilqa/node-file-router/blob/main/LICENSE)
@@ -67,6 +68,10 @@ export default [
 ```
 
 # Documentation
+
+```bash
+npm i node-file-router
+```
 
 Visit [website](https://danilqa.github.io/node-file-router/) to get started and view 
 the full documentation.
