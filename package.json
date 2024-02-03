@@ -1,6 +1,6 @@
 {
   "name": "node-file-router",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "A powerful file-based routing for Express.js, Bun, pure Node.js and more",
   "scripts": {
     "dev:sandbox": "tsnd examples/sandbox/server.ts",
