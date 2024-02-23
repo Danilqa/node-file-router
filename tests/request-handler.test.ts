@@ -624,5 +624,27 @@ describe('RequestHandler', () => {
         'handled-error:a'
       ]);
     });
+
+    it('should be able to pass data through pipelines', async () => {
+      const requestHandler = await initFileRouter({
+        baseDir: 'api-middlewares/next-fn-result'
+      });
+
+      const run = createTestMiddlewareRequestRunner(requestHandler);
+      const { result } = await run('/in-middle');
+
+      expect(result).toEqual('some-data');
+    });
+
+    it('should use the last returned data in the pipeline', async () => {
+      const requestHandler = await initFileRouter({
+        baseDir: 'api-middlewares/next-fn-result'
+      });
+
+      const run = createTestMiddlewareRequestRunner(requestHandler);
+      const { result } = await run('/override');
+
+      expect(result).toEqual('new-data');
+    });
   });
 });
