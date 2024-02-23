@@ -91,6 +91,7 @@ Usage:
 * [Usage guide](https://node-file-router.js.org/docs/usage-guide)
   * [Configuration](https://node-file-router.js.org/docs/usage-guide#configuration)
 * [Usage with Bun](https://node-file-router.js.org/docs/use-with-bun)
+* [Middlewares](https://node-file-router.js.org/docs/middlewares)
 
 Methods routing:
 * [Any method](https://node-file-router.js.org/docs/usage-guide#any-method)
