@@ -1,10 +1,10 @@
 import type { NextFunction } from 'node-file-router';
 
-export async function useAuth(req: Request, next: NextFunction) {
-  const auth = req.headers.get('Authorization');
-  if (!auth) {
-    return new Response('Unauthorized', { status: 401 });
-  }
+export async function useCors(req: Request, next: NextFunction<Response>) {
+  const res = await next();
+  if (!res) return;
 
-  await next();
+  res.headers.set('Access-Control-Allow-Methods', 'PUT');
+
+  return res;
 }

@@ -100,9 +100,21 @@ export function expectAfterInit(baseDir: string) {
   };
 }
 
+interface Options {
+  hasInterruption?: boolean;
+  hasError?: boolean;
+  hasErrorHandler?: boolean;
+  returnResult?: unknown;
+}
+
 export function createTestMiddlewareRequestHandler(
   label: string,
-  { hasInterruption = false, hasError = false, hasErrorHandler = false } = {}
+  {
+    hasInterruption = false,
+    hasError = false,
+    hasErrorHandler = false,
+    returnResult
+  }: Options = {}
 ) {
   return async (
     req: IncomingMessage,
@@ -112,6 +124,11 @@ export function createTestMiddlewareRequestHandler(
     routeParams: Dictionary<string>
   ) => {
     marks.push(`before:${label}`);
+
+    if (returnResult) {
+      await next();
+      return returnResult;
+    }
 
     if (hasInterruption) {
       res.registerCall({ req, marks, routeParams });
@@ -133,9 +150,11 @@ export function createTestMiddlewareRequestHandler(
       }
     }
 
-    await next();
+    const result = await next();
 
     marks.push(`after:${label}`);
     res.registerCall({ req, marks, routeParams });
+
+    return result;
   };
 }

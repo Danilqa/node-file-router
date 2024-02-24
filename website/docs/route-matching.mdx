@@ -1,15 +1,16 @@
 ---
 sidebar_position: 2
+custom_edit_url: https://github.com/Danilqa/node-file-router/blob/main/website/docs/route-matching.mdx
 ---
 
 # Route Matching
 
 ## Direct Matching
 
-A URL can accurately reflect the path to a specific file within your project's structure. 
+A URL can accurately reflect the path to a specific file within your project's structure.
 For example, `/products/top-10` would refer to the file `/products/top-10.js`.
 
-When there is nesting in the path, but you want it to be invoked, use `index.js`. 
+When there is nesting in the path, but you want it to be invoked, use `index.js`.
 For instance, `/products/top-10` will map to either `/products/top-10.js` or `/products/top-10/index.js`.
 
 | Route              | Example URL      |
@@ -42,7 +43,7 @@ This type of matching can identify a list of slugs, but only if they are provide
 
 ## Optional Catching All
 
-This document is nearly identical to the previous one. The main difference is that it includes the root when 
+This document is nearly identical to the previous one. The main difference is that it includes the root when
 no parameters are specified.
 
 | Route                            | Example URL                    | Params                                             | Notes        |
