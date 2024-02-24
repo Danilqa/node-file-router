@@ -362,9 +362,9 @@ at the beginning, and these arguments will remain accessible throughout all stag
   src={useBaseUrl('/img/diagrams/middleware-return-result-diagram.svg')}
 />
 
-In some situations, you may need to use an object as the final outcome of middleware, or modify one within a request
-handler. A good example is altering a Response object in Bun.js. To do this, just return a value from the middleware.
-This value will then be the result of the `await next()` call.
+In some situations, you may need to use an object as the final outcome of middleware, or modify one arrived from a request handler.
+A good example is altering a Response object in Bun.js. To do this, just return a value from the middleware. This value will
+then be the result of the `await next()` call.
 
 <Tabs>
 <TabItem value="js" label="JavaScript" default>
@@ -401,7 +401,7 @@ export async function useCors(req: Request, next: NextFunction<Response>) {
 
 :::warning Note
 
-Remember to return the result of await next() in the subsequent middlewares if you wish to utilize the outcome from
+Remember to return the result of `await next()` in the subsequent middlewares if you wish to utilize the outcome from
 later stages. In other scenarios, returning a result from `next` is not mandatory.
 
 :::
