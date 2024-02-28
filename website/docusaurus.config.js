@@ -27,7 +27,7 @@ const config = {
   // to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
-    locales: ['en'],
+    locales: ['en']
   },
 
   plugins: ['docusaurus-plugin-sass'],
@@ -42,20 +42,20 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/'
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/'
         },
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
-        },
-      }),
-    ],
+          customCss: require.resolve('./src/css/custom.css')
+        }
+      })
+    ]
   ],
 
   headTags: [
@@ -63,36 +63,39 @@ const config = {
       tagName: 'meta',
       attributes: {
         name: 'google-site-verification',
-        content: 'ZLU9sqEwKnQIldUB0bpRADb2OB31xASUYC7DF9COEQ0',
-      },
-    },
+        content: 'ZLU9sqEwKnQIldUB0bpRADb2OB31xASUYC7DF9COEQ0'
+      }
+    }
   ],
 
   themeConfig:
-    /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+  /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       colorMode: {
         disableSwitch: true,
-        defaultMode: 'dark',
+        defaultMode: 'dark'
       },
-      // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
+      metadata: [
+        { name: 'keywords', content: 'node, node.js, file router, node file router, express-file-routing' },
+        { name: 'og:title', content: 'Node File Router' },
+        { name: 'og:site_name', content: 'Node File Router' }
+      ],
       navbar: {
         title: 'Node File Router',
         logo: {
           alt: 'Node File Router Logo',
-          src: 'img/logo.png',
+          src: 'img/logo.png'
         },
         items: [
           {
             to: 'docs/getting-started',
             position: 'left',
-            label: 'Getting Started',
+            label: 'Getting Started'
           },
           {
             to: 'docs/usage-guide',
             position: 'left',
-            label: 'Usage Guide',
+            label: 'Usage Guide'
           },
           {
             to: 'docs/route-matching',
@@ -112,27 +115,27 @@ const config = {
           {
             href: 'https://github.com/danilqa/node-file-router',
             label: 'GitHub',
-            position: 'right',
-          },
-        ],
+            position: 'right'
+          }
+        ]
       },
       footer: {
         style: 'dark',
-        copyright: `© ${new Date().getFullYear()} Daniil Sitdikov`,
+        copyright: `© ${new Date().getFullYear()} Daniil Sitdikov`
       },
       announcementBar: {
         id: 'support_us',
         content:
-        '⭐️ Support the project by giving it a star on <a href="https://github.com/Danilqa/node-file-router" target="_blank">Github</a>',
+          '⭐️ Support the project by giving it a star on <a href="https://github.com/Danilqa/node-file-router" target="_blank">Github</a>',
         backgroundColor: 'rgb(131, 58, 180)',
         textColor: '#fff',
-        isCloseable: false,
+        isCloseable: false
       },
       prism: {
         theme: prismThemes.github,
-        darkTheme: prismThemes.dracula,
-      },
-    }),
+        darkTheme: prismThemes.dracula
+      }
+    })
 };
 
 module.exports = config;
