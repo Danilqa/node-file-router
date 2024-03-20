@@ -71,6 +71,12 @@ const config = {
   themeConfig:
   /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      algolia: {
+        appId: '5ILYN8FF1K',
+        apiKey: 'daea83269a1628ea2e6799d39e0b8456',
+        contextualSearch: true,
+        indexName: 'node-file-router-js',
+      },
       colorMode: {
         disableSwitch: true,
         defaultMode: 'dark'
