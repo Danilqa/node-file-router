@@ -73,9 +73,9 @@ const config = {
     ({
       algolia: {
         appId: '5ILYN8FF1K',
-        apiKey: 'daea83269a1628ea2e6799d39e0b8456',
-        contextualSearch: true,
+        apiKey: '15c2c198de52656aca0e9d7de860668e',
         indexName: 'node-file-router-js',
+        contextualSearch: false,
       },
       colorMode: {
         disableSwitch: true,

@@ -26,6 +26,12 @@ html[data-theme='dark'] {
   --doc-sidebar-width: 200px;
   --ifm-menu-color-active: #ffffff;
   --ifm-breadcrumb-color-active: #ffffff;
+  --docsearch-container-background: var(--ifm-background-color) !important;
+  --docsearch-modal-background: var(--ifm-background-color) !important;
+  --docsearch-footer-background: var(--ifm-background-color) !important;
+  --docsearch-hit-active-color: #121212;
+  --docsearch-searchbox-background: transparent !important;
+  --docsearch-hit-background: rgba(0, 0, 0, 0.1) !important;
 }
 
 .navbar {
