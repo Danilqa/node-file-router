@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "node-file-router": "workspace:../../dist",
-    "express": "4.18.2"
+    "express": "4.19.2"
   },
   "devDependencies": {
     "ts-node": "10.9.1",
