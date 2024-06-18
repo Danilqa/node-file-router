@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "node-file-router": "workspace:../../dist",
-    "ws": "8.16.0"
+    "ws": "8.17.1"
   },
   "devDependencies": {
     "@types/node": "20.1.4",
