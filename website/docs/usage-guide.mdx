@@ -171,6 +171,28 @@ export default {
 }
 ```
 
+### Class with Methods
+
+Specify functions for each method within the class. The main requirement is that it should be the default export.
+
+```js
+export default class Resource {
+  get(req, res, routeParams) {
+    const { documentId, draftId } = routeParams;
+    res.end(`Requested document ${documentId} and his draft ${draftId}`);
+  }
+
+  post(req, res, routeParams) {
+    const { documentId, draftId } = routeParams;
+    res.end(`Created draft ${draftId} for document ${documentId}`);
+  }
+
+  patch(req, res, routeParams) {
+    // ...
+  }
+}
+```
+
 ### Methods in Filenames
 
 Use the `.[method].` suffix to directly specify methods in the filenames. This approach can be used for
