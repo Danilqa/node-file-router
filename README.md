@@ -77,6 +77,17 @@ export default [
 ];
 ```
 
+Classes
+```js
+export default class Resource {
+  get(req, res, routeParams) {}
+  
+  post(req, res, routeParams) {}
+  
+  patch(req, res, routeParams) {}
+}
+```
+
 # Documentation
 
 ```bash
@@ -95,6 +106,7 @@ Usage:
 Methods routing:
 * [Any method](https://node-file-router.js.org/docs/usage-guide#any-method)
 * [Object with methods](https://node-file-router.js.org/docs/usage-guide#object-with-methods)
+* [Class with methods](https://node-file-router.js.org/docs/usage-guide#class-with-methods)
 * [Methods in filenames](https://node-file-router.js.org/docs/usage-guide#methods-in-filenames)
 
 Route matching:
