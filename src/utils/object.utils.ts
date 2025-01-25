@@ -38,7 +38,11 @@ export function filterValues<V>(
 export function isRecordWith<T>(
   maybeObject: unknown
 ): maybeObject is Record<string, T> {
-  return maybeObject != null && maybeObject.constructor.name === 'Object';
+  return (
+    typeof maybeObject === 'object' &&
+    !Array.isArray(maybeObject) &&
+    maybeObject !== null
+  );
 }
 
 export function isFunction(

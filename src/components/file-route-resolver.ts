@@ -9,6 +9,7 @@ import { MiddlewareHandler } from './route-handler/middleware-handler';
 import { isCommonJs } from '../utils/env.utils';
 import { validateFileFormat } from '../validations/validations';
 
+import { isClass } from '../utils/common.utils';
 import type { ParamExtractor } from './dynamic-routes/common/route-params-parser';
 import type { Dirent } from 'node:fs';
 
@@ -192,7 +193,10 @@ export class FileRouteResolver {
 
     const handler = await import(fullPath)
       .then((module) => validateFileFormat(fullPath, module))
-      .then((module) => module.default);
+      .then((module) => module.default)
+      .then((FunctionOrClass) =>
+        isClass(FunctionOrClass) ? new FunctionOrClass() : FunctionOrClass
+      );
 
     const initialRoute = routePath.replace(
       FileRouteResolver.fileExtensionPattern,

@@ -1,13 +1,9 @@
-import {
-  createTestMiddlewareRequestRunner,
-  createTestRequestRunner,
-  expectAfterInit
-} from './test-utils';
+import { createTestMiddlewareRequestRunner, createTestRequestRunner, expectAfterInit } from './test-utils';
+import type { FileRouterRequestHandler } from '../src';
 import { initFileRouter } from '../src';
-import { describe, expect, it, beforeAll, vi, afterEach } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import type { IncomingMessage } from 'node:http';
-import type { FileRouterRequestHandler } from '../src';
 
 const currentCwd = process.cwd();
 vi.mock('process', () => ({
@@ -645,6 +641,24 @@ describe('RequestHandler', () => {
       const { result } = await run('/override');
 
       expect(result).toEqual('new-data');
+    });
+  });
+
+  describe('#Classes', () => {
+    const baseDir = `${process.cwd()}/tests/api-classes`;
+
+    it('should invoke http-method based handlers from class-based file', async () => {
+      const requestHandler = await initFileRouter({ baseDir });
+      const run = createTestRequestRunner(requestHandler);
+
+      await run('/3/endpoint', 'post').then(({ req, routeParams }) => {
+        expect(routeParams).toEqual({ id: '3' });
+        expect(req?.method).toBe('post');
+      });
+      await run('/3/endpoint', 'get').then(({ req, routeParams }) => {
+        expect(routeParams).toEqual({ id: '3' });
+        expect(req?.method).toBe('get');
+      });
     });
   });
 });
