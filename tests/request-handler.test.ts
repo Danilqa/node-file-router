@@ -1,7 +1,11 @@
-import { createTestMiddlewareRequestRunner, createTestRequestRunner, expectAfterInit } from './test-utils';
-import type { FileRouterRequestHandler } from '../src';
+import {
+  createTestMiddlewareRequestRunner,
+  createTestRequestRunner,
+  expectAfterInit
+} from './test-utils';
 import { initFileRouter } from '../src';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import type { FileRouterRequestHandler } from '../src';
 
 import type { IncomingMessage } from 'node:http';
 
