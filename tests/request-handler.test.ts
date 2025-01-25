@@ -664,5 +664,23 @@ describe('RequestHandler', () => {
         expect(req?.method).toBe('get');
       });
     });
+
+    it('should invoke http-method based handlers from instance of class based file', async () => {
+      const requestHandler = await initFileRouter({ baseDir });
+      const run = createTestRequestRunner(requestHandler);
+
+      await run('/3/endpoint-with-instance', 'post').then(
+        ({ req, routeParams }) => {
+          expect(routeParams).toEqual({ id: '3' });
+          expect(req?.method).toBe('post');
+        }
+      );
+      await run('/3/endpoint-with-instance', 'get').then(
+        ({ req, routeParams }) => {
+          expect(routeParams).toEqual({ id: '3' });
+          expect(req?.method).toBe('get');
+        }
+      );
+    });
   });
 });
