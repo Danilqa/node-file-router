@@ -250,14 +250,47 @@ export default function(req, res, routeParams) {
 }
 ```
 
-## Showing all registered routes
+## Get All Registered Routes
 
-The initialization function `initFileRouter` receives `onInit` callback which has route
+Get all parsed routes for cases where you need to show or process all routes after initialization.
+The initialization function `initFileRouter` receives lifecycle callback `onInit` which has `routes`.
 
-```js
+```ts
 await initFileRouter({
   onInit: ({ routes }) => {
     console.log({ routes })
   }
 });
+```
+
+The list contains the following items:
+```ts
+interface Route {
+  // Formatted endpoint path
+  // Example: "shops/[shopId]/products/[productId]"
+  urlPath: string;
+
+  // Contains the request handler functions from the file
+  // For instance,
+  // - for single handler:
+  //   (req, res, routeParams) => {}
+  // - for method-based handler:
+  //   {
+  //      get: (req, res, routeParams) => {},
+  //      post: (req, res, routeParams) => {}
+  //   }
+  handler: RequestHandler | Record<string, RequestHandler>;
+
+  // When a file has a specified method in its name, like suppliers.[get].ts
+  // Example: 'get', 'post', 'put', etc.
+  method?: string;
+
+  // The filename
+  // Example: suppliers.[get].ts
+  fileName: string;
+
+  // Regexp which is used to match URL on file
+  // Example: ^\/one\/(?<id_36428213>[^/]+)\/two\/(?<subId_44858161>[^/]+)\/?$
+  regex: RegExp;
+}
 ```
