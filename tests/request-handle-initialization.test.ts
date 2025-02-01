@@ -1,7 +1,7 @@
 import { createTestRequestRunner } from './test-utils';
 import { initFileRouter } from '../src';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { Route } from '../src/components/route/route';
+import type { Route } from '../src';
 
 const currentCwd = process.cwd();
 vi.mock('process', () => ({
