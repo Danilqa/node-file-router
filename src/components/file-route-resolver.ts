@@ -4,8 +4,8 @@ import path from 'node:path';
 import { exactSlugSegment } from './dynamic-routes/exact-slug-segment';
 import { catchAllSegment } from './dynamic-routes/catch-all-segment';
 import { optionalCatchAllSegment } from './dynamic-routes/optional-catch-all-segment';
-import { RouteHandler } from './route-handler/route-handler';
-import { MiddlewareHandler } from './route-handler/middleware-handler';
+import { Route } from './route/route';
+import { Middleware } from './route/middleware';
 import { isCommonJs } from '../utils/env.utils';
 import { validateFileFormat } from '../validations/validations';
 
@@ -54,7 +54,7 @@ export class FileRouteResolver {
 
   async getHandlers(
     directory = this.baseDir
-  ): Promise<[MiddlewareHandler[], RouteHandler[]]> {
+  ): Promise<[Middleware[], Route[]]> {
     const [middlewares, routes] = await this.scanDirectory(directory);
 
     return [
@@ -67,24 +67,24 @@ export class FileRouteResolver {
     directory = this.baseDir,
     parentRoute = '',
     nestingLevel = 0
-  ): Promise<[MiddlewareHandler[], RouteHandler[]]> {
+  ): Promise<[Middleware[], Route[]]> {
     const entries = await fs.readdir(directory, { withFileTypes: true });
-    const routeHandlers: RouteHandler[] = [];
-    const middlewareHandlers: MiddlewareHandler[] = [];
+    const routes: Route[] = [];
+    const middlewares: Middleware[] = [];
 
     for (const entry of entries) {
-      const [middlewares, routes] = await this.processEntry(
+      const [childMiddlewares, childRoutes] = await this.processEntry(
         directory,
         parentRoute,
         nestingLevel,
         entry
       );
 
-      routeHandlers.push(...routes);
-      middlewareHandlers.push(...middlewares);
+      routes.push(...childRoutes);
+      middlewares.push(...childMiddlewares);
     }
 
-    return [middlewareHandlers, routeHandlers];
+    return [middlewares, routes];
   }
 
   private async processEntry(
@@ -93,42 +93,42 @@ export class FileRouteResolver {
     nestingLevel: number,
     entry: Dirent
   ) {
-    const routeHandlers: RouteHandler[] = [];
-    const middlewareHandlers: MiddlewareHandler[] = [];
+    const routes: Route[] = [];
+    const middlewares: Middleware[] = [];
 
     const fullPath = path.join(directory, entry.name);
     const routePath = `${parentRoute}/${entry.name}`;
 
     if (entry.isDirectory()) {
-      const [childMiddlewareHandlers, childHandlers] = await this.scanDirectory(
+      const [childMiddlewares, childRoutes] = await this.scanDirectory(
         fullPath,
         routePath,
         nestingLevel + 1
       );
-      routeHandlers.push(...childHandlers);
-      middlewareHandlers.push(...childMiddlewareHandlers);
+      routes.push(...childRoutes);
+      middlewares.push(...childMiddlewares);
     } else if (entry.isFile() && this.isValidFile(entry.name)) {
       if (FileRouteResolver.middlewareFilePattern.test(entry.name)) {
-        const middlewareHandler = await this.processMiddlewareEntry(
+        const middleware = await this.processMiddlewareEntry(
           fullPath,
           routePath,
           nestingLevel
         );
 
-        middlewareHandlers.push(middlewareHandler);
+        middlewares.push(middleware);
       } else {
-        const routeHandler = await this.processFileEntry(
+        const route = await this.processFileEntry(
           fullPath,
           entry,
           routePath,
           nestingLevel
         );
 
-        routeHandlers.push(routeHandler);
+        routes.push(route);
       }
     }
 
-    return [middlewareHandlers, routeHandlers] as const;
+    return [middlewares, routes] as const;
   }
 
   private isValidFile(name: string): boolean {
@@ -139,10 +139,7 @@ export class FileRouteResolver {
     return FileRouteResolver.fileExtensionPattern.test(name);
   }
 
-  private compareByNestingLevelAndType(
-    left: RouteHandler,
-    right: RouteHandler
-  ): number {
+  private compareByNestingLevelAndType(left: Route, right: Route): number {
     if (left.nestingLevel !== right.nestingLevel) {
       return right.nestingLevel - left.nestingLevel;
     }
@@ -174,7 +171,7 @@ export class FileRouteResolver {
       ''
     );
 
-    return new MiddlewareHandler({
+    return new Middleware({
       path: routePath,
       handler,
       nestingLevel
@@ -186,7 +183,7 @@ export class FileRouteResolver {
     entry: Dirent,
     routePath: string,
     nestingLevel: number
-  ): Promise<RouteHandler> {
+  ): Promise<Route> {
     if (this.clearImportCache) {
       delete require.cache[fullPath];
     }
@@ -209,15 +206,17 @@ export class FileRouteResolver {
     const isIndex = FileRouteResolver.indexFilePattern.test(entry.name);
     const routeKey = isIndex ? route.replace(/\/index$/, '') : route;
 
-    const regex = new RegExp(`^${routeKey}/?$`);
+    const formattedUrlPath =
+      (isIndex ? pureRouteName.replace(/\/index$/, '') : pureRouteName) || '/';
 
-    return new RouteHandler({
+    return new Route({
       method,
       fileName: entry.name,
       handler,
-      regex,
+      regex: new RegExp(`^${routeKey}/?$`),
       nestingLevel,
-      paramExtractors
+      paramExtractors,
+      urlPath: formattedUrlPath
     });
   }
 

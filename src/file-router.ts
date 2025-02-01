@@ -8,21 +8,28 @@ import { httpAdapter } from './adapters/http-adapter';
 import { validateBaseDirExistence } from './validations/validations';
 import { executeWithMiddlewares } from './components/middleware-executer';
 
-import type { Adapter } from './types/adapter';
 import type { RequestHandler } from './types/request-handlers';
+import type { Adapter } from './types/adapter';
+import type { Route } from './components/route/route';
+
+interface InitParams {
+  routes: Route[];
+}
 
 interface Options {
   baseDir?: string;
   ignoreFilesRegex?: RegExp[];
   adapter?: Adapter;
   clearImportCache?: boolean;
+  onInit?: (params: InitParams) => void;
 }
 
 export async function initFileRouter({
   baseDir = 'api',
   ignoreFilesRegex,
   clearImportCache = false,
-  adapter = httpAdapter
+  adapter = httpAdapter,
+  onInit
 }: Options = {}) {
   const { getPathname, defaultNotFoundHandler, getMethod } = adapter;
 
@@ -88,6 +95,10 @@ export async function initFileRouter({
     }
 
     return notFoundHandler(...args, routeParams);
+  }
+
+  if (onInit) {
+    onInit({ routes: routeHandlers });
   }
 
   return function requestHandler<R>(...args: unknown[]) {

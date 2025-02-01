@@ -13,14 +13,16 @@ interface Props {
   regex: RegExp;
   paramExtractors: Record<string, ParamExtractor>;
   nestingLevel: number;
+  urlPath: string;
 }
 
-export class RouteHandler {
+export class Route {
   method?: string;
   fileName: string;
   handler: RequestHandler | Record<string, RequestHandler>;
   regex: RegExp;
   nestingLevel: number;
+  urlPath: string;
 
   private paramExtractors: Record<string, ParamExtractor>;
 

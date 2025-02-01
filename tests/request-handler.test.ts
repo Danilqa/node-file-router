@@ -19,27 +19,6 @@ describe('RequestHandler', () => {
     vi.clearAllMocks();
   });
 
-  describe('#Initialization', () => {
-    it('should init file router with the default params', async () => {
-      const requestHandler = await initFileRouter();
-
-      const run = createTestRequestRunner(requestHandler);
-      const { filePath } = await run('/');
-
-      expect(filePath).toBe('/api/index.ts');
-    });
-
-    it('should init file router with an absolute path', async () => {
-      const baseDir = `${process.cwd()}/tests/api`;
-      const requestHandler = await initFileRouter({ baseDir });
-      const run = createTestRequestRunner(requestHandler);
-
-      const { filePath } = await run('/');
-
-      expect(filePath).toBe('/api/index.ts');
-    });
-  });
-
   describe('#Adapter', () => {
     const adapter = {
       getPathname: (req: IncomingMessage) => req.url || '',

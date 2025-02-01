@@ -4,7 +4,7 @@ interface Props {
   nestingLevel: number;
 }
 
-export class MiddlewareHandler {
+export class Middleware {
   regexp: RegExp;
   handler: (...args: unknown[]) => Promise<void>;
   nestingLevel: number;

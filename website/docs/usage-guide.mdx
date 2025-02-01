@@ -249,3 +249,15 @@ export default function(req, res, routeParams) {
   // ... your code
 }
 ```
+
+## Showing all registered routes
+
+The initialization function `initFileRouter` receives `onInit` callback which has route
+
+```js
+await initFileRouter({
+  onInit: ({ routes }) => {
+    console.log({ routes })
+  }
+});
+```
