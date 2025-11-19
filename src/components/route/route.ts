@@ -14,6 +14,7 @@ interface Props {
   paramExtractors: Record<string, ParamExtractor>;
   nestingLevel: number;
   urlPath: string;
+  directoryPaths: string[];
 }
 
 export class Route {
@@ -23,6 +24,7 @@ export class Route {
   regex: RegExp;
   nestingLevel: number;
   urlPath: string;
+  directoryPaths: string[];
 
   private paramExtractors: Record<string, ParamExtractor>;
 

@@ -40,7 +40,13 @@ describe('RequestHandler', () => {
       const runForRoute = createTestRequestRunner(middlewaresRequestHandler);
 
       const { marks } = await runForMiddleware('/nested/123');
-      expect(marks).toEqual(['before:m-root', '[id]', 'after:m-root']);
+      expect(marks).toEqual([
+        'before:m-root',
+        'before:[id]-nested',
+        '[id]',
+        'after:[id]-nested',
+        'after:m-root'
+      ]);
       const { routeParams } = await runForRoute('/nested/123');
       expect(routeParams).toEqual({ id: '123' });
     });
@@ -103,7 +109,7 @@ describe('RequestHandler', () => {
     });
 
     it('should get route params in middlewares', async () => {
-      const run = createTestRequestRunner(middlewaresRequestHandler);
+      const run = createTestMiddlewareRequestRunner(middlewaresRequestHandler);
       const { routeParams } = await run('/nested/7/unreachable');
       expect(routeParams?.id).toEqual('7');
     });
@@ -207,6 +213,34 @@ describe('RequestHandler', () => {
       const { result } = await run('/override');
 
       expect(result).toEqual('new-data');
+    });
+
+    describe('static vs dynamic routes', () => {
+      let staticVsDynamicHandler: FileRouterRequestHandler;
+
+      beforeAll(async () => {
+        staticVsDynamicHandler = await initFileRouter({
+          baseDir: 'api-middlewares/static-vs-dynamic'
+        });
+      });
+
+      it('should not invoke dynamic middleware when static route matches', async () => {
+        const run = createTestMiddlewareRequestRunner(staticVsDynamicHandler);
+        const { marks } = await run('/static/test');
+
+        expect(marks).toBeUndefined();
+      });
+
+      it('should still invoke dynamic middleware for dynamic routes', async () => {
+        const run = createTestMiddlewareRequestRunner(staticVsDynamicHandler);
+        const { marks } = await run('/hello');
+
+        expect(marks).toEqual([
+          'before:dynamic',
+          'dynamic-route',
+          'after:dynamic'
+        ]);
+      });
     });
   });
 });

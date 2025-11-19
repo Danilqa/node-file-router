@@ -11,6 +11,7 @@ import { executeWithMiddlewares } from './components/middleware-executer';
 import type { RequestHandler } from './types/request-handlers';
 import type { Adapter } from './types/adapter';
 import type { Route } from './components/route/route';
+import type { Dictionary } from './types/dictionary';
 
 interface InitParams {
   routes: Route[];
@@ -49,28 +50,41 @@ export async function initFileRouter({
   const notFoundHandler =
     (await resolveNotFoundHandler(normalizedBaseDir)) || defaultNotFoundHandler;
 
-  function extractMiddlewares(pathname: string) {
-    return middlewares
-      .filter(({ regexp }) => regexp.test(`${pathname}/`))
-      .flatMap(({ handler }) => (Array.isArray(handler) ? handler : [handler]));
+  function extractMiddlewares(pathname: string, matchedRoute?: Route) {
+    let matched = middlewares;
+
+    if (matchedRoute) {
+      const allowedPaths = new Set(matchedRoute.directoryPaths);
+      matched = middlewares.filter(({ path: middlewarePath }) =>
+        allowedPaths.has(middlewarePath)
+      );
+    } else {
+      matched = middlewares.filter(({ regexp }) => regexp.test(pathname));
+    }
+
+    return matched.flatMap(({ handler }) =>
+      Array.isArray(handler) ? handler : [handler]
+    );
   }
 
-  function runHandler<R>(
-    pathname: string,
-    method: string | undefined,
-    args: unknown[]
-  ) {
-    const matchedRoute = routeHandlers.find(
+  function matchRoute(pathname: string, method: string | undefined) {
+    return routeHandlers.find(
       ({ regex, method: routeMethod }) =>
         regex.test(pathname) && (!routeMethod || method === routeMethod)
     );
+  }
 
+  function runHandler<R>(
+    method: string | undefined,
+    args: unknown[],
+    matchedRoute?: Route,
+    routeParams?: Dictionary<string>
+  ) {
     if (!matchedRoute) {
       return notFoundHandler(...args);
     }
 
     const { handler } = matchedRoute;
-    const routeParams = matchedRoute.getRouteParams(pathname);
 
     if (isRecordWith<RequestHandler>(handler) && method && handler[method]) {
       return handler[method](...args, routeParams);
@@ -104,12 +118,15 @@ export async function initFileRouter({
   return function requestHandler<R>(...args: unknown[]) {
     const pathname = getPathname(...args);
     const method = getMethod ? getMethod(...args) : undefined;
-    const matchedMiddlewares = extractMiddlewares(pathname);
+    const matchedRoute = matchRoute(pathname, method);
+    const routeParams = matchedRoute?.getRouteParams(pathname);
+    const matchedMiddlewares = extractMiddlewares(pathname, matchedRoute);
 
     return executeWithMiddlewares<R>(
       matchedMiddlewares,
-      () => runHandler<R>(pathname, method, args),
-      args
+      () => runHandler<R>(method, args, matchedRoute, routeParams),
+      args,
+      routeParams
     );
   };
 }
