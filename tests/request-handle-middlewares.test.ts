@@ -256,7 +256,7 @@ describe('RequestHandler', () => {
         expect(routeParams).toEqual({ id: '123' });
       });
 
-      it('runs every middleware before serving POST /static/test', async () => {
+      it('runs every middleware before serving GET /static/test', async () => {
         const run = createTestMiddlewareRequestRunner(staticVsDynamicHandler);
         const { marks, routeParams } = await run('/static/test', 'GET');
 

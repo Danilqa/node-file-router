@@ -51,8 +51,7 @@ export async function initFileRouter({
     (await resolveNotFoundHandler(normalizedBaseDir)) || defaultNotFoundHandler;
 
   function extractMiddlewares(pathname: string, matchedRoute?: Route) {
-    let matched = middlewares;
-
+    let matched;
     if (matchedRoute) {
       const allowedPaths = new Set(matchedRoute.directoryPaths);
       matched = middlewares.filter(({ path: middlewarePath }) =>
