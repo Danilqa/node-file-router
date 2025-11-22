@@ -1,3 +1,3 @@
 import { createTestMiddlewareRequestHandler } from '../../../test-utils';
 
-export default createTestMiddlewareRequestHandler('dynamic');
+export default createTestMiddlewareRequestHandler('m-dynamic-id');

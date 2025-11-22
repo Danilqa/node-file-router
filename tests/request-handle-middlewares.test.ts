@@ -224,22 +224,48 @@ describe('RequestHandler', () => {
         });
       });
 
-      it('should not invoke dynamic middleware when static route matches', async () => {
+      it('runs every middleware before serving GET /:id/apples', async () => {
         const run = createTestMiddlewareRequestRunner(staticVsDynamicHandler);
-        const { marks } = await run('/static/test');
-
-        expect(marks).toBeUndefined();
-      });
-
-      it('should still invoke dynamic middleware for dynamic routes', async () => {
-        const run = createTestMiddlewareRequestRunner(staticVsDynamicHandler);
-        const { marks } = await run('/hello');
+        const { marks, routeParams } = await run('/123/apples', 'GET');
 
         expect(marks).toEqual([
-          'before:dynamic',
-          'dynamic-route',
-          'after:dynamic'
+          'before:m-root-static-vs-dynamic',
+          'before:m-dynamic-id',
+          'before:m-dynamic-apples',
+          'route-apples-index-get',
+          'after:m-dynamic-apples',
+          'after:m-dynamic-id',
+          'after:m-root-static-vs-dynamic'
         ]);
+        expect(routeParams).toEqual({ id: '123' });
+      });
+
+      it('runs every middleware before serving POST /:id/apples/invite', async () => {
+        const run = createTestMiddlewareRequestRunner(staticVsDynamicHandler);
+        const { marks, routeParams } = await run('/123/apples/invite', 'POST');
+
+        expect(marks).toEqual([
+          'before:m-root-static-vs-dynamic',
+          'before:m-dynamic-id',
+          'before:m-dynamic-apples',
+          'route-apples-invite-post',
+          'after:m-dynamic-apples',
+          'after:m-dynamic-id',
+          'after:m-root-static-vs-dynamic'
+        ]);
+        expect(routeParams).toEqual({ id: '123' });
+      });
+
+      it('runs every middleware before serving POST /static/test', async () => {
+        const run = createTestMiddlewareRequestRunner(staticVsDynamicHandler);
+        const { marks, routeParams } = await run('/static/test', 'GET');
+
+        expect(marks).toEqual([
+          'before:m-root-static-vs-dynamic',
+          'route-static-test-get',
+          'after:m-root-static-vs-dynamic'
+        ]);
+        expect(routeParams).toEqual({});
       });
     });
   });
