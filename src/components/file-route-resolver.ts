@@ -1,27 +1,22 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { exactSlugSegment } from './dynamic-routes/exact-slug-segment';
-import { catchAllSegment } from './dynamic-routes/catch-all-segment';
-import { optionalCatchAllSegment } from './dynamic-routes/optional-catch-all-segment';
 import { Route } from './route/route';
 import { Middleware } from './route/middleware';
+import { catchAllSegment } from './dynamic-routes/catch-all-segment';
+import { exactSlugSegment } from './dynamic-routes/exact-slug-segment';
+import { optionalCatchAllSegment } from './dynamic-routes/optional-catch-all-segment';
+import { parseDynamicRoute } from './dynamic-routes/parse-dynamic-route';
 import { isCommonJs } from '../utils/env.utils';
 import { validateFileFormat } from '../validations/validations';
 
 import { isClass } from '../utils/common.utils';
-import type { ParamExtractor } from './dynamic-routes/common/route-params-parser';
 import type { Dirent } from 'node:fs';
 
 interface Props {
   baseDir: string;
   ignoreFilesRegex?: RegExp[];
   clearImportCache: boolean;
-}
-
-interface RouteWithParams {
-  route: string;
-  paramExtractors: Record<string, ParamExtractor>;
 }
 
 export class FileRouteResolver {
@@ -121,7 +116,8 @@ export class FileRouteResolver {
           fullPath,
           entry,
           routePath,
-          nestingLevel
+          nestingLevel,
+          parentRoute
         );
 
         routes.push(route);
@@ -166,10 +162,7 @@ export class FileRouteResolver {
       .then((module) => validateFileFormat(fullPath, module))
       .then((module) => module.default);
 
-    const routePath = filePath.replace(
-      FileRouteResolver.middlewareFilePattern,
-      ''
-    );
+    const routePath = this.normalizeMiddlewarePath(filePath);
 
     return new Middleware({
       path: routePath,
@@ -182,7 +175,8 @@ export class FileRouteResolver {
     fullPath: string,
     entry: Dirent,
     routePath: string,
-    nestingLevel: number
+    nestingLevel: number,
+    parentRoute: string
   ): Promise<Route> {
     if (this.clearImportCache) {
       delete require.cache[fullPath];
@@ -201,13 +195,14 @@ export class FileRouteResolver {
     );
 
     const [method, pureRouteName] = this.extractMethodFromRoute(initialRoute);
-    const { route, paramExtractors } = this.parseDynamicParams(pureRouteName);
+    const { route, paramExtractors } = parseDynamicRoute(pureRouteName);
 
     const isIndex = FileRouteResolver.indexFilePattern.test(entry.name);
     const routeKey = isIndex ? route.replace(/\/index$/, '') : route;
 
     const formattedUrlPath =
       (isIndex ? pureRouteName.replace(/\/index$/, '') : pureRouteName) || '/';
+    const directoryPaths = this.buildDirectoryPaths(parentRoute);
 
     return new Route({
       method,
@@ -216,26 +211,9 @@ export class FileRouteResolver {
       regex: new RegExp(`^${routeKey}/?$`),
       nestingLevel,
       paramExtractors,
-      urlPath: formattedUrlPath
+      urlPath: formattedUrlPath,
+      directoryPaths
     });
-  }
-
-  private parseDynamicParams(initialRoute: string): RouteWithParams {
-    return [exactSlugSegment, catchAllSegment, optionalCatchAllSegment]
-      .filter((dynamicRoute) => dynamicRoute.isMatch(initialRoute))
-      .reduce(
-        (acc, route) => {
-          const parsedRoute = route.parse(acc.route);
-          return {
-            route: parsedRoute.route,
-            paramExtractors: {
-              ...acc.paramExtractors,
-              ...parsedRoute.paramExtractors
-            }
-          };
-        },
-        { route: initialRoute, paramExtractors: {} }
-      );
   }
 
   private extractMethodFromRoute(route: string): [string | undefined, string] {
@@ -250,5 +228,36 @@ export class FileRouteResolver {
     const pureRoute = route.replace(pattern, '');
 
     return [method, pureRoute];
+  }
+
+  private normalizeMiddlewarePath(filePath: string) {
+    const pathWithoutFile = filePath.replace(
+      FileRouteResolver.middlewareFilePattern,
+      ''
+    );
+
+    if (pathWithoutFile === '/' || pathWithoutFile === '') {
+      return '/';
+    }
+
+    return pathWithoutFile.replace(/\/$/, '');
+  }
+
+  private buildDirectoryPaths(parentRoute: string): string[] {
+    const directories = ['/'];
+
+    if (!parentRoute) {
+      return directories;
+    }
+
+    const segments = parentRoute.split('/').filter(Boolean);
+    let currentPath = '';
+
+    for (const segment of segments) {
+      currentPath += `/${segment}`;
+      directories.push(currentPath);
+    }
+
+    return directories;
   }
 }

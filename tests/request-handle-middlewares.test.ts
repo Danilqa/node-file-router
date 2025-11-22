@@ -40,7 +40,13 @@ describe('RequestHandler', () => {
       const runForRoute = createTestRequestRunner(middlewaresRequestHandler);
 
       const { marks } = await runForMiddleware('/nested/123');
-      expect(marks).toEqual(['before:m-root', '[id]', 'after:m-root']);
+      expect(marks).toEqual([
+        'before:m-root',
+        'before:[id]-nested',
+        '[id]',
+        'after:[id]-nested',
+        'after:m-root'
+      ]);
       const { routeParams } = await runForRoute('/nested/123');
       expect(routeParams).toEqual({ id: '123' });
     });
@@ -103,7 +109,7 @@ describe('RequestHandler', () => {
     });
 
     it('should get route params in middlewares', async () => {
-      const run = createTestRequestRunner(middlewaresRequestHandler);
+      const run = createTestMiddlewareRequestRunner(middlewaresRequestHandler);
       const { routeParams } = await run('/nested/7/unreachable');
       expect(routeParams?.id).toEqual('7');
     });
@@ -207,6 +213,60 @@ describe('RequestHandler', () => {
       const { result } = await run('/override');
 
       expect(result).toEqual('new-data');
+    });
+
+    describe('static vs dynamic routes', () => {
+      let staticVsDynamicHandler: FileRouterRequestHandler;
+
+      beforeAll(async () => {
+        staticVsDynamicHandler = await initFileRouter({
+          baseDir: 'api-middlewares/static-vs-dynamic'
+        });
+      });
+
+      it('runs every middleware before serving GET /:id/apples', async () => {
+        const run = createTestMiddlewareRequestRunner(staticVsDynamicHandler);
+        const { marks, routeParams } = await run('/123/apples', 'GET');
+
+        expect(marks).toEqual([
+          'before:m-root-static-vs-dynamic',
+          'before:m-dynamic-id',
+          'before:m-dynamic-apples',
+          'route-apples-index-get',
+          'after:m-dynamic-apples',
+          'after:m-dynamic-id',
+          'after:m-root-static-vs-dynamic'
+        ]);
+        expect(routeParams).toEqual({ id: '123' });
+      });
+
+      it('runs every middleware before serving POST /:id/apples/invite', async () => {
+        const run = createTestMiddlewareRequestRunner(staticVsDynamicHandler);
+        const { marks, routeParams } = await run('/123/apples/invite', 'POST');
+
+        expect(marks).toEqual([
+          'before:m-root-static-vs-dynamic',
+          'before:m-dynamic-id',
+          'before:m-dynamic-apples',
+          'route-apples-invite-post',
+          'after:m-dynamic-apples',
+          'after:m-dynamic-id',
+          'after:m-root-static-vs-dynamic'
+        ]);
+        expect(routeParams).toEqual({ id: '123' });
+      });
+
+      it('runs every middleware before serving GET /static/test', async () => {
+        const run = createTestMiddlewareRequestRunner(staticVsDynamicHandler);
+        const { marks, routeParams } = await run('/static/test', 'GET');
+
+        expect(marks).toEqual([
+          'before:m-root-static-vs-dynamic',
+          'route-static-test-get',
+          'after:m-root-static-vs-dynamic'
+        ]);
+        expect(routeParams).toEqual({});
+      });
     });
   });
 });

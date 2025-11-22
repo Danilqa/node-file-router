@@ -5,3 +5,6 @@ coverage
 dist
 .DS_Store
 .history
+
+#Ignore cursor AI rules
+.cursor/rules/codacy.mdc

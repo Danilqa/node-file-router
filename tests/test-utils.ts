@@ -71,10 +71,10 @@ export function createTestRequestRunner(
 export function createTestMiddlewareRequestRunner(
   requestHandler: FileRouterRequestHandler
 ) {
-  return async (url: string) => {
+  return async (url: string, method?: string) => {
     let runnerResult: MiddlewareResult = {};
     const result = await requestHandler(
-      { url, headers: { host: 'site' } },
+      { url, headers: { host: 'site' }, method },
       {
         end: () => {},
         registerCall: (props: MiddlewareResult) => {
