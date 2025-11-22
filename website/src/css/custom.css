@@ -51,7 +51,7 @@ html[data-theme='dark'] {
   --ifm-footer-background-color: #121212;
 }
 
-div[class^=announcementBar_] {
+div.theme-announcement-bar {
   background: linear-gradient(
     90deg,
     rgba(131,58,180,1) 0%,
@@ -59,4 +59,3 @@ div[class^=announcementBar_] {
     rgba(252,176,69,1) 100%
   );
 }
-
