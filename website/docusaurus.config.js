@@ -30,7 +30,30 @@ const config = {
     locales: ['en']
   },
 
-  plugins: ['docusaurus-plugin-sass'],
+  plugins: [
+    'docusaurus-plugin-sass',
+    [
+      'docusaurus-plugin-llms',
+      {
+        generateLLMsTxt: true,
+        generateLLMsFullTxt: true,
+        generateMarkdownFiles: true,
+        docsDir: 'docs',
+        title: 'Node File Router',
+        description: 'A lightweight and fast file-based routing for Node.js. Works with any framework or pure Node.js HTTP server.',
+        excludeImports: true,
+        removeDuplicateHeadings: true,
+        includeOrder: [
+          'getting-started*',
+          'usage-guide*',
+          'use-with-bun*',
+          'route-matching*',
+          'middlewares*',
+          'custom-adapter*',
+        ],
+      },
+    ],
+  ],
 
   presets: [
     [
